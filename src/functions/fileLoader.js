@@ -11,7 +11,7 @@ async function deleteCachedFile(file) {
 async function loadFiles(dirName) {
     console.log("Reached loadFiles function")
     try {
-        const files = await glob(`${process.cwd().replace(/\\/g, "/")}/${dirName}/**/*.js`);
+        const files = await glob(path.join(process.cwd(), dirName, "/**/*.js").replace(/\\/g, "/"));
         const jsFiles = files.filter(file => path.extname(file) === ".js"); // safety measure
         await Promise.all(jsFiles.map(deleteCachedFile));
         return jsFiles;

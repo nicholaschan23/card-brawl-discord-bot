@@ -1,4 +1,4 @@
-const { loadFiles } = require("../functions/loadFiles");
+const { loadFiles } = require("../functions/fileLoader");
 
 async function loadEvents(client) {
     console.time("Events loaded");
@@ -6,7 +6,7 @@ async function loadEvents(client) {
     client.events = new Map();
     const events = new Array();
 
-    const files = await loadFiles("events");
+    const files = await loadFiles("src/events");
     for (const file of files) {
         try {
             const event = require(file);
@@ -16,7 +16,7 @@ async function loadEvents(client) {
             target[event.once ? "once" : "on"](event.name, execute);
             client.events.set(event.name, execute); // creates new entry in Collection (event name, execute function)
 
-            events.push({ Event: event.name, Status: "🟢" });
+            events.push({ Event: event.name, Status: "✅" });
         } catch (error) {
             events.push({
                 Event: file.split("/").pop().slice(0, -3),
