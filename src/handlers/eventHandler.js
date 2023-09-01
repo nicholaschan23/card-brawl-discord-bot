@@ -27,8 +27,7 @@ async function loadEvents(client) {
 
     console.table(events, ["Event", "Status"]);
     console.info("\n\x1b[36m%s\x1b[0m", "Loaded Events."); // Cyan
-    console.timeEnd("Events loaded")
-
+    console.timeEnd("Events loaded");
 }
 
 module.exports = { loadEvents };

@@ -18,3 +18,5 @@ const { loadEvents } = require("./handlers/eventHandler");
 loadEvents(client);
 
 client.login(process.env.TOKEN);
+
+module.exports = client;
