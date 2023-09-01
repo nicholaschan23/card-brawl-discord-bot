@@ -1,0 +1,17 @@
+{
+  "name": "card-brawl-discord-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ascii-table": "^0.0.9",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "glob": "^10.3.4"
+  }
+}
