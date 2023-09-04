@@ -1,24 +1,38 @@
-const { glob } = require("glob");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
-async function deleteCachedFile(file) {
-    const filePath = path.resolve(file);
-    if (require.cache[filePath]) {
-        delete require.cache[filePath];
-    }
-}
+async function loadFiles(dirPath) {
+    const jsFiles = [];
 
-async function loadFiles(dirName) {
-    console.log("Reached loadFiles function")
-    try {
-        const files = await glob(path.join(process.cwd(), dirName, "/**/*.js").replace(/\\/g, "/"));
-        const jsFiles = files.filter(file => path.extname(file) === ".js"); // safety measure
-        await Promise.all(jsFiles.map(deleteCachedFile));
-        return jsFiles;
-    } catch (error) {
-        console.error(`Error loading files from directory ${dirName}: ${error}`);
-        throw error;
+    function scanDirectory(currentDirPath) {
+        const items = fs.readdirSync(currentDirPath);
+
+        for (const item of items) {
+            const itemPath = path.join(currentDirPath, item);
+            const itemStat = fs.statSync(itemPath);
+
+            try {
+                if (itemStat.isDirectory()) {
+                    // If it's a directory, recursively scan it
+                    scanDirectory(itemPath);
+                } else if (item.endsWith(".js")) {
+                    // If it's a .js file, add its path to the files array
+                    jsFiles.push(itemPath);
+                }
+            } catch (error) {
+                console.error(
+                    `Error loading files from directory ${itemPath}: ${error}`
+                );
+                throw error;
+            }
+        }
     }
+
+    // Start scanning the specified directory
+    const filePath = path.join(process.cwd(), dirPath);
+    scanDirectory(filePath);
+
+    return jsFiles;
 }
 
 module.exports = { loadFiles };
