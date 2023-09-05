@@ -14,8 +14,12 @@ const client = new Client({
 });
 
 client.events = new Collection();
+client.commands = new Collection();
+
 const { loadEvents } = require("./handlers/eventHandler");
 loadEvents(client);
+
+require("./interactions/slashCommands")(client);
 
 client.login(process.env.TOKEN);
 
