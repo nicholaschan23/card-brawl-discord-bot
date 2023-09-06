@@ -1,9 +1,10 @@
-const config = require("../../config.json");
+const config = require("../../../config.json");
 const { Events, Collection } = require("discord.js");
 
-module.exports = (client) => {
-    client.on(Events.InteractionCreate, async (interaction) => {
-        if (!interaction.isChatInputCommand()) return;
+module.exports = {
+    name: Events.InteractionCreate,
+    async execute(interaction) {
+        // if (!interaction.isChatInputCommand()) return;
 
         const command = interaction.client.commands.get(
             interaction.commandName
@@ -15,8 +16,17 @@ module.exports = (client) => {
             return;
         }
 
+        if (interaction.isAutocomplete()) {
+            try {
+                await command.autocomplete(interaction);
+            } catch (error) {
+                console.error(error);
+            }
+            return;
+        }
+        
         // Global command cooldown
-        const { cooldowns } = client;
+        const { cooldowns } = require("../../index");
         if (!cooldowns.has(command.data.name)) {
             cooldowns.set(command.data.name, new Collection());
         }
@@ -63,5 +73,5 @@ module.exports = (client) => {
                 });
             }
         }
-    });
+    },
 };

@@ -4,7 +4,6 @@ async function loadEvents(client) {
     console.time("Events loaded");
 
     const tableArray = new Array();
-
     const eventFiles = await loadFiles("src/events");
     for (const file of eventFiles) {
         try {
@@ -14,7 +13,6 @@ async function loadEvents(client) {
             } else {
                 client.on(event.name, (...args) => event.execute(...args));
             }
-
             tableArray.push({ Event: event.name, Status: "✅" });
         } catch (error) {
             tableArray.push({ Event: file, Status: "❌" });

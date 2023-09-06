@@ -15,7 +15,7 @@ const client = new Client({
 
 // Connect to MongoDB
 try {
-    const database = require("./functions/databaseConnect")
+    const database = require("./functions/databaseConnect");
     database.run().catch(console.dir);
 } catch (error) {
     console.log(error);
@@ -28,7 +28,7 @@ client.commands = new Collection();
 const { loadEvents } = require("./handlers/eventHandler");
 loadEvents(client);
 
-require("./interactions/slashCommands")(client);
+// require("./events/client/slashCommands")(client);
 
 client.login(process.env.TOKEN);
 

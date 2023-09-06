@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const client = require("../../index");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,7 +10,19 @@ module.exports = {
                 .setName("command")
                 .setDescription("The command to reload.")
                 .setRequired(true)
+                .setAutocomplete(true)
         ),
+
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        const choices = [...client.commands.keys()];
+        const filtered = choices.filter((choice) =>
+            choice.startsWith(focusedValue)
+        );
+        await interaction.respond(
+            filtered.map((choice) => ({ name: choice, value: choice }))
+        );
+    },
     async execute(interaction) {
         const commandName = interaction.options
             .getString("command", true)
@@ -22,16 +35,22 @@ module.exports = {
             );
         }
 
-        delete require.cache[require.resolve(`../${command.category}/${command.data.name}.js`)];
+        delete require.cache[
+            require.resolve(`../${command.category}/${command.data.name}.js`)
+        ];
 
-		try {
-	        interaction.client.commands.delete(command.data.name);
-	        const newCommand = require(`../${command.category}/${command.data.name}.js`);
-	        interaction.client.commands.set(newCommand.data.name, newCommand);
-	        await interaction.reply(`Command \`${newCommand.data.name}\` was reloaded!`);
-		} catch (error) {
-	        console.error(error);
-	        await interaction.reply(`There was an error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``);
-		}
+        try {
+            interaction.client.commands.delete(command.data.name);
+            const newCommand = require(`../${command.category}/${command.data.name}.js`);
+            interaction.client.commands.set(newCommand.data.name, newCommand);
+            await interaction.reply(
+                `Command \`${newCommand.data.name}\` was reloaded!`
+            );
+        } catch (error) {
+            console.error(error);
+            await interaction.reply(
+                `There was an error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``
+            );
+        }
     },
 };
