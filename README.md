@@ -16,12 +16,12 @@ Before you begin, make sure you have the following prerequisites:
 
 1. **Create a `.env` File:**
 
-   Start by creating a `.env` file in the root directory of your bot project. You can use a code editor to create this file. The file should be named `.env` (with a leading period).
+   Start by creating a `.env` file in the root directory of your bot project. The file should be named `.env` (with a leading period).
 
 2. **Add Environment Variables:**
 
    In your `.env` file, add the following lines, replacing `YOUR_BOT_TOKEN` and `YOUR_MONGODB_URI` with your actual bot token and MongoDB URI:
 
    ```env
-   BOT_TOKEN=YOUR_BOT_TOKEN
-   MONGODB_URI=YOUR_MONGODB_URI
+   TOKEN = "YOUR_BOT_TOKEN"
+   MONGODB_URI = "YOUR_MONGODB_URI"
