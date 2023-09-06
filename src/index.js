@@ -13,6 +13,14 @@ const client = new Client({
     partials: [User, Message, GuildMember],
 });
 
+// Connect to MongoDB
+try {
+    const database = require("./functions/databaseConnect")
+    database.run().catch(console.dir);
+} catch (error) {
+    console.log(error);
+}
+
 client.events = new Collection();
 client.cooldowns = new Collection();
 client.commands = new Collection();
@@ -21,8 +29,6 @@ const { loadEvents } = require("./handlers/eventHandler");
 loadEvents(client);
 
 require("./interactions/slashCommands")(client);
-
-
 
 client.login(process.env.TOKEN);
 
