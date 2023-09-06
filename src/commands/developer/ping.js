@@ -4,8 +4,9 @@ const client = require("../../index");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("ping")
-        .setDescription("Returns bot's latency"),
+        .setDescription("Returns bot latency."),
+    category: "developer",
     async execute(interaction) {
-        interaction.reply(`Pong! ${client.ws.ping}ms`);
+        await interaction.reply(`Pong! ${client.ws.ping}ms`);
     },
 };

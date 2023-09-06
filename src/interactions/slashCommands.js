@@ -1,3 +1,4 @@
+const config = require("../../config.json");
 const { Events, Collection } = require("discord.js");
 
 module.exports = (client) => {
@@ -22,7 +23,7 @@ module.exports = (client) => {
 
         const now = Date.now();
         const timestamps = cooldowns.get(command.data.name);
-        const defaultCooldownDuration = 10;
+        const defaultCooldownDuration = config.globalCooldown;
         const cooldownAmount =
             (command.cooldown ?? defaultCooldownDuration) * 1000;
 
@@ -33,7 +34,7 @@ module.exports = (client) => {
             if (now < expirationTime) {
                 const expiredTimestamp = Math.round(expirationTime / 1000);
                 return interaction.reply({
-                    content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
+                    content: `You can run the \`${command.data.name}\` command again <t:${expiredTimestamp}:R>.`,
                     ephemeral: true,
                 });
             }
