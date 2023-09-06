@@ -1,3 +1,35 @@
+# Card Brawl Discord Bot
+
+## Introduction
+
+Welcome to Card Brawl, the ultimate Discord bot for managing and hosting card competitions! Card Brawl is a versatile and engaging bot designed to facilitate card-based competitions, tournaments, and challenges within your Discord community.
+
+### What is Card Brawl?
+
+Card Brawl is a customizable Discord bot that allows you to create and manage card-based competitions of all kinds. Whether you're hosting a collectible card game (CCG) tournament, a card design competition, or any other card-related event, Card Brawl has you covered.
+
+### Key Features
+
+- **Create Card Competitions:** Easily set up card competitions where participants can submit their card designs, artwork, or any type of card-related content.
+
+- **Auto-generate Brackets:** Card Brawl's intelligent bracket system automates the creation of matchups, making it effortless to organize competitive rounds.
+
+- **Interactive Voting:** Engage your community with interactive voting rounds. Participants can react to matchups and decide the winners in real-time.
+
+- **Progressive Elimination:** As rounds progress, participants will compete head-to-head, leading to the ultimate showdown and crowning the top contenders.
+
+- **Customization:** Tailor Card Brawl to your server's needs with a range of customizable settings, including voting durations, eligibility criteria, and more.
+
+- **User-Friendly Commands:** Card Brawl offers an intuitive and user-friendly command interface, making it easy for both administrators and participants to interact with the bot.
+
+- **Secure and Reliable:** Your data's security is our top priority. Card Brawl ensures the safety of sensitive information and reliable operation, so your competitions run smoothly.
+
+### How to Get Started
+
+To start using Card Brawl, invite the bot to your Discord server and follow our comprehensive setup guide. With just a few simple steps, you'll be ready to host card competitions and engage your community in exciting card battles.
+
+Card Brawl is here to bring card enthusiasts and creators together, making Discord the perfect platform for card-related fun and competition. Get ready to embark on your card-battling journey with Card Brawl, and may the best card win!
+
 # Setting Up a `.env` File for Your Discord Bot
 
 ## Introduction
