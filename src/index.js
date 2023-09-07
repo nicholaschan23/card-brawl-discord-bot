@@ -28,8 +28,6 @@ client.commands = new Collection();
 const { loadEvents } = require("./handlers/eventHandler");
 loadEvents(client);
 
-// require("./events/client/slashCommands")(client);
-
 client.login(process.env.TOKEN);
 
 module.exports = client;

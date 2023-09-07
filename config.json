@@ -1,5 +1,10 @@
 {
     "guildId": "1036473558144127039",
     "clientId": "1146594862108508161",
-    "developerId": "195592343771021312"
+    "developerId": "195592343771021312",
+    "globalCooldown": 10,
+    "blue": "#7289da",
+    "green": "#43b581",
+    "red": "#f04747",
+    "yellow": "#faa61a"
 }
