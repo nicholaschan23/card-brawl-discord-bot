@@ -5,12 +5,14 @@ module.exports = {
     category: "public",
     data: new SlashCommandBuilder()
         .setName("brawl")
+        .setDescription("Brawl main command.")
         .addSubcommand(create.data),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
-        switch(subcommand) {
+        switch (subcommand) {
             case "create": {
                 await create.execute(interaction);
+                break;
             }
             default: {
                 await interaction.reply(

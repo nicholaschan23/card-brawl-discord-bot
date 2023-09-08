@@ -68,7 +68,7 @@ module.exports = {
         let deadline = interaction.options.getInteger("deadline") ?? 3;
         let mode = interaction.options.getString("mode") ?? "synchronous";
 
-        const createEmbed = new EmbedBuilder()
+        const createBrawlEmbed = new EmbedBuilder()
             .setColor(config.blue)
             .setTitle(name)
             .setDescription(
@@ -91,6 +91,7 @@ module.exports = {
             .setStyle(ButtonStyle.Danger);
 
         const edit = new ButtonBuilder()
+            .setDisabled(true)
             .setCustomId("edit")
             .setLabel("Edit")
             .setStyle(ButtonStyle.Primary);
@@ -98,11 +99,41 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(edit, confirm);
         const row2 = new ActionRowBuilder().addComponents(cancel);
 
-        await interaction.reply({
+        const response = await interaction.reply({
             content:
                 'Review your card brawl and click "Confirm" to allow contestants to enter.',
-            embeds: [createEmbed],
+            embeds: [createBrawlEmbed],
             components: [row, row2],
         });
+
+        const collectorFilter = (i) => i.user.id === interaction.user.id; // Only user who triggered command can use the buttons
+        try {
+            const confirmation = await response.awaitMessageComponent({
+                filter: collectorFilter,
+                time: 60000,
+            });
+
+            switch (confirmation.customId) {
+                case "cancel": {
+                    await response.delete();
+                    break;
+                }
+                case "confirm": {
+                    createBrawlEmbed.setColor(config.green);
+                    await confirmation.update({
+                        embeds: [createBrawlEmbed],
+                        components: [],
+                    });
+                    break;
+                }
+            }
+        } catch (error) {
+            await interaction.editReply({
+                content:
+                    "Confirmation not received within 1 minute, cancelling.",
+                embeds: [],
+                components: [],
+            });
+        }
     },
 };
