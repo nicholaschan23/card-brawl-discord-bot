@@ -15,7 +15,7 @@ const client = new Client({
 
 // Connect to MongoDB
 try {
-    const database = require("./functions/databaseConnect");
+    const database = require("./functions/database");
     database.run().catch(console.dir);
 } catch (error) {
     console.log(error);
