@@ -14,12 +14,14 @@ const client = new Client({
 });
 
 // Connect to MongoDB
-try {
-    const database = require("./functions/database");
-    database.run().catch(console.dir);
-} catch (error) {
-    console.log(error);
-}
+// try {
+//     const database = require("./functions/database");
+//     database.run().catch(console.dir);
+// } catch (error) {
+//     console.log(error);
+// }
+const { mongooseConnect } = require("./functions/mongooseConnect");
+mongooseConnect();
 
 client.events = new Collection();
 client.cooldowns = new Collection();
