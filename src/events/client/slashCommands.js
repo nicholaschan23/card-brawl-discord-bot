@@ -15,16 +15,6 @@ module.exports = {
                 return;
             }
 
-            // Autocomplete
-            if (interaction.isAutocomplete()) {
-                try {
-                    await command.autocomplete(interaction);
-                } catch (error) {
-                    console.error(error);
-                }
-                return;
-            }
-
             // Global command cooldown
             const { cooldowns } = require("../../index");
             if (!cooldowns.has(command.data.name)) {
@@ -74,6 +64,22 @@ module.exports = {
                         ephemeral: true,
                     });
                 }
+            }
+        } else if (interaction.isAutocomplete()) {
+            const command = interaction.client.commands.get(
+                interaction.commandName
+            );
+            if (!command) {
+                console.error(
+                    `No command matching ${interaction.commandName} was found.`
+                );
+                return;
+            }
+            
+            try {
+                await command.autocomplete(interaction);
+            } catch (error) {
+                console.error(error);
             }
         } else if (interaction.isButton()) {
         } else if (interaction.isStringSelectMenu()) {
