@@ -123,20 +123,13 @@ module.exports = {
                 }
                 case "confirm": {
                     // Save to database
-                    const mongoose = require("mongoose");
-                    console.log(mongoose.connection.readyState);
-                    /**
-                     * @returns 0: Disconnected
-                     * @returns 1: Connected
-                     * @returns 2: Connecting
-                     * @returns 3: Disconnecting
-                     */
-
                     const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
                     const myBrawlSetup = new BrawlSetupModel({
                         name: interaction.options.getString("name"),
                         theme: interaction.options.getString("theme"),
-                        size: interaction.options.getInteger("size")
+                        size: interaction.options.getInteger("size"),
+                        entries: new Map(),
+                        cards: new Map(),
                     });
 
                     try {
