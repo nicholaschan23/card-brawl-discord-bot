@@ -27,11 +27,19 @@ class BrawlBracket {
 
         this.currentRound = 1; // Current round of the tournament
         this.currentMatch = 1; // Current match of the tournament
-
-        this.hasStarted = false;
     }
 
-    // Split competitors into pairs to create matches
+    getStatus() {
+        if (this.matches.length === 0) {
+            if (this.completedMatches.length === 0) return 0; // Brawl has not started
+            if (this.completedMatches.length === this.competitors.length - 1)
+                return 2; // Brawl is finished
+        }
+        return 1; // Brawl is in progress
+    }
+
+    // Split competitors into pairs to create initial matches
+    // Run this once before conduct tournament method
     generateInitialBracket() {
         // Randomize competitors
         const shuffle = require("../functions/shuffleArray");
@@ -73,6 +81,12 @@ class BrawlBracket {
 
     // Generate matches for the next round based on the winners of the current round
     generateNextRound() {
+        // Bracket finished
+        if (this.completedMatches.length === this.competitors.length - 1) {
+            return;
+        }
+
+        // Generate matches
         for (
             let i = this.startIndex;
             i < this.completedMatches.length;
@@ -91,6 +105,7 @@ class BrawlBracket {
         if (this.completedMatches.length === this.competitors.length - 1) {
             return this.completedMatches[-1].winner;
         }
+        return null;
     }
 
     // Save the tournament progress to persistent storage
@@ -103,6 +118,8 @@ class BrawlBracket {
     loadProgress() {
         // Retrieve the serialized bracket state and completed rounds
         // Restore the bracket to the previous state to resume the tournament
+        // Display stats of current on-going brawl
+        // Confirm to resume it
     }
 }
 
