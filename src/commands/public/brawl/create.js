@@ -30,7 +30,7 @@ module.exports = {
         )
         .addIntegerOption((option) =>
             option
-                .setName("entries")
+                .setName("size")
                 .setDescription("How many cards can enter the brawl?")
                 .addChoices(
                     { name: "2", value: 2 },
@@ -61,10 +61,9 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        // Execute logic for the 'create' subcommand
         let name = interaction.options.getString("name");
         let theme = interaction.options.getString("theme");
-        let entries = interaction.options.getInteger("entries");
+        let size = interaction.options.getInteger("size");
         let deadline = interaction.options.getInteger("deadline") ?? 3;
         let mode = interaction.options.getString("mode") ?? "synchronous";
 
@@ -72,7 +71,7 @@ module.exports = {
             .setColor(config.blue)
             .setTitle(name)
             .setDescription(
-                `Type \`/brawl enter ${name}\` to join this card brawl! 🥊\nTheme: **${theme}**\nEntries: **${entries}**\nSubmissions close: in **${deadline} days**`
+                `Type \`/brawl enter ${name}\` to join this card brawl! 🥊\nTheme: **${theme}**\nSize: **${size}**\nSubmissions close: in **${deadline} days**`
             )
             .addFields({
                 name: "Requirements:",
@@ -115,12 +114,41 @@ module.exports = {
 
             switch (confirmation.customId) {
                 case "cancel": {
-                    await response.delete();
+                    createBrawlEmbed.setColor(config.red);
+                    await confirmation.update({
+                        embeds: [createBrawlEmbed],
+                        components: [],
+                    });
                     break;
                 }
                 case "confirm": {
+                    // Save to database
+                    const mongoose = require("mongoose");
+                    console.log(mongoose.connection.readyState);
+                    /**
+                     * @returns 0: Disconnected
+                     * @returns 1: Connected
+                     * @returns 2: Connecting
+                     * @returns 3: Disconnecting
+                     */
+
+                    const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+                    const myBrawlSetup = new BrawlSetupModel({
+                        name: interaction.options.getString("name"),
+                        theme: interaction.options.getString("theme"),
+                        size: interaction.options.getInteger("size")
+                    });
+
+                    try {
+                        const savedBrawlSetup = await myBrawlSetup.save();
+                        console.log("Brawl setup saved:", savedBrawlSetup);
+                    } catch (error) {
+                        console.error("Error saving brawl setup:", error);
+                    }
+
                     createBrawlEmbed.setColor(config.green);
                     await confirmation.update({
+                        content: "Card brawl created!",
                         embeds: [createBrawlEmbed],
                         components: [],
                     });
