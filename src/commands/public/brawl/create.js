@@ -7,6 +7,7 @@ const {
 } = require("discord.js");
 const config = require("../../../../config.json");
 const BrawlSetup = require("../../../classes/brawlSetup");
+const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
     category: "public/brawl",
@@ -125,7 +126,7 @@ module.exports = {
         try {
             const confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
-                time: 60000,
+                time: 30000,
             });
 
             switch (confirmation.customId) {
@@ -138,16 +139,13 @@ module.exports = {
                     break;
                 }
                 case "confirm": {
-                    // Save to database
-                    // const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
-                    // const myBrawlSetup = new BrawlSetupModel({
-                    //     name: name,
-                    //     theme: theme,
-                    //     size: size,
-                    // });
                     try {
-                        const myBrawlSetup = new BrawlSetup(name, theme, size);
-                        const savedBrawlSetup = await myBrawlSetup.save();
+                        const data = new BrawlSetupModel({
+                            name: name,
+                            theme: theme,
+                            size: size
+                        })   
+                        const savedBrawlSetup = await data.save();
                         console.log("Brawl setup saved:", savedBrawlSetup);
                     } catch (error) {
                         console.error("Error saving brawl setup:", error);
@@ -164,8 +162,7 @@ module.exports = {
             }
         } catch (error) {
             await interaction.followUp({
-                content:
-                    "Confirmation not received within 1 minute, cancelling.",
+                content: config.cancel30,
                 embeds: [],
                 components: [],
             });

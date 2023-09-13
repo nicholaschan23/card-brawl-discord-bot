@@ -125,9 +125,7 @@ module.exports = {
             }
         } catch (error) {
             enterEmbed.setColor(config.red);
-            await interaction.followUp(
-                "No response received within 30 seconds. Cancelling."
-            );
+            await interaction.followUp(config.cancel30);
             return;
         }
         await interaction.followUp(
@@ -149,7 +147,6 @@ module.exports = {
             });
 
             if (collected.first()) {
-                // console.log(collected.first());
                 try {
                     botResponseEmbed = collected.first().embeds[0].data;
                     if (botResponseEmbed.title !== "Card Details") {
@@ -168,9 +165,7 @@ module.exports = {
             }
         } catch (error) {
             console.log("Error while waiting for response:", error);
-            await interaction.followUp(
-                "No response received within 30 seconds. Cancelling."
-            );
+            await interaction.followUp(config.cancel30);
             return;
         }
 
@@ -191,7 +186,7 @@ module.exports = {
             await interaction.followUp("This card is already in this brawl.");
             return;
         }
-        const cardImage = botResponseEmbed.thumbnail.url; // Alternative is .proxy_url
+        const cardImage = botResponseEmbed.thumbnail.proxy_url; // Alternative is .proxy_url
 
         // Check card requirements
         const description = botResponseEmbed.description;
@@ -245,9 +240,7 @@ module.exports = {
             }
         } catch (error) {
             enterEmbed.setColor(config.red);
-            await interaction.followUp(
-                "No response received within 30 seconds. Cancelling."
-            );
+            await interaction.followUp(config.cancel30);
             return;
         }
 

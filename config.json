@@ -7,5 +7,6 @@
     "blue": "#7289da",
     "green": "#43b581",
     "red": "#f04747",
-    "yellow": "#faa61a"
+    "yellow": "#faa61a",
+    "cancel30": "Confirmation not received within 30 seconds, cancelling."
 }
