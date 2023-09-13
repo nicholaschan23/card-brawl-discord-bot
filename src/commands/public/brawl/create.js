@@ -6,6 +6,7 @@ const {
     ActionRowBuilder,
 } = require("discord.js");
 const config = require("../../../../config.json");
+const BrawlSetup = require("../../../classes/brawlSetup");
 
 module.exports = {
     category: "public/brawl",
@@ -24,7 +25,7 @@ module.exports = {
             option
                 .setName("theme")
                 .setDescription(
-                    "Theme contestants will match to enter the the card brawl."
+                    "Write a sentence regarding the theme contestants will match to enter the the card brawl."
                 )
                 .setRequired(true)
         )
@@ -69,15 +70,31 @@ module.exports = {
 
         const createBrawlEmbed = new EmbedBuilder()
             .setColor(config.blue)
-            .setTitle(name)
-            .setDescription(
-                `Type \`/brawl enter ${name}\` to join this card brawl! 🥊\nTheme: **${theme}**\nSize: **${size}**\nSubmissions close: in **${deadline} days**`
-            )
-            .addFields({
-                name: "Requirements:",
-                value: "- 🖼️ Framed\n- 💧 Dyed",
-            })
-            .addFields({ name: "Details", value: `- Mode: \`${mode}\`` });
+            .setTitle("Enter Card Brawl")
+            // .setDescription(
+            //     `Type \`/brawl enter ${name}\` to join this card brawl! 🥊\n`
+            // )
+            .addFields(
+                {
+                    name: "Name:",
+                    value: `${name}`,
+                },
+                { name: "Theme:", value: `${theme}` },
+                {
+                    name: "Size:",
+                    value: `${size}`,
+                },
+                {
+                    name: "Requirements:",
+                    value: `🖼️ Framed\n🎨 Morphed`,
+                    inline: true,
+                },
+                {
+                    name: "Optional:",
+                    value: `💧 Dyed\n🩸 Sketched`,
+                    inline: true,
+                }
+            );
 
         const confirm = new ButtonBuilder()
             .setCustomId("confirm")
@@ -99,8 +116,7 @@ module.exports = {
         const row2 = new ActionRowBuilder().addComponents(cancel);
 
         const response = await interaction.reply({
-            content:
-                'Review your card brawl and click "Confirm" to allow contestants to enter.',
+            content: "Review your card brawl details.",
             embeds: [createBrawlEmbed],
             components: [row, row2],
         });
@@ -123,16 +139,14 @@ module.exports = {
                 }
                 case "confirm": {
                     // Save to database
-                    const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
-                    const myBrawlSetup = new BrawlSetupModel({
-                        name: interaction.options.getString("name"),
-                        theme: interaction.options.getString("theme"),
-                        size: interaction.options.getInteger("size"),
-                        entries: new Map(),
-                        cards: new Map(),
-                    });
-
+                    // const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+                    // const myBrawlSetup = new BrawlSetupModel({
+                    //     name: name,
+                    //     theme: theme,
+                    //     size: size,
+                    // });
                     try {
+                        const myBrawlSetup = new BrawlSetup(name, theme, size);
                         const savedBrawlSetup = await myBrawlSetup.save();
                         console.log("Brawl setup saved:", savedBrawlSetup);
                     } catch (error) {
@@ -149,7 +163,7 @@ module.exports = {
                 }
             }
         } catch (error) {
-            await interaction.editReply({
+            await interaction.followUp({
                 content:
                     "Confirmation not received within 1 minute, cancelling.",
                 embeds: [],
