@@ -1,4 +1,4 @@
-const CardImageModel = require("../schemas/cardImageSchema");
+const ImageSchema = require("../schemas/cardImageSchema");
 const mongoose = require("mongoose");
 
 // Define a schema for storing brawl setups
@@ -8,20 +8,35 @@ const setupSchema = new mongoose.Schema({
     size: Number,
     entries: {
         type: Map,
-        of: [
-            {
-                type: String,
-            },
-        ],
+        of: [String],
+        default: new Map(),
     },
     cards: {
         type: Map,
-        of: {
-            type: CardImageModel
-        },
+        of: ImageSchema,
+        default: new Map(),
     },
+    // entries: {
+    //     type: Map,
+    //     of: [
+    //         {
+    //             type: String,
+    //         },
+    //     ],
+    //     default: new Map(),
+    // },
+    // cards: {
+    //     type: Map,
+    //     of: {
+    //         type: new mongoose.Schema({
+    //             imageLink: String,
+    //             userID: String,
+    //         })
+    //     },
+    //     default: new Map(),
+    // },
 });
 
-const BrawlSetupModel = mongoose.model("Brawl Setup", setupSchema);
+const BrawlSetupModel = mongoose.model("brawl setup", setupSchema);
 
 module.exports = BrawlSetupModel;
