@@ -16,25 +16,6 @@ const setupSchema = new mongoose.Schema({
         of: ImageSchema,
         default: new Map(),
     },
-    // entries: {
-    //     type: Map,
-    //     of: [
-    //         {
-    //             type: String,
-    //         },
-    //     ],
-    //     default: new Map(),
-    // },
-    // cards: {
-    //     type: Map,
-    //     of: {
-    //         type: new mongoose.Schema({
-    //             imageLink: String,
-    //             userID: String,
-    //         })
-    //     },
-    //     default: new Map(),
-    // },
 });
 
 const BrawlSetupModel = mongoose.model("brawl setup", setupSchema);

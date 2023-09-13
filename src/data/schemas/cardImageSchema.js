@@ -6,7 +6,4 @@ const imageSchema = new mongoose.Schema({
     userID: String,
 });
 
-const CardImageModel = mongoose.model("card image", imageSchema);
-
 module.exports = imageSchema;
-// module.exports = CardImageModel;

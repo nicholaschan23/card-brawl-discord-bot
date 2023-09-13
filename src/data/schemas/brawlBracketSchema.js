@@ -6,7 +6,7 @@ const matchSchema = new mongoose.Schema({
     winner: String
 })
 
-// Define a schema for storing card images
+// Define a schema for storing bracket data
 const bracketSchema = new mongoose.Schema({
     competitors: [String],
     matches: [matchSchema],
