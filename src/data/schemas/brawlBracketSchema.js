@@ -8,14 +8,24 @@ const matchSchema = new mongoose.Schema({
 
 // Define a schema for storing bracket data
 const bracketSchema = new mongoose.Schema({
+    name: String,
     competitors: [String],
     matches: [matchSchema],
     completedMatches: [matchSchema],
-    startIndex: Number,
-    currentRound: Number,
-    currentMatch: Number
+    startIndex: {
+        type: Number,
+        default: 0
+    },
+    currentRound: {
+        type: Number,
+        default: 1
+    },
+    currentMatch: {
+        type: Number,
+        default: 1
+    },
 });
 
-const BrawlBracketModel = mongoose.model("Brawl Bracket", bracketSchema);
+const BrawlBracketModel = mongoose.model("brawl bracket", bracketSchema);
 
 module.exports = BrawlBracketModel;
