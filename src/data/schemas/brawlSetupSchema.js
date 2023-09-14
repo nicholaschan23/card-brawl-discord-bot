@@ -1,4 +1,4 @@
-const ImageSchema = require("../schemas/cardImageSchema");
+const imageSchema = require("../schemas/cardImageSchema");
 const mongoose = require("mongoose");
 
 // Define a schema for storing brawl setups
@@ -13,7 +13,7 @@ const setupSchema = new mongoose.Schema({
     },
     cards: {
         type: Map,
-        of: ImageSchema,
+        of: imageSchema,
         default: new Map(),
     },
 });

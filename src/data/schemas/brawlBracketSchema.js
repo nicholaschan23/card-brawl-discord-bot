@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
-
-const matchSchema = new mongoose.Schema({
-    competitor1: String,
-    competitor2: String,
-    winner: String
-})
+const matchSchema = require("./brawlMatchSchema")
 
 // Define a schema for storing bracket data
 const bracketSchema = new mongoose.Schema({
