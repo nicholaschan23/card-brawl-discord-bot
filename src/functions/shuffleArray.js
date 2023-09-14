@@ -11,11 +11,11 @@ function shuffleArray(array) {
 
         // Swap with current element
         const temp = shuffledArray[currentIndex];
-        shuffleArray[currentIndex] = shuffledArray[randomIndex];
-        shuffleArray[randomIndex] = temp;
+        shuffledArray[currentIndex] = shuffledArray[randomIndex];
+        shuffledArray[randomIndex] = temp;
     }
 
-    return shuffleArray;
+    return shuffledArray;
 }
 
 module.exports = { shuffleArray };
