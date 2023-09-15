@@ -42,25 +42,25 @@ module.exports = {
                     { name: "64", value: 64 }
                 )
                 .setRequired(true)
-        )
-        .addIntegerOption((option) =>
-            option
-                .setName("deadline")
-                .setDescription("How many days will submissions be open for?")
-                .setMinValue(1)
-                .setMaxValue(7)
-        )
-        .addStringOption((option) =>
-            option
-                .setName("mode")
-                .setDescription(
-                    "Will viewers see matchups and vote in real-time or not?"
-                )
-                .addChoices(
-                    { name: "Synchronous", value: "synchronous" },
-                    { name: "Asynchronous", value: "asynchronous" }
-                )
         ),
+    // .addIntegerOption((option) =>
+    //     option
+    //         .setName("deadline")
+    //         .setDescription("How many days will submissions be open for?")
+    //         .setMinValue(1)
+    //         .setMaxValue(7)
+    // )
+    // .addStringOption((option) =>
+    //     option
+    //         .setName("mode")
+    //         .setDescription(
+    //             "Will viewers see matchups and vote in real-time or not?"
+    //         )
+    //         .addChoices(
+    //             { name: "Synchronous", value: "synchronous" },
+    //             { name: "Asynchronous", value: "asynchronous" }
+    //         )
+    // ),
     async execute(interaction) {
         if (
             !interaction.member.roles.cache.some(
@@ -77,11 +77,10 @@ module.exports = {
         let name = interaction.options.getString("name");
         name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
         let theme = interaction.options.getString("theme");
-        theme = `${theme.charAt(0).toUpperCase()}${theme.slice(1)}`
+        theme = `${theme.charAt(0).toUpperCase()}${theme.slice(1)}`;
         let size = interaction.options.getInteger("size");
-        let deadline = interaction.options.getInteger("deadline") ?? 3;
-        let mode = interaction.options.getString("mode") ?? "synchronous";
-        // Add options for changing requirements
+        // let deadline = interaction.options.getInteger("deadline") ?? 3;
+        // let mode = interaction.options.getString("mode") ?? "synchronous";
 
         const createBrawlEmbed = new EmbedBuilder()
             .setColor(config.blue)
@@ -121,6 +120,7 @@ module.exports = {
             .setLabel("Cancel")
             .setStyle(ButtonStyle.Danger);
 
+        // TODO: Add edit button options for changing requirements
         const edit = new ButtonBuilder()
             .setDisabled(true)
             .setCustomId("edit")
@@ -175,7 +175,7 @@ module.exports = {
             }
         } catch (error) {
             await interaction.followUp({
-                content: config.cancel30,
+                content: "Confirmation not received within 30 seconds, cancelling.",
                 embeds: [],
                 components: [],
             });

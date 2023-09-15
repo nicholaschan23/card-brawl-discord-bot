@@ -2,7 +2,6 @@ const { EmbedBuilder } = require("discord.js");
 const { mergeImages } = require("../functions/mergeImages");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
-const config = require("../../config.json");
 
 class Match {
     /**
@@ -15,14 +14,14 @@ class Match {
         this.winner = null;
     }
 
-    async conductMatch(interaction, round, match, setupModel) {
+    async conductMatch(channel, round, match, setupModel) {
         // Combine card images
         const image1 = setupModel.cards.get(this.card1).imageLink;
         const image2 = setupModel.cards.get(this.card2).imageLink;
         const imageBuffer = await mergeImages(image1, image2);
 
         // Display matchup as a png with reactions for the audience to vote
-        const message = await interaction.followUp({
+        const message = await channel.send({
             content: `### Round ${round}: Match ${match}`,
             files: [imageBuffer],
         });
@@ -44,19 +43,19 @@ class Match {
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
             this.winner = this.card1;
-            await interaction.followUp(
-                `Card 1 won by **${difference}** votes! (Card 1) **${count1}** : **${count2}** (Card 2)`
+            await channel.send(
+                `**Card 1** won by **${difference}** votes! Card 1 **${count1}** : **${count2}** Card 2`
             );
         } else if (count1 < count2) {
             this.winner = this.card2;
-            await interaction.followUp(
-                `Card 2 won by **${difference}** votes! (Card 1) **${count1}** : **${count2}** (Card 2)`
+            await channel.send(
+                `**Card 2** won by **${difference}** votes! Card 1 **${count1}** : **${count2}** Card 2`
             );
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             // TODO: Add player stat for ties won
-            await interaction
-                .followUp(
+            await channel
+                .send(
                     `Voting ended in a tie with **${count1}** votes each. The lucky winner is... 🥁`
                 )
                 .then(async (msg) => {
@@ -86,12 +85,8 @@ class Match {
 }
 
 class BrawlBracketHelper {
-    /**
-     * @param {Interaction} interaction
-     * @param {BrawlBracketModel} bracketModel
-     */
-    constructor(interaction, bracketModel, setupModel) {
-        this.interaction = interaction;
+    constructor(channel, bracketModel, setupModel) {
+        this.channel = channel;
         this.bracketModel = bracketModel;
         this.setupModel = setupModel;
     }
@@ -130,11 +125,29 @@ class BrawlBracketHelper {
 
     // Conduct the tournament
     async conductTournament() {
+        const totalRounds = log2(this.bracketModel.competitors.size());
         while (this.bracketModel.matches.length > 0) {
-            // const currentMatchSchema = this.bracketModel.matches.shift();
+            // Finals announcements
+            if (this.currentMatch === 1) {
+                switch (this.currentRound) {
+                    case totalRounds - 3: {
+                        await this.channel.send("## Quarter-finals");
+                        break;
+                    }
+                    case totalRounds - 2: {
+                        await this.channel.send("## Semi-finals");
+                        break;
+                    }
+                    case totalRounds - 1: {
+                        await this.channel.send("## Finals");
+                        break;
+                    }
+                }
+            }
+
             const currentMatch = new Match(this.bracketModel.matches.shift());
             const completedMatchSchema = await currentMatch.conductMatch(
-                this.interaction,
+                this.channel,
                 this.bracketModel.currentRound,
                 this.bracketModel.currentMatch,
                 this.setupModel
@@ -142,9 +155,6 @@ class BrawlBracketHelper {
 
             // Save the match result and update the bracket
             await this.bracketModel.completedMatches.push(completedMatchSchema);
-            console.log(
-                `Pushed Round ${this.bracketModel.currentRound}: Match ${this.bracketModel.currentMatch}`
-            );
 
             // Check if there are more matches in the current round
             // If not, move to the next round
@@ -209,15 +219,24 @@ class BrawlBracketHelper {
                 )
                 .setImage(this.setupModel.cards.get(winner).imageLink);
 
-            await this.interaction.followUp({
+            await this.channel.send({
+                content: "# Winner",
                 embeds: [cardEmbed],
             });
-            await this.interaction.followUp(
+            await this.channel.send(
                 `Congratulations <@${
                     this.setupModel.cards.get(winner).userID
-                }>! 🎉`
-            );
-        }
+                }>! 🎉\nThis card won out of **${this.setupModel.cards.size()}** cards!`
+                );
+            }
+
+            // Post winner in winners media channel
+            // TODO: Discord v14.14 upload to media channel
+            // const client = require("../index")
+            // const config = require("../../config.json")
+            // await client.channels.cache.get(config.winnersChannelID)({
+            //     embeds: [cardEmbed],
+            // });
     }
 
     // Save the tournament progress to persistent storage
@@ -225,14 +244,6 @@ class BrawlBracketHelper {
         // Serialize the bracket state, including completed rounds
         // Store it in a database or a file for later retrieval
         await this.bracketModel.save();
-    }
-
-    // Load the tournament progress from persistent storage
-    loadProgress() {
-        // Retrieve the serialized bracket state and completed rounds
-        // Restore the bracket to the previous state to resume the tournament
-        // Display stats of current on-going brawl
-        // Confirm to resume it
     }
 }
 

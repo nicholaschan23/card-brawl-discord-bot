@@ -3,10 +3,15 @@
     "clientID": "1146594862108508161",
     "developerID": "195592343771021312",
     "karutaID": "646937666251915264",
+
     "globalCooldown": 0,
+
+    "announcementChannelID": "1152363749966102559",
+    "winnersChannelID": "1152373201712713900",
+    "arenaChannelID": "1152352856247119953",
+
     "blue": "#7289da",
     "green": "#43b581",
     "red": "#f04747",
-    "yellow": "#faa61a",
-    "cancel30": "Confirmation not received within 30 seconds, cancelling."
+    "yellow": "#faa61a"
 }
