@@ -125,8 +125,26 @@ class BrawlBracketHelper {
 
     // Conduct the tournament
     async conductTournament() {
+        const totalRounds = log2(this.bracketModel.competitors.size());
         while (this.bracketModel.matches.length > 0) {
-            // const currentMatchSchema = this.bracketModel.matches.shift();
+            // Finals announcements
+            if (this.currentMatch === 1) {
+                switch (this.currentRound) {
+                    case totalRounds - 3: {
+                        await this.channel.send("## Quarter-finals");
+                        break;
+                    }
+                    case totalRounds - 2: {
+                        await this.channel.send("## Semi-finals");
+                        break;
+                    }
+                    case totalRounds - 1: {
+                        await this.channel.send("## Finals");
+                        break;
+                    }
+                }
+            }
+
             const currentMatch = new Match(this.bracketModel.matches.shift());
             const completedMatchSchema = await currentMatch.conductMatch(
                 this.channel,
@@ -137,9 +155,6 @@ class BrawlBracketHelper {
 
             // Save the match result and update the bracket
             await this.bracketModel.completedMatches.push(completedMatchSchema);
-            console.log(
-                `Pushed Round ${this.bracketModel.currentRound}: Match ${this.bracketModel.currentMatch}`
-            );
 
             // Check if there are more matches in the current round
             // If not, move to the next round
@@ -205,14 +220,23 @@ class BrawlBracketHelper {
                 .setImage(this.setupModel.cards.get(winner).imageLink);
 
             await this.channel.send({
+                content: "# Winner",
                 embeds: [cardEmbed],
             });
             await this.channel.send(
                 `Congratulations <@${
                     this.setupModel.cards.get(winner).userID
-                }>! 🎉`
-            );
-        }
+                }>! 🎉\nThis card won out of **${this.setupModel.cards.size()}** cards!`
+                );
+            }
+
+            // Post winner in winners media channel
+            // TODO: Discord v14.14 upload to media channel
+            // const client = require("../index")
+            // const config = require("../../config.json")
+            // await client.channels.cache.get(config.winnersChannelID)({
+            //     embeds: [cardEmbed],
+            // });
     }
 
     // Save the tournament progress to persistent storage
@@ -220,14 +244,6 @@ class BrawlBracketHelper {
         // Serialize the bracket state, including completed rounds
         // Store it in a database or a file for later retrieval
         await this.bracketModel.save();
-    }
-
-    // Load the tournament progress from persistent storage
-    loadProgress() {
-        // Retrieve the serialized bracket state and completed rounds
-        // Restore the bracket to the previous state to resume the tournament
-        // Display stats of current on-going brawl
-        // Confirm to resume it
     }
 }
 

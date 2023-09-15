@@ -135,7 +135,7 @@ module.exports = {
             }
         } catch (error) {
             enterEmbed.setColor(config.red);
-            await interaction.followUp(config.cancel30);
+            await interaction.followUp("Confirmation not received within 30 seconds, cancelling.");
             return;
         }
         message = await channel.send(
@@ -174,7 +174,7 @@ module.exports = {
             }
         } catch (error) {
             console.log("Error while waiting for response:", error);
-            await message.reply(config.cancel30);
+            await message.reply("Card details not received within 30 seconds, cancelling.");
             return;
         }
 
@@ -248,7 +248,7 @@ module.exports = {
             }
         } catch (error) {
             enterEmbed.setColor(config.red);
-            await response.reply(config.cancel30);
+            await response.reply("Confirmation not received within 30 seconds, cancelling.");
             return;
         }
 

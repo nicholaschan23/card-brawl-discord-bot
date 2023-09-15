@@ -3,6 +3,7 @@ const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
 const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
 const client = require("../../../index");
+const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/brawl",
@@ -67,7 +68,7 @@ module.exports = {
 
         // Get competitors and create brawl bracket
         const myBrawlBracket = new BrawlBracketHelper(
-            client.channels.cache.get(interaction.channel.id),
+            client.channels.cache.get(config.arenaChannelID),
             bracketModel,
             setupModel
         );
@@ -88,7 +89,6 @@ module.exports = {
             await interaction.reply(
                 `Welcome to the **${setupModel.name}** card brawl! There are ${setupModel.size} cards in this  etc.`
             );
-            
         }
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();

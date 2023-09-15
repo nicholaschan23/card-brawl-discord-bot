@@ -163,7 +163,7 @@ module.exports = {
             }
         } catch (error) {
             await interaction.followUp({
-                content: config.cancel30,
+                content: "Confirmation not received within 30 seconds, cancelling.",
                 embeds: [],
                 components: [],
             });
