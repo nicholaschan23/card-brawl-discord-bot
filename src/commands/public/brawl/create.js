@@ -6,7 +6,6 @@ const {
     ActionRowBuilder,
 } = require("discord.js");
 const config = require("../../../../config.json");
-const BrawlSetup = require("../../../classes/brawlSetup");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -63,11 +62,16 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
+        // TODO: force capitalizing first letter of name and theme
+        // TODO: force punctuation? (.?! not detected)
         let name = interaction.options.getString("name");
+        name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
         let theme = interaction.options.getString("theme");
+        theme = `${theme.charAt(0).toUpperCase()}${theme.slice(1)}`
         let size = interaction.options.getInteger("size");
         let deadline = interaction.options.getInteger("deadline") ?? 3;
         let mode = interaction.options.getString("mode") ?? "synchronous";
+        // Add options for changing requirements
 
         const createBrawlEmbed = new EmbedBuilder()
             .setColor(config.blue)
@@ -140,13 +144,12 @@ module.exports = {
                 }
                 case "confirm": {
                     try {
-                        const data = new BrawlSetupModel({
+                        const setupModel = new BrawlSetupModel({
                             name: name,
                             theme: theme,
-                            size: size
-                        })   
-                        const savedBrawlSetup = await data.save();
-                        console.log("Brawl setup saved:", savedBrawlSetup);
+                            size: size,
+                        });
+                        await setupModel.save();
                     } catch (error) {
                         console.error("Error saving brawl setup:", error);
                     }
@@ -168,4 +171,6 @@ module.exports = {
             });
         }
     },
+
+    // Announce brawl bracket creation for contestants to join
 };

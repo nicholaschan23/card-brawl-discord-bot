@@ -20,13 +20,14 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const name = interaction.options.getString("name");
+        let name = interaction.options.getString("name");
+        name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
 
         // Find brawl setup in database
-        let data;
+        let setupModel;
         try {
-            data = await BrawlSetupModel.findOne({ name }).exec();
-            if (!data) {
+            setupModel = await BrawlSetupModel.findOne({ name }).exec();
+            if (!setupModel) {
                 interaction.reply(`No brawl found with the name "${name}".`);
                 return;
             }
@@ -37,17 +38,19 @@ module.exports = {
         }
 
         // Check preconditions
-        if (data.cards.size === data.size) {
+        if (setupModel.cards.size === setupModel.size) {
             await interaction.reply("This card brawl is full!");
             return;
         }
         // TODO: Check if user is eligible for multiple entries
-        if (data.entries.get(interaction.user.id)) {
-            // const cards = entries.get(userID).size();
-            await interaction.reply(
-                "You already entered a card for this brawl."
-            );
-            return;
+        if (interaction.user.id !== config.developerID) { // Debugging
+            if (data.entries.get(interaction.user.id)) {
+                // const cards = entries.get(userID).size();
+                await interaction.reply(
+                    "You already entered a card for this brawl."
+                );
+                return;
+            }
         }
 
         // Confirm correct brawl data
@@ -57,12 +60,12 @@ module.exports = {
             .addFields(
                 {
                     name: "Name:",
-                    value: `${data.name}`,
+                    value: `${setupModel.name}`,
                 },
-                { name: "Theme:", value: `${data.theme}` },
+                { name: "Theme:", value: `${setupModel.theme}` },
                 {
                     name: "Status:",
-                    value: `${data.entries.size}/${data.size} spots filled`,
+                    value: `${setupModel.entries.size}/${setupModel.size} spots filled`,
                 },
                 {
                     name: "Requirements:",
@@ -182,7 +185,7 @@ module.exports = {
         }
         const cardCode = match[1];
         // Check precondition
-        if (data.cards.get(cardCode)) {
+        if (setupModel.cards.get(cardCode)) {
             await interaction.followUp("This card is already in this brawl.");
             return;
         }
@@ -199,7 +202,7 @@ module.exports = {
         } else if (!description.includes(`Morphed by`)) {
             await interaction.followUp("This card is not morphed.");
             return;
-        }        
+        }
 
         // Display card confirmation
         const cardEmbed = new EmbedBuilder()
@@ -246,17 +249,16 @@ module.exports = {
 
         // Add card to the brawl in database
         try {
-            const cardInfo = {
+            const imageSchema = {
                 imageLink: cardImage,
                 userID: interaction.user.id,
             };
-            data.entries.set(interaction.user.id, [cardCode]);
-            data.cards.set(cardCode, cardInfo);
-            data.save();
+            setupModel.entries.set(interaction.user.id, [cardCode]);
+            setupModel.cards.set(cardCode, imageSchema);
+            await setupModel.save();
             await interaction.followUp(
-                `Successfully submitted \`${cardCode}\` to the **${data.name}** card brawl!`
+                `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** card brawl!`
             );
-            
         } catch (error) {
             console.error("Error submitting card:", error);
         }

@@ -8,6 +8,7 @@ const statsSchema = new mongoose.Schema({
     matchesWon: Number,
     roundsPlayed: Number,
     tiesWon: Number,
+    wins: Number,
 });
 
 module.exports = statsSchema;

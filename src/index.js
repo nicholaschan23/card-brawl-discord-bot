@@ -5,21 +5,15 @@ const {
     Partials,
     Collection,
 } = require("discord.js");
-const { Guilds, GuildMembers, GuildMessages, MessageContent } = GatewayIntentBits;
+const { Guilds, GuildMembers, GuildMessages, GuildMessageReactions, MessageContent } = GatewayIntentBits;
 const { User, Message, GuildMember } = Partials;
 
 const client = new Client({
-    intents: [Guilds, GuildMembers, GuildMessages, MessageContent],
+    intents: [Guilds, GuildMembers, GuildMessages, GuildMessageReactions, MessageContent],
     partials: [User, Message, GuildMember],
 });
 
 // Connect to MongoDB
-// try {
-//     const database = require("./functions/database");
-//     database.run().catch(console.dir);
-// } catch (error) {
-//     console.log(error);
-// }
 const { mongooseConnect } = require("./functions/mongooseConnect");
 mongooseConnect();
 

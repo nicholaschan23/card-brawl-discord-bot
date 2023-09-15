@@ -14,7 +14,7 @@ async function mongooseConnect() {
     });
 
     db.once("open", () => {
-        console.info("\n\x1b[36m%s\x1b[0m", "Connected to MongoDB.");
+        console.info("\n\x1b[36m%s\x1b[0m", "Mongoose connected.");
     });
 
     // Listen for the process exit event
