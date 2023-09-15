@@ -2,7 +2,6 @@ const { EmbedBuilder } = require("discord.js");
 const { mergeImages } = require("../functions/mergeImages");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
-const config = require("../../config.json");
 
 class Match {
     /**
@@ -15,14 +14,14 @@ class Match {
         this.winner = null;
     }
 
-    async conductMatch(interaction, round, match, setupModel) {
+    async conductMatch(channel, round, match, setupModel) {
         // Combine card images
         const image1 = setupModel.cards.get(this.card1).imageLink;
         const image2 = setupModel.cards.get(this.card2).imageLink;
         const imageBuffer = await mergeImages(image1, image2);
 
         // Display matchup as a png with reactions for the audience to vote
-        const message = await interaction.followUp({
+        const message = await channel.send({
             content: `### Round ${round}: Match ${match}`,
             files: [imageBuffer],
         });
@@ -44,19 +43,19 @@ class Match {
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
             this.winner = this.card1;
-            await interaction.followUp(
-                `Card 1 won by **${difference}** votes! (Card 1) **${count1}** : **${count2}** (Card 2)`
+            await channel.send(
+                `**Card 1** won by **${difference}** votes! Card 1 **${count1}** : **${count2}** Card 2`
             );
         } else if (count1 < count2) {
             this.winner = this.card2;
-            await interaction.followUp(
-                `Card 2 won by **${difference}** votes! (Card 1) **${count1}** : **${count2}** (Card 2)`
+            await channel.send(
+                `**Card 2** won by **${difference}** votes! Card 1 **${count1}** : **${count2}** Card 2`
             );
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             // TODO: Add player stat for ties won
-            await interaction
-                .followUp(
+            await channel
+                .send(
                     `Voting ended in a tie with **${count1}** votes each. The lucky winner is... 🥁`
                 )
                 .then(async (msg) => {
@@ -86,12 +85,8 @@ class Match {
 }
 
 class BrawlBracketHelper {
-    /**
-     * @param {Interaction} interaction
-     * @param {BrawlBracketModel} bracketModel
-     */
-    constructor(interaction, bracketModel, setupModel) {
-        this.interaction = interaction;
+    constructor(channel, bracketModel, setupModel) {
+        this.channel = channel;
         this.bracketModel = bracketModel;
         this.setupModel = setupModel;
     }
@@ -134,7 +129,7 @@ class BrawlBracketHelper {
             // const currentMatchSchema = this.bracketModel.matches.shift();
             const currentMatch = new Match(this.bracketModel.matches.shift());
             const completedMatchSchema = await currentMatch.conductMatch(
-                this.interaction,
+                this.channel,
                 this.bracketModel.currentRound,
                 this.bracketModel.currentMatch,
                 this.setupModel
@@ -209,10 +204,10 @@ class BrawlBracketHelper {
                 )
                 .setImage(this.setupModel.cards.get(winner).imageLink);
 
-            await this.interaction.followUp({
+            await this.channel.send({
                 embeds: [cardEmbed],
             });
-            await this.interaction.followUp(
+            await this.channel.send(
                 `Congratulations <@${
                     this.setupModel.cards.get(winner).userID
                 }>! 🎉`

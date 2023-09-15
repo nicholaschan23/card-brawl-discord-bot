@@ -2,6 +2,7 @@ const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
 const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
+const client = require("../../../index");
 
 module.exports = {
     category: "public/brawl",
@@ -41,6 +42,7 @@ module.exports = {
                     goal - current
                 }** more contestant(s)! Only **${current}/${goal}** cards have been submitted.`
             );
+            return;
         }
 
         // Resume brawl
@@ -65,7 +67,7 @@ module.exports = {
 
         // Get competitors and create brawl bracket
         const myBrawlBracket = new BrawlBracketHelper(
-            interaction,
+            client.channels.cache.get(interaction.channel.id),
             bracketModel,
             setupModel
         );
