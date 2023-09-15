@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const client = require("../../index");
 
 module.exports = {
@@ -11,8 +11,9 @@ module.exports = {
                 .setDescription("The command to reload.")
                 .setRequired(true)
                 .setAutocomplete(true)
-        ),
-
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         const choices = [...client.commands.keys()];

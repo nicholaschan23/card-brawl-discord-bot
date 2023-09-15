@@ -62,8 +62,18 @@ module.exports = {
                 )
         ),
     async execute(interaction) {
-        // TODO: force capitalizing first letter of name and theme
-        // TODO: force punctuation? (.?! not detected)
+        if (
+            !interaction.member.roles.cache.some(
+                (role) => role.name === "Moderator"
+            )
+        ) {
+            await interaction.reply({
+                content: "You do not have permission to use this command.",
+                ephemeral: true,
+            });
+            return;
+        }
+        
         let name = interaction.options.getString("name");
         name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
         let theme = interaction.options.getString("theme");

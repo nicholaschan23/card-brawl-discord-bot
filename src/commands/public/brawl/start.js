@@ -15,6 +15,18 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
+        if (
+            !interaction.member.roles.cache.some(
+                (role) => role.name === "Moderator"
+            )
+        ) {
+            await interaction.reply({
+                content: "You do not have permission to use this command.",
+                ephemeral: true,
+            });
+            return;
+        }
+
         let name = interaction.options.getString("name");
         name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
 
@@ -86,7 +98,6 @@ module.exports = {
             await interaction.reply(
                 `Welcome to the **${setupModel.name}** card brawl! There are ${setupModel.size} cards in this  etc.`
             );
-            
         }
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();

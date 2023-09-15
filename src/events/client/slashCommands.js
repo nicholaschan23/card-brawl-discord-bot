@@ -75,14 +75,12 @@ module.exports = {
                 );
                 return;
             }
-            
+
             try {
                 await command.autocomplete(interaction);
             } catch (error) {
                 console.error(error);
             }
-        } else if (interaction.isButton()) {
-        } else if (interaction.isStringSelectMenu()) {
         }
     },
 };
