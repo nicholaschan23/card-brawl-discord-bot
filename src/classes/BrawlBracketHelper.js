@@ -56,17 +56,17 @@ class Match {
             // TODO: Add player stat for ties won
             await channel
                 .send(
-                    `Voting ended in a tie with **${count1}** votes each. The lucky winner is... 🥁`
+                    `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`
                 )
                 .then(async (msg) => {
                     await delay(3); // Suspense
                     if (this.winner === this.card1) {
                         msg.edit(
-                            `Voting ended in a tie with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
+                            `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
                         );
                     } else {
                         msg.edit(
-                            `Voting ended in a tie with **${count1}** votes each. The lucky winner is... **Card 2**! 🎉`
+                            `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 2**! 🎉`
                         );
                     }
                 });
@@ -125,20 +125,20 @@ class BrawlBracketHelper {
 
     // Conduct the tournament
     async conductTournament() {
-        const totalRounds = log2(this.bracketModel.competitors.size());
+        const totalRounds = Math.log2(this.setupModel.size);
         while (this.bracketModel.matches.length > 0) {
             // Finals announcements
-            if (this.currentMatch === 1) {
-                switch (this.currentRound) {
-                    case totalRounds - 3: {
+            if (this.bracketModel.currentMatch === 1) {
+                switch (this.bracketModel.currentRound) {
+                    case totalRounds - 2: {
                         await this.channel.send("## Quarter-finals");
                         break;
                     }
-                    case totalRounds - 2: {
+                    case totalRounds - 1: {
                         await this.channel.send("## Semi-finals");
                         break;
                     }
-                    case totalRounds - 1: {
+                    case totalRounds: {
                         await this.channel.send("## Finals");
                         break;
                     }
@@ -220,13 +220,13 @@ class BrawlBracketHelper {
                 .setImage(this.setupModel.cards.get(winner).imageLink);
 
             await this.channel.send({
-                content: "# Winner",
+                content: "# Winner!",
                 embeds: [cardEmbed],
             });
             await this.channel.send(
                 `Congratulations <@${
                     this.setupModel.cards.get(winner).userID
-                }>! 🎉\nThis card won out of **${this.setupModel.cards.size()}** cards!`
+                }>! 🎉\nThis card won out of **${this.setupModel.size}** cards!`
                 );
             }
 

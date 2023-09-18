@@ -79,8 +79,9 @@ module.exports = {
         }
 
         // Get competitors and create brawl bracket
+        const arenaChannel = client.channels.cache.get(config.arenaChannelID);
         const myBrawlBracket = new BrawlBracketHelper(
-            client.channels.cache.get(config.arenaChannelID),
+            arenaChannel,
             bracketModel,
             setupModel
         );
@@ -88,7 +89,7 @@ module.exports = {
         // Check if in progress, finished, etc.
         if (myBrawlBracket.getStatus() === 2) {
             await interaction.reply(
-                `The **${setupModel.name}** card brawl is already finished!`
+                `The **${setupModel.name}** card brawl has already finished!`
             );
             return;
         }
@@ -98,7 +99,10 @@ module.exports = {
             );
         } else if (myBrawlBracket.getStatus() === 0) {
             await myBrawlBracket.generateInitialBracket();
-            await interaction.reply(
+            await interaction.reply(`Starting the **${setupModel.name}** card brawl...`)
+
+            // Introduction
+            await arenaChannel.send(
                 `Welcome to the **${setupModel.name}** card brawl! There are ${setupModel.size} cards in this  etc.`
             );
         }
