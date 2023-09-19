@@ -6,7 +6,11 @@ const {
     ActionRowBuilder,
 } = require("discord.js");
 const config = require("../../../../config.json");
+const client = require("../../../index");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+const {
+    getAnnouncementEmbed,
+} = require("../../../functions/embeds/brawlAnnouncement");
 
 module.exports = {
     category: "public/brawl",
@@ -73,42 +77,23 @@ module.exports = {
             });
             return;
         }
-        
-        let name = interaction.options.getString("name");
-        name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-        let theme = interaction.options.getString("theme");
-        theme = `${theme.charAt(0).toUpperCase()}${theme.slice(1)}`;
+
+        const {
+            formatTitle,
+            formatTheme,
+        } = require("../../../functions/formatWords");
+        let name = formatTitle(interaction.options.getString("name"));
+        let theme = formatTheme(interaction.options.getString("theme"));
         let size = interaction.options.getInteger("size");
         // let deadline = interaction.options.getInteger("deadline") ?? 3;
         // let mode = interaction.options.getString("mode") ?? "synchronous";
 
-        const createBrawlEmbed = new EmbedBuilder()
-            .setColor(config.blue)
-            .setTitle("Enter Card Brawl")
-            // .setDescription(
-            //     `Type \`/brawl enter ${name}\` to join this card brawl! 🥊\n`
-            // )
-            .addFields(
-                {
-                    name: "Name:",
-                    value: `${name}`,
-                },
-                { name: "Theme:", value: `${theme}` },
-                {
-                    name: "Size:",
-                    value: `${size}`,
-                },
-                {
-                    name: "Requirements:",
-                    value: `🖼️ Framed\n🎨 Morphed`,
-                    inline: true,
-                },
-                {
-                    name: "Optional:",
-                    value: `💧 Dyed\n🩸 Sketched`,
-                    inline: true,
-                }
-            );
+        const setupBrawlEmbed = getAnnouncementEmbed(
+            name,
+            theme,
+            size,
+            interaction.user.id
+        );
 
         const confirm = new ButtonBuilder()
             .setCustomId("confirm")
@@ -121,19 +106,19 @@ module.exports = {
             .setStyle(ButtonStyle.Danger);
 
         // TODO: Add edit button options for changing requirements
-        const edit = new ButtonBuilder()
-            .setDisabled(true)
-            .setCustomId("edit")
-            .setLabel("Edit")
-            .setStyle(ButtonStyle.Primary);
+        // const edit = new ButtonBuilder()
+        //     .setDisabled(true)
+        //     .setCustomId("edit")
+        //     .setLabel("Edit")
+        //     .setStyle(ButtonStyle.Primary);
 
-        const row = new ActionRowBuilder().addComponents(edit, confirm);
-        const row2 = new ActionRowBuilder().addComponents(cancel);
+        const row = new ActionRowBuilder().addComponents(cancel, confirm);
+        // const row2 = new ActionRowBuilder().addComponents(cancel);
 
         const response = await interaction.reply({
             content: "Review your card brawl details.",
-            embeds: [createBrawlEmbed],
-            components: [row, row2],
+            embeds: [setupBrawlEmbed],
+            components: [row],
         });
 
         const collectorFilter = (i) => i.user.id === interaction.user.id; // Only user who triggered command can use the buttons
@@ -145,29 +130,42 @@ module.exports = {
 
             switch (confirmation.customId) {
                 case "cancel": {
-                    createBrawlEmbed.setColor(config.red);
+                    setupBrawlEmbed.setColor(config.red);
                     await confirmation.update({
-                        embeds: [createBrawlEmbed],
+                        embeds: [setupBrawlEmbed],
                         components: [],
                     });
                     break;
                 }
                 case "confirm": {
+                    // Announce brawl bracket creation for contestants to join
+                    const channel = client.channels.cache.get(
+                        config.announcementChannelID
+                    );
+                    const message = await channel.send({
+                        embeds: [setupBrawlEmbed],
+                    });
+                    channel.send(
+                        `Type \`/brawl enter ${name}\` to join this card brawl! <@&872334793885503581>`
+                    );
+
                     try {
                         const setupModel = new BrawlSetupModel({
                             name: name,
                             theme: theme,
                             size: size,
+                            messageID: message.id,
+                            hostID: interaction.user.id,
                         });
                         await setupModel.save();
                     } catch (error) {
                         console.error("Error saving brawl setup:", error);
                     }
 
-                    createBrawlEmbed.setColor(config.green);
+                    setupBrawlEmbed.setColor(config.green);
                     await confirmation.update({
                         content: "Card brawl created!",
-                        embeds: [createBrawlEmbed],
+                        embeds: [setupBrawlEmbed],
                         components: [],
                     });
                     break;
@@ -175,12 +173,10 @@ module.exports = {
             }
         } catch (error) {
             await interaction.followUp({
-                content: "Confirmation not received within 30 seconds, cancelling.",
-                embeds: [],
-                components: [],
+                content:
+                    "Confirmation not received within 30 seconds, cancelling.",
+                ephemeral: true,
             });
         }
     },
-
-    // Announce brawl bracket creation for contestants to join
 };

@@ -16,6 +16,8 @@ const setupSchema = new mongoose.Schema({
         of: imageSchema,
         default: new Map(),
     },
+    messageID: String,
+    hostID: String,
 });
 
 const BrawlSetupModel = mongoose.model("brawl setup", setupSchema);

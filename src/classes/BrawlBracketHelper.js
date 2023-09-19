@@ -227,16 +227,28 @@ class BrawlBracketHelper {
                 `Congratulations <@${
                     this.setupModel.cards.get(winner).userID
                 }>! 🎉\nThis card won out of **${this.setupModel.size}** cards!`
-                );
-            }
+            );
 
             // Post winner in winners media channel
             // TODO: Discord v14.14 upload to media channel
-            // const client = require("../index")
-            // const config = require("../../config.json")
-            // await client.channels.cache.get(config.winnersChannelID)({
-            //     embeds: [cardEmbed],
-            // });
+            const client = require("../index");
+            const config = require("../../config.json");
+            const announcementChannel = client.channels.cache.get(
+                config.announcementChannelID
+            );
+            announcementChannel.messages
+                .fetch(this.setupModel.messageID)
+                .then((message) => {
+                    const updatedEmbed = new EmbedBuilder(message.embeds[0]);
+                    updatedEmbed.setImage(
+                        this.setupModel.cards.get(winner).imageLink
+                    );
+                    updatedEmbed.setFooter({
+                        text: "This Card Brawl has a winner!",
+                    });
+                    message.edit({ embeds: [updatedEmbed] });
+                });
+        }
     }
 
     // Save the tournament progress to persistent storage
