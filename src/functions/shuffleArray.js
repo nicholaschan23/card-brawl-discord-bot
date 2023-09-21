@@ -3,7 +3,7 @@ function shuffleArray(array) {
     // Clone array
     const shuffledArray = [...array];
 
-    let currentIndex = shuffleArray.length;
+    let currentIndex = shuffledArray.length;
     while (currentIndex !== 0) {
         // Pick random element
         const randomIndex = Math.floor(Math.random() * currentIndex);
