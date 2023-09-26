@@ -2,6 +2,8 @@ const { EmbedBuilder } = require("discord.js");
 const { mergeImages } = require("../functions/mergeImages");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
+const config = require("../../config.json");
+const client = require("../index");
 
 class Match {
     /**
@@ -12,6 +14,36 @@ class Match {
         this.card1 = matchSchema.card1;
         this.card2 = matchSchema.card2;
         this.winner = null;
+    }
+
+    addBonusVotes(users) {
+        let count = 0;
+        users.forEach(async (reactedUser) => {
+            const guild = client.guilds.cache.get(config.guildID);
+            const member = guild.members.cache.get(reactedUser.id);
+            if (
+                member.roles.cache.some(
+                    (role) => role.name === "Server Booster"
+                )
+            ) {
+                count++;
+                if (
+                    member.roles.cache.some(
+                        (role) => role.name === "Active Booster"
+                    )
+                ) {
+                    count += 3;
+                }
+            }
+            if (
+                member.roles.cache.some(
+                    (role) => role.name === "Server Subscriber"
+                )
+            ) {
+                count += 5;
+            }
+        });
+        return count;
     }
 
     async conductMatch(channel, round, match, setupModel) {
@@ -38,18 +70,23 @@ class Match {
         const reaction2 = await message.reactions.cache.find(
             (reaction) => reaction.emoji.name === "2️⃣"
         );
-        const count1 = (await reaction1.count) - 1;
-        const count2 = (await reaction2.count) - 1;
+        const users1 = await reaction1.users.fetch();
+        const users2 = await reaction2.users.fetch();
+        let count1 = (await reaction1.count) - 1;
+        let count2 = (await reaction2.count) - 1;
+        count1 += await this.addBonusVotes(users1);
+        count2 += await this.addBonusVotes(users2);
+
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
             this.winner = this.card1;
             await channel.send(
-                `**Card 1** won by **${difference}** votes! Card 1 **${count1}** : **${count2}** Card 2`
+                `**Card 1** won by **${difference}** votes!    [ Card 1 **${count1}** : **${count2}** Card 2 ]`
             );
         } else if (count1 < count2) {
             this.winner = this.card2;
             await channel.send(
-                `**Card 2** won by **${difference}** votes! Card 1 **${count1}** : **${count2}** Card 2`
+                `**Card 2** won by **${difference}** votes!    [ Card 1 **${count1}** : **${count2}** Card 2 ]`
             );
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
@@ -89,6 +126,7 @@ class BrawlBracketHelper {
         this.channel = channel;
         this.bracketModel = bracketModel;
         this.setupModel = setupModel;
+        this.serverBoosters, this.activeBoosters, this.premiumSubscribers;
     }
 
     getStatus() {
