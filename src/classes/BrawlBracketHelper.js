@@ -74,20 +74,48 @@ class Match {
         const users2 = await reaction2.users.fetch();
         let count1 = (await reaction1.count) - 1;
         let count2 = (await reaction2.count) - 1;
-        count1 += await this.addBonusVotes(users1);
-        count2 += await this.addBonusVotes(users2);
+
+        // Bonus votes
+        const bonus1 = await this.addBonusVotes(users1);
+        if (bonus1 === 0) {
+            await channel.send("No bonus votes for Card 1...");
+        } else {
+            await channel.send("Adding bonus votes for Card 1!");
+        }
+        await delay(2);
+        const bonus2 = await this.addBonusVotes(users2);
+        if (bonus2 === 0) {
+            await channel.send("No bonus votes for Card 2...");
+        } else {
+            await channel.send("Adding bonus votes for Card 2!");
+        }
+        await delay(2);
+        count1 += bonus1;
+        count2 += bonus2;
 
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
             this.winner = this.card1;
-            await channel.send(
-                `**Card 1** won by **${difference}** votes!    [ Card 1 **${count1}** : **${count2}** Card 2 ]`
-            );
+            if (difference === 1) {
+                await channel.send(
+                    `**Card 1** won by just **${difference}** vote! [**${count1}**:**${count2}**]`
+                );
+            } else {
+                await channel.send(
+                    `**Card 1** won by **${difference}** votes! [**${count1}**:**${count2}**]`
+                );
+            }
         } else if (count1 < count2) {
             this.winner = this.card2;
-            await channel.send(
-                `**Card 2** won by **${difference}** votes!    [ Card 1 **${count1}** : **${count2}** Card 2 ]`
-            );
+            if (difference === 1) {
+                await channel.send(
+                    `**Card 2** won by just **${difference}** vote! [**${count1}**:**${count2}**]`
+                );
+            } else {
+                await channel.send(
+                    `**Card 2** won by **${difference}** votes! [**${count1}**:**${count2}**]`
+                );
+            }
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             // TODO: Add player stat for ties won
@@ -96,7 +124,15 @@ class Match {
                     `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`
                 )
                 .then(async (msg) => {
-                    await delay(3); // Suspense
+                    await delay(2); // Suspense
+                    msg.edit(
+                        `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁`
+                    );
+                    await delay(2);
+                    msg.edit(
+                        `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁 🥁`
+                    );
+                    await delay(2);
                     if (this.winner === this.card1) {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
@@ -204,6 +240,7 @@ class BrawlBracketHelper {
                 this.bracketModel.currentMatch++;
             }
             this.saveProgress(); // Save after every completed match
+            await delay(2)
         }
         this.announceWinner();
     }
