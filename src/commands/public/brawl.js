@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");
 const start = require("./brawl/start");
+const instructions = require("./brawl/instructions");
 
 module.exports = {
     category: "public",
@@ -10,7 +11,8 @@ module.exports = {
         .setDescription("Brawl main command.")
         .addSubcommand(create.data)
         .addSubcommand(enter.data)
-        .addSubcommand(start.data),
+        .addSubcommand(start.data)
+        .addSubcommand(instructions.data),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
@@ -24,6 +26,10 @@ module.exports = {
             }
             case "start": {
                 await start.execute(interaction);
+                break;
+            }
+            case "instructions": {
+                await instructions.execute(interaction);
                 break;
             }
             default: {
