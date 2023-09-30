@@ -10,7 +10,7 @@ function getInstructionsEmbed() {
         .addFields(
             {
                 name: "Notifications:",
-                value: `Get notified for Card Brawl server events by visiting <id:customize>.
+                value: `Get notified for Card Brawl community events by visiting <id:customize>.
                 - <@&${config.competitorRole}>: notified when to submit cards to compete\n- <@&${config.judgeRole}>: notified when the event goes live to vote`,
             },
             {

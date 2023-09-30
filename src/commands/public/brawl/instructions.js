@@ -11,6 +11,7 @@ module.exports = {
     async execute(interaction) {
         interaction.reply({
             embeds: [getInstructionsEmbed()],
+            ephemeral: true,
         });
     },
 };
