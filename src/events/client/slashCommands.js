@@ -1,10 +1,26 @@
+const { Events, Collection, PermissionsBitField } = require("discord.js");
 const config = require("../../../config.json");
-const { Events, Collection } = require("discord.js");
+const client = require("../../index");
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (interaction.isChatInputCommand()) {
+            // Keep slash commands in designated channels
+            const guild = client.guilds.cache.get(config.guildID);
+            const hasSendMessagePermission = interaction.channel
+                .permissionsFor(guild.members.me)
+                .has(PermissionsBitField.Flags.ViewChannel);
+            if (!hasSendMessagePermission) {
+                // Bot doesn't have 'SEND_MESSAGES' permission in this channel
+                interaction.reply({
+                    content:
+                        "Please use <#1152356454771216415> for Card Brawl commands.",
+                    ephemeral: true,
+                });
+                return;
+            }
+
             const command = interaction.client.commands.get(
                 interaction.commandName
             );
