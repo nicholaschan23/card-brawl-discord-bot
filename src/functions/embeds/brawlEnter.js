@@ -6,24 +6,11 @@ function getEnterEmbed(setupModel) {
         .setColor(config.blue)
         .setTitle(`Enter Card Brawl`)
         .setDescription(
-            `Name: **${setupModel.name}**
-            Status: **${setupModel.size - setupModel.cards.size}/${
-                setupModel.size
-            }** spots available
-            Theme: ${setupModel.theme}
-            `
-        )
-        .addFields(
-            {
-                name: "Requirements:",
-                value: `🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched`,
-                inline: true,
-            },
-            {
-                name: "Optional:",
-                value: `💧 Dyed\n✂️ Trimmed`,
-                inline: true,
-            }
+            `Name: **${setupModel.name}**\nStatus: **${
+                setupModel.size - setupModel.cards.size
+            }/${setupModel.size}** spots available\nTheme: ${
+                setupModel.theme
+            }\n\n**Requirements**:\n🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed`
         );
     return embed;
 }
