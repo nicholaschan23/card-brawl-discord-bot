@@ -61,8 +61,12 @@ async function createGuildEvent(setupModel) {
         config.serverAnnouncementChannelID
     );
     const channel2 = client.channels.cache.get(config.karutaUpdateChannelID);
+    const channel3 = client.channels.cache.get(
+        config.brawlAnnouncementChannelID
+    );
     channel1.send(link);
     channel2.send(link);
+    channel3.send(link);
 }
 
 module.exports = { createGuildEvent };

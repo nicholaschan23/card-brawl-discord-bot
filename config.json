@@ -8,8 +8,10 @@
 
     "announcementChannelID": "1152363749966102559",
     "arenaChannelID": "1152352856247119953",
+
     "serverAnnouncementChannelID": "1024721644889047071",
     "karutaUpdateChannelID": "1157474189024972860",
+    "brawlAnnouncementChannelID": "1157476974671958016",
 
     "judgeRole": "1143997170731729046",
     "competitorRole": "1157371773009006703",

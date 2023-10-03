@@ -8,9 +8,9 @@ function getEnterEmbed(setupModel) {
         .setDescription(
             `Name: **${setupModel.name}**\nStatus: **${
                 setupModel.size - setupModel.cards.size
-            }/${setupModel.size}** spots available\nTheme: ${
+            }/${setupModel.size}** spots available\nTheme: **${
                 setupModel.theme
-            }\n\n**Requirements**:\n🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed`
+            }**\n\n**Requirements**:\n🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed`
         );
     return embed;
 }

@@ -3,6 +3,7 @@ const {
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
+    PermissionFlagsBits,
 } = require("discord.js");
 const config = require("../../../../config.json");
 const client = require("../../../index");
@@ -10,7 +11,7 @@ const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const {
     getAnnouncementEmbed,
 } = require("../../../functions/embeds/brawlAnnouncement");
-const createGuildEvent = require("../../../functions/createGuildEvent")
+const createGuildEvent = require("../../../functions/createGuildEvent");
 
 module.exports = {
     category: "public/brawl",
@@ -48,7 +49,8 @@ module.exports = {
                     { name: "64", value: 64 }
                 )
                 .setRequired(true)
-        ),
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         if (
             !interaction.member.roles.cache.some(
@@ -136,12 +138,12 @@ module.exports = {
                             messageID: message.id,
                             hostID: interaction.user.id,
                         });
+                        await createGuildEvent(setupModel);
                         await setupModel.save();
                     } catch (error) {
                         console.error("Error saving brawl setup:", error);
                     }
 
-                    createGuildEvent(setupModel);
 
                     setupBrawlEmbed.setColor(config.green);
                     await confirmation.update({
