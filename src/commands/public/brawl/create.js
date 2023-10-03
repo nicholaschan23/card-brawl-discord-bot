@@ -10,6 +10,7 @@ const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const {
     getAnnouncementEmbed,
 } = require("../../../functions/embeds/brawlAnnouncement");
+const createGuildEvent = require("../../../functions/createGuildEvent")
 
 module.exports = {
     category: "public/brawl",
@@ -139,6 +140,8 @@ module.exports = {
                     } catch (error) {
                         console.error("Error saving brawl setup:", error);
                     }
+
+                    createGuildEvent(setupModel);
 
                     setupBrawlEmbed.setColor(config.green);
                     await confirmation.update({
