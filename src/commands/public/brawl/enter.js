@@ -14,7 +14,7 @@ module.exports = {
     category: "public/brawl",
     data: new SlashCommandSubcommandBuilder()
         .setName("enter")
-        .setDescription("Enter a card brawl.")
+        .setDescription("Enter a card competition.")
         .addStringOption((option) =>
             option
                 .setName("name")
@@ -22,7 +22,7 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const { formatTitle } = require("../../../functions/formatWords");
+        const { formatTitle } = require("../../../functions/formatTitle");
         const name = formatTitle(interaction.options.getString("name"));
         const channel = client.channels.cache.get(interaction.channel.id);
         let message;
@@ -64,14 +64,14 @@ module.exports = {
                         setupModel.entries.get(interaction.user.id).length === 2
                     ) {
                         await interaction.reply({
-                            content: `You already entered **2 cards** for the **${setupModel.name}** card brawl.`,
+                            content: `You already entered **2 cards** for the **${setupModel.name}** Card Brawl.`,
                         });
                         return;
                     }
                 } else {
                     await interaction.reply({
-                        content: `You already entered a card for the **${setupModel.name}** card brawl.
-                        Upgrade to <@&1152082378563534922> to submit **2 cards**.`,
+                        content: `You already entered a card for the **${setupModel.name}** Card Brawl.
+                        Become a <@&1152082378563534922> to submit **2 cards**!`,
                         allowedMentions: [],
                     });
                     return;
@@ -104,7 +104,7 @@ module.exports = {
         try {
             confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
-                time: 30000,
+                time: 60000,
             });
 
             switch (confirmation.customId) {
@@ -132,7 +132,7 @@ module.exports = {
         } catch (error) {
             enterEmbed.setColor(config.red);
             await interaction.followUp(
-                "Confirmation not received within 30 seconds, cancelling."
+                "Confirmation not received within 1 minute, cancelling."
             );
             return;
         }
@@ -149,7 +149,7 @@ module.exports = {
         try {
             const collected = await interaction.channel.awaitMessages({
                 max: 1,
-                time: 30000,
+                time: 60000,
                 errors: ["time"],
                 filter: botResponseFilter,
             });
@@ -174,7 +174,7 @@ module.exports = {
             console.log("Error while waiting for response:", error);
             await message.reply({
                 content:
-                    "Card details not received within 30 seconds, cancelling.",
+                    "Card details not received within 1 minute, cancelling.",
                 ephemeral: true,
             });
             return;
@@ -230,7 +230,7 @@ module.exports = {
         try {
             confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
-                time: 30000,
+                time: 60000,
             });
 
             switch (confirmation.customId) {
@@ -257,7 +257,7 @@ module.exports = {
             enterEmbed.setColor(config.red);
             await response.reply({
                 content:
-                    "Confirmation not received within 30 seconds, cancelling.",
+                    "Confirmation not received within 1 minute, cancelling.",
                 ephemeral: true,
             });
             return;
@@ -286,8 +286,9 @@ module.exports = {
             console.error("Error submitting card:", error);
         }
 
-        // Update announcement embed
+        // Card Brawl is full
         if (setupModel.cards.size === setupModel.size) {
+            // Update announcement embed
             const announcementChannel = client.channels.cache.get(
                 config.announcementChannelID
             );
@@ -301,6 +302,8 @@ module.exports = {
                     });
                     message.edit({ embeds: [updatedEmbed] });
                 });
+
+            // Create guild scheduled event
         }
     },
 };

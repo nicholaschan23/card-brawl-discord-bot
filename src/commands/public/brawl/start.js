@@ -1,15 +1,22 @@
-const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandSubcommandBuilder } = require("discord.js");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
 const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
+const { delay } = require("../../../functions/delay");
 const client = require("../../../index");
 const config = require("../../../../config.json");
+const {
+    getIntroductionEmbed,
+} = require("../../../functions/embeds/brawlIntroduction");
+const {
+    getConclusionEmbed,
+} = require("../../../functions/embeds/brawlConclusion");
 
 module.exports = {
     category: "public/brawl",
     data: new SlashCommandSubcommandBuilder()
         .setName("start")
-        .setDescription("Start a card brawl.")
+        .setDescription("Start a card competition.")
         .addStringOption((option) =>
             option
                 .setName("name")
@@ -95,18 +102,38 @@ module.exports = {
         }
         if (myBrawlBracket.getStatus() === 1) {
             await interaction.reply(
-                `Resuming the **${setupModel.name}** card brawl...`
+                `Resuming the **${setupModel.name}** Card Brawl...`
+            );
+            await arenaChannel.send(
+                `Resuming the **${setupModel.name}** Card Brawl...`
             );
         } else if (myBrawlBracket.getStatus() === 0) {
             await myBrawlBracket.generateInitialBracket();
-            await interaction.reply(`Starting the **${setupModel.name}** card brawl...`)
+            await interaction.reply(
+                `Starting the **${setupModel.name}** Card Brawl...`
+            );
 
             // Introduction
-            await arenaChannel.send(
-                `Welcome to the **${setupModel.name}** card brawl! There are ${setupModel.size} cards in this  etc.`
-            );
+            const message = await arenaChannel.send({
+                content: `We'll be starting in \`1 minute\`. <@&${config.judgeRole}>`,
+                embeds: [getIntroductionEmbed(setupModel)],
+            });
+            await message.react("🥳");
+            await delay(26); // 26
+            await arenaChannel.send("# 3");
+            await delay(1);
+            await arenaChannel.send("# 2");
+            await delay(1);
+            await arenaChannel.send("# 1");
+            await delay(1);
+            await arenaChannel.send("# Let the Card Brawl begin! 🥊");
+            await delay(2);
         }
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();
+        await delay(3);
+        await arenaChannel.send({
+            embeds: [getConclusionEmbed()],
+        });
     },
 };

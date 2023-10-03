@@ -4,10 +4,23 @@
     "developerID": "195592343771021312",
     "karutaID": "646937666251915264",
 
-    "globalCooldown": 0,
+    "globalCooldown": 5,
 
     "announcementChannelID": "1152363749966102559",
     "arenaChannelID": "1152352856247119953",
+    "serverAnnouncementChannelID": "1024721644889047071",
+    "karutaUpdateChannelID": "1157474189024972860",
+
+    "judgeRole": "1143997170731729046",
+    "competitorRole": "1157371773009006703",
+    "serverBoosterRole": "814708993393426482",
+    "activeBoosterRole": "776543515735883828",
+    "serverSubscriberRole": "1153438579821903974",
+    "brawlChampionRole": "1158801902939672668",
+
+    "serverBoosterBonus": "1",
+    "activeBoosterBonus": "3",
+    "serverSubscriberBonus": "5",
 
     "blue": "#7289da",
     "green": "#43b581",

@@ -1,6 +1,5 @@
 const {
     SlashCommandSubcommandBuilder,
-    EmbedBuilder,
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
@@ -16,12 +15,12 @@ module.exports = {
     category: "public/brawl",
     data: new SlashCommandSubcommandBuilder()
         .setName("create")
-        .setDescription("Create a card brawl.")
+        .setDescription("Create a card competition.")
         .addStringOption((option) =>
             option
                 .setName("name")
                 .setDescription(
-                    "Name contestants will use to enter the card brawl."
+                    "Name contestants will use to enter the card competition."
                 )
                 .setRequired(true)
         )
@@ -29,14 +28,16 @@ module.exports = {
             option
                 .setName("theme")
                 .setDescription(
-                    "Write a sentence regarding the theme contestants will match to enter the the card brawl."
+                    "Set the theme contestants will match to enter the the card competition."
                 )
                 .setRequired(true)
         )
         .addIntegerOption((option) =>
             option
                 .setName("size")
-                .setDescription("How many cards can enter the brawl?")
+                .setDescription(
+                    "How many cards can enter the card competition?"
+                )
                 .addChoices(
                     { name: "2", value: 2 },
                     { name: "4", value: 4 },
@@ -47,24 +48,6 @@ module.exports = {
                 )
                 .setRequired(true)
         ),
-    // .addIntegerOption((option) =>
-    //     option
-    //         .setName("deadline")
-    //         .setDescription("How many days will submissions be open for?")
-    //         .setMinValue(1)
-    //         .setMaxValue(7)
-    // )
-    // .addStringOption((option) =>
-    //     option
-    //         .setName("mode")
-    //         .setDescription(
-    //             "Will viewers see matchups and vote in real-time or not?"
-    //         )
-    //         .addChoices(
-    //             { name: "Synchronous", value: "synchronous" },
-    //             { name: "Asynchronous", value: "asynchronous" }
-    //         )
-    // ),
     async execute(interaction) {
         if (
             !interaction.member.roles.cache.some(
@@ -78,15 +61,10 @@ module.exports = {
             return;
         }
 
-        const {
-            formatTitle,
-            formatTheme,
-        } = require("../../../functions/formatWords");
+        const { formatTitle } = require("../../../functions/formatTitle");
         let name = formatTitle(interaction.options.getString("name"));
-        let theme = formatTheme(interaction.options.getString("theme"));
+        let theme = formatTitle(interaction.options.getString("theme"));
         let size = interaction.options.getInteger("size");
-        // let deadline = interaction.options.getInteger("deadline") ?? 3;
-        // let mode = interaction.options.getString("mode") ?? "synchronous";
 
         const setupBrawlEmbed = getAnnouncementEmbed(
             name,
@@ -116,7 +94,7 @@ module.exports = {
         // const row2 = new ActionRowBuilder().addComponents(cancel);
 
         const response = await interaction.reply({
-            content: "Review your card brawl details.",
+            content: "Review your Card Brawl details.",
             embeds: [setupBrawlEmbed],
             components: [row],
         });
@@ -125,7 +103,7 @@ module.exports = {
         try {
             const confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
-                time: 30000,
+                time: 60000,
             });
 
             switch (confirmation.customId) {
@@ -146,7 +124,7 @@ module.exports = {
                         embeds: [setupBrawlEmbed],
                     });
                     channel.send(
-                        `Type \`/brawl enter ${name}\` to join this card brawl! <@&872334793885503581>`
+                        `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`
                     );
 
                     try {
@@ -164,7 +142,7 @@ module.exports = {
 
                     setupBrawlEmbed.setColor(config.green);
                     await confirmation.update({
-                        content: "Card brawl created!",
+                        content: "Card Brawl created!",
                         embeds: [setupBrawlEmbed],
                         components: [],
                     });
@@ -174,7 +152,7 @@ module.exports = {
         } catch (error) {
             await interaction.followUp({
                 content:
-                    "Confirmation not received within 30 seconds, cancelling.",
+                    "Confirmation not received within 1 minute, cancelling.",
                 ephemeral: true,
             });
         }

@@ -6,13 +6,4 @@ function formatTitle(str) {
         .join(" "); // Join the words back together into a single string
 }
 
-function formatTheme(str) {
-    return (
-        str
-            .toLowerCase() // Convert the entire string to lowercase
-            .charAt(0)
-            .toUpperCase() + str.slice(1)
-    ); // Capitalize the first letter of the sentence
-}
-
-module.exports = { formatTitle, formatTheme };
+module.exports = { formatTitle };

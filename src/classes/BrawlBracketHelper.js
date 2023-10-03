@@ -124,15 +124,15 @@ class Match {
                     `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`
                 )
                 .then(async (msg) => {
-                    await delay(2); // Suspense
+                    await delay(1); // Suspense
                     msg.edit(
                         `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁`
                     );
-                    await delay(2);
+                    await delay(1);
                     msg.edit(
                         `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁 🥁`
                     );
-                    await delay(2);
+                    await delay(3);
                     if (this.winner === this.card1) {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
@@ -240,7 +240,7 @@ class BrawlBracketHelper {
                 this.bracketModel.currentMatch++;
             }
             this.saveProgress(); // Save after every completed match
-            await delay(2)
+            await delay(2);
         }
         this.announceWinner();
     }
@@ -323,6 +323,14 @@ class BrawlBracketHelper {
                     });
                     message.edit({ embeds: [updatedEmbed] });
                 });
+
+            // Give winner Brawl Champion role
+            const guild = client.guilds.cache.get(config.guildID);
+            const member = guild.members.cache.get(
+                this.setupModel.cards.get(winner).userID
+            );
+            const role = guild.roles.cache.find((r) => r.name === "Brawl Champion") 
+            await member.role.add(role);
         }
     }
 

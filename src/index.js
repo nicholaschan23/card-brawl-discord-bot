@@ -5,11 +5,11 @@ const {
     Partials,
     Collection,
 } = require("discord.js");
-const { Guilds, GuildMembers, GuildMessages, GuildMessageReactions, MessageContent } = GatewayIntentBits;
+const { Guilds, GuildMembers, GuildMessages, GuildMessageReactions, GuildScheduledEvents, MessageContent } = GatewayIntentBits;
 const { User, Message, GuildMember } = Partials;
 
 const client = new Client({
-    intents: [Guilds, GuildMembers, GuildMessages, GuildMessageReactions, MessageContent],
+    intents: [Guilds, GuildMembers, GuildMessages, GuildMessageReactions, GuildScheduledEvents, MessageContent],
     partials: [User, Message, GuildMember],
 });
 
