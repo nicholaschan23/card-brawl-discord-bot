@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { mergeImages } = require("../functions/mergeImages");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
+const UserStatHelper = require("./UserStatHelper");
 const config = require("../../config.json");
 const client = require("../index");
 
@@ -16,37 +17,43 @@ class Match {
         this.winner = null;
     }
 
-    addBonusVotes(users) {
+    addBonusVotes(users, myUserStat) {
         let count = 0;
         users.forEach(async (reactedUser) => {
             const guild = client.guilds.cache.get(config.guildID);
             const member = guild.members.cache.get(reactedUser.id);
-            if (
-                member.roles.cache.some(
-                    (role) => role.name === "Server Booster"
-                )
-            ) {
-                count++;
+
+            if (reactedUser.id != config.clientID) {
+                let userCount = 0;
                 if (
                     member.roles.cache.some(
-                        (role) => role.name === "Active Booster"
+                        (role) => role.name === "Server Booster"
                     )
                 ) {
-                    count += 3;
+                    userCount++;
+                    if (
+                        member.roles.cache.some(
+                            (role) => role.name === "Active Booster"
+                        )
+                    ) {
+                        userCount += 3;
+                    }
                 }
-            }
-            if (
-                member.roles.cache.some(
-                    (role) => role.name === "Server Subscriber"
-                )
-            ) {
-                count += 5;
+                if (
+                    member.roles.cache.some(
+                        (role) => role.name === "Server Subscriber"
+                    )
+                ) {
+                    userCount += 5;
+                }
+                count += userCount;
+                await myUserStat.updateVotesGiven(reactedUser.id, userCount + 1);
             }
         });
         return count;
     }
 
-    async conductMatch(channel, round, match, setupModel) {
+    async conductMatch(channel, round, match, setupModel, myUserStat) {
         // Combine card images
         const image1 = setupModel.cards.get(this.card1).imageLink;
         const image2 = setupModel.cards.get(this.card2).imageLink;
@@ -76,14 +83,14 @@ class Match {
         let count2 = (await reaction2.count) - 1;
 
         // Bonus votes
-        const bonus1 = await this.addBonusVotes(users1);
+        const bonus1 = await this.addBonusVotes(users1, myUserStat);
         if (bonus1 === 0) {
             await channel.send("No bonus votes for Card 1...");
         } else {
             await channel.send("Adding bonus votes for Card 1!");
         }
         await delay(2);
-        const bonus2 = await this.addBonusVotes(users2);
+        const bonus2 = await this.addBonusVotes(users2, myUserStat);
         if (bonus2 === 0) {
             await channel.send("No bonus votes for Card 2...");
         } else {
@@ -92,6 +99,12 @@ class Match {
         await delay(2);
         count1 += bonus1;
         count2 += bonus2;
+
+        // Update user stats
+        const user1 = setupModel.cards.get(this.card1).userID;
+        const user2 = setupModel.cards.get(this.card2).userID;
+        await myUserStat.updateVotesReceived(user1, count1);
+        await myUserStat.updateVotesReceived(user2, count2);
 
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
@@ -105,6 +118,8 @@ class Match {
                     `**Card 1** won by **${difference}** votes! [**${count1}**:**${count2}**]`
                 );
             }
+            await myUserStat.updateMatchesCompeted(user1, true, false);
+            await myUserStat.updateMatchesCompeted(user2, false, false);
         } else if (count1 < count2) {
             this.winner = this.card2;
             if (difference === 1) {
@@ -116,6 +131,8 @@ class Match {
                     `**Card 2** won by **${difference}** votes! [**${count1}**:**${count2}**]`
                 );
             }
+            await myUserStat.updateMatchesCompeted(user1, false, false);
+            await myUserStat.updateMatchesCompeted(user2, true, false);
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             // TODO: Add player stat for ties won
@@ -137,10 +154,14 @@ class Match {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
                         );
+                        await myUserStat.updateMatchesCompeted(user1, true, true);
+                        await myUserStat.updateMatchesCompeted(user2, false, true);
                     } else {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 2**! 🎉`
                         );
+                        await myUserStat.updateMatchesCompeted(user1, false, true);
+                        await myUserStat.updateMatchesCompeted(user2, true, true);
                     }
                 });
         }
@@ -162,7 +183,7 @@ class BrawlBracketHelper {
         this.channel = channel;
         this.bracketModel = bracketModel;
         this.setupModel = setupModel;
-        this.serverBoosters, this.activeBoosters, this.premiumSubscribers;
+        this.myUserStat = new UserStatHelper();
     }
 
     getStatus() {
@@ -224,7 +245,8 @@ class BrawlBracketHelper {
                 this.channel,
                 this.bracketModel.currentRound,
                 this.bracketModel.currentMatch,
-                this.setupModel
+                this.setupModel,
+                this.myUserStat
             ); // Determine the winner of the match
 
             // Save the match result and update the bracket
@@ -240,9 +262,18 @@ class BrawlBracketHelper {
                 this.bracketModel.currentMatch++;
             }
             this.saveProgress(); // Save after every completed match
+            this.myUserStat.saveProgress();
             await delay(2);
         }
         this.announceWinner();
+
+        // Update user stats completed Card Brawl
+        const userIDs = [];
+        this.setupModel.cards.forEach((card) => {
+            userIDs.push(card.userID);
+        });
+        await this.myUserStat.updateCardsEntered(userIDs);
+        this.myUserStat.saveProgress();
     }
 
     // Generate matches for the next round based on the winners of the current round
@@ -282,16 +313,14 @@ class BrawlBracketHelper {
                 this.bracketModel.completedMatches[
                     this.bracketModel.completedMatches.length - 1
                 ].winner;
+            const winnerUserID = this.setupModel.cards.get(winner).userID;
+            this.myUserStat.updateWin(winnerUserID);
 
             // Card embed
             const cardEmbed = new EmbedBuilder()
                 // .setColor(config.blue)
                 .setTitle(`Card Brawl Winner`)
-                .setDescription(
-                    `\`${winner}\` by <@${
-                        this.setupModel.cards.get(winner).userID
-                    }>`
-                )
+                .setDescription(`\`${winner}\` by <@${winnerUserID}>`)
                 .setImage(this.setupModel.cards.get(winner).imageLink);
 
             await this.channel.send({
@@ -306,6 +335,8 @@ class BrawlBracketHelper {
 
             // Post winner in winners media channel
             // TODO: Discord v14.14 upload to media channel
+
+            // Edit announcement message with image of winning card
             const client = require("../index");
             const config = require("../../config.json");
             const announcementChannel = client.channels.cache.get(
@@ -329,15 +360,15 @@ class BrawlBracketHelper {
             const member = guild.members.cache.get(
                 this.setupModel.cards.get(winner).userID
             );
-            const role = guild.roles.cache.find((r) => r.name === "Brawl Champion") 
-            await member.role.add(role);
+            const role = guild.roles.cache.find(
+                (r) => r.name === "Brawl Champion"
+            );
+            member.roles.add(role);
         }
     }
 
-    // Save the tournament progress to persistent storage
+    // Save the tournament progress to database
     async saveProgress() {
-        // Serialize the bracket state, including completed rounds
-        // Store it in a database or a file for later retrieval
         await this.bracketModel.save();
     }
 }
