@@ -13,7 +13,6 @@ module.exports = {
                 .setAutocomplete(true)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-        
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         const choices = [...client.commands.keys()];

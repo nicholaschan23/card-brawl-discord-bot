@@ -11,7 +11,7 @@ const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const {
     getAnnouncementEmbed,
 } = require("../../../functions/embeds/brawlAnnouncement");
-const createGuildEvent = require("../../../functions/createGuildEvent");
+const { createGuildEvent } = require("../../../functions/createGuildEvent");
 
 module.exports = {
     category: "public/brawl",
@@ -49,8 +49,7 @@ module.exports = {
                     { name: "64", value: 64 }
                 )
                 .setRequired(true)
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        ),
     async execute(interaction) {
         if (
             !interaction.member.roles.cache.some(
@@ -68,6 +67,21 @@ module.exports = {
         let name = formatTitle(interaction.options.getString("name"));
         let theme = formatTitle(interaction.options.getString("theme"));
         let size = interaction.options.getInteger("size");
+
+        // Check if name already exists
+        try {
+            const setupModel = await BrawlSetupModel.findOne({ name }).exec();
+            if (setupModel) {
+                interaction.reply(
+                    `Another Card Brawl already exists with this name.`
+                );
+                return;
+            }
+        } catch (error) {
+            console.log("Error retrieving brawl setups:", error);
+            interaction.reply(`There was an error retrieving the brawl.`);
+            return;
+        }
 
         const setupBrawlEmbed = getAnnouncementEmbed(
             name,
@@ -138,12 +152,11 @@ module.exports = {
                             messageID: message.id,
                             hostID: interaction.user.id,
                         });
-                        await createGuildEvent(setupModel);
+                        createGuildEvent(setupModel);
                         await setupModel.save();
                     } catch (error) {
                         console.error("Error saving brawl setup:", error);
                     }
-
 
                     setupBrawlEmbed.setColor(config.green);
                     await confirmation.update({

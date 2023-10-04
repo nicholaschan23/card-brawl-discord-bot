@@ -57,16 +57,15 @@ async function createGuildEvent(setupModel) {
     const link = await event.createInviteURL({
         channel: config.arenaChannelID,
     });
-    const channel1 = client.channels.cache.get(
-        config.serverAnnouncementChannelID
+    const karutaUpdate = client.channels.cache.get(
+        config.karutaUpdateChannelID
     );
-    const channel2 = client.channels.cache.get(config.karutaUpdateChannelID);
-    const channel3 = client.channels.cache.get(
+    const brawlAnnounce = client.channels.cache.get(
         config.brawlAnnouncementChannelID
     );
-    channel1.send(link);
-    channel2.send(link);
-    channel3.send(link);
+    // karutaUpdate.send(link);
+    // brawlAnnounce.send(link);
+    event.delete();
 }
 
 module.exports = { createGuildEvent };

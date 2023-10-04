@@ -119,7 +119,7 @@ module.exports = {
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            await delay(26); // 26
+            await delay(1); // 26
             await arenaChannel.send("# 3");
             await delay(1);
             await arenaChannel.send("# 2");
