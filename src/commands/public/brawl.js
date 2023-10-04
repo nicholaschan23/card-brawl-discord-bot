@@ -3,6 +3,7 @@ const create = require("./brawl/create");
 const enter = require("./brawl/enter");
 const start = require("./brawl/start");
 const instructions = require("./brawl/instructions");
+const stats = require("./brawl/stats");
 
 module.exports = {
     category: "public",
@@ -12,7 +13,8 @@ module.exports = {
         .addSubcommand(create.data)
         .addSubcommand(enter.data)
         .addSubcommand(start.data)
-        .addSubcommand(instructions.data),
+        .addSubcommand(instructions.data)
+        .addSubcommand(stats.data),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
@@ -30,6 +32,10 @@ module.exports = {
             }
             case "instructions": {
                 await instructions.execute(interaction);
+                break;
+            }
+            case "stats": {
+                await stats.execute(interaction);
                 break;
             }
             default: {
