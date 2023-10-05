@@ -11,9 +11,9 @@ class UserStatHelper {
             let statModel = this.userStatModels[userID];
             if (!statModel) {
                 statModel = await UserStatModel.findOne({ userID }).exec();
+
+                // User stats doesn't exist, create one
                 if (!statModel) {
-                    console.log("not in database");
-                    // User stats doesn't exist, create one
                     statModel = new UserStatModel({
                         userID: userID,
                         cardsEntered: 0,

@@ -4,6 +4,7 @@ const enter = require("./brawl/enter");
 const start = require("./brawl/start");
 const instructions = require("./brawl/instructions");
 const stats = require("./brawl/stats");
+const winner = require("./brawl/winner");
 
 module.exports = {
     category: "public",
@@ -14,7 +15,8 @@ module.exports = {
         .addSubcommand(enter.data)
         .addSubcommand(start.data)
         .addSubcommand(instructions.data)
-        .addSubcommand(stats.data),
+        .addSubcommand(stats.data)
+        .addSubcommand(winner.data),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
@@ -36,6 +38,10 @@ module.exports = {
             }
             case "stats": {
                 await stats.execute(interaction);
+                break;
+            }
+            case "winner": {
+                await winner.execute(interaction);
                 break;
             }
             default: {

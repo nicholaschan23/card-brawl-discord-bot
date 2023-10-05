@@ -22,18 +22,18 @@ module.exports = {
         try {
             const setupModel = await UserStatModel.findOne({ userID }).exec();
             if (setupModel) {
-                interaction.reply({
+                await interaction.reply({
                     embeds: [getUserStatEmbed(setupModel)],
                 });
             } else {
-                interaction.reply({
+                await interaction.reply({
                     content: `<@${userID}> has not participated in a Card Brawl yet.`,
                     mentions: [],
                 });
             }
         } catch (error) {
             console.log("Error retrieving user stats:", error);
-            interaction.reply(`There was an error retrieving user stats.`);
+            await interaction.reply(`There was an error retrieving user stats.`);
         }
     },
 };

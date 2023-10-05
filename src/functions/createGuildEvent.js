@@ -63,8 +63,8 @@ async function createGuildEvent(setupModel) {
     const brawlAnnounce = client.channels.cache.get(
         config.brawlAnnouncementChannelID
     );
-    // karutaUpdate.send(link);
-    // brawlAnnounce.send(link);
+    karutaUpdate.send(link);
+    brawlAnnounce.send(link);
     event.delete();
 }
 

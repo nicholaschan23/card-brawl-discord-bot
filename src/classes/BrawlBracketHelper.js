@@ -309,23 +309,10 @@ class BrawlBracketHelper {
             this.bracketModel.completedMatches.length ===
             this.bracketModel.competitors.length - 1
         ) {
-            const winner =
-                this.bracketModel.completedMatches[
-                    this.bracketModel.completedMatches.length - 1
-                ].winner;
-            const winnerUserID = this.setupModel.cards.get(winner).userID;
-            this.myUserStat.updateWin(winnerUserID);
-
-            // Card embed
-            const cardEmbed = new EmbedBuilder()
-                // .setColor(config.blue)
-                .setTitle(`Card Brawl Winner`)
-                .setDescription(`\`${winner}\` by <@${winnerUserID}>`)
-                .setImage(this.setupModel.cards.get(winner).imageLink);
-
+            const { getWinnerEmbed } = require("../functions/embeds/brawlWinner")
             await this.channel.send({
                 content: "# Winner!",
-                embeds: [cardEmbed],
+                embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
             });
             await this.channel.send(
                 `Congratulations <@${
@@ -352,7 +339,9 @@ class BrawlBracketHelper {
                     updatedEmbed.setFooter({
                         text: "This Card Brawl has a winner!",
                     });
-                    message.edit({ embeds: [updatedEmbed] });
+                    message.edit({ 
+                        content: `This Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
+                        embeds: [updatedEmbed] });
                 });
 
             // Give winner Brawl Champion role

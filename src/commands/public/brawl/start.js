@@ -26,7 +26,7 @@ module.exports = {
     async execute(interaction) {
         if (
             !interaction.member.roles.cache.some(
-                (role) => role.name === "Moderator"
+                (role) => role.name === "Owner"
             )
         ) {
             await interaction.reply({
@@ -44,12 +44,12 @@ module.exports = {
         try {
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
-                interaction.reply(`No brawl found with the name "${name}".`);
+                await interaction.reply(`No brawl found with the name "${name}".`);
                 return;
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            interaction.reply(`There was an error retrieving the brawl.`);
+            await interaction.reply(`There was an error retrieving the brawl.`);
             return;
         }
 
@@ -79,7 +79,7 @@ module.exports = {
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            interaction.reply(
+            await interaction.reply(
                 "There was an error retrieving the brawl bracket."
             );
             return;

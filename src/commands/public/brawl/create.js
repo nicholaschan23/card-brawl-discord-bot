@@ -53,7 +53,7 @@ module.exports = {
     async execute(interaction) {
         if (
             !interaction.member.roles.cache.some(
-                (role) => role.name === "Moderator"
+                (role) => role.name === "Owner"
             )
         ) {
             await interaction.reply({
@@ -79,7 +79,7 @@ module.exports = {
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            interaction.reply(`There was an error retrieving the brawl.`);
+            await interaction.reply(`There was an error retrieving the brawl.`);
             return;
         }
 
@@ -138,11 +138,9 @@ module.exports = {
                         config.announcementChannelID
                     );
                     const message = await channel.send({
+                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
                         embeds: [setupBrawlEmbed],
                     });
-                    channel.send(
-                        `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`
-                    );
 
                     try {
                         const setupModel = new BrawlSetupModel({

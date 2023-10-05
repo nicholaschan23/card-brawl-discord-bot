@@ -32,12 +32,12 @@ module.exports = {
         try {
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
-                interaction.reply(`No brawl found with the name "${name}".`);
+                await interaction.reply(`No brawl found with the name "${name}".`);
                 return;
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            interaction.reply(`There was an error retrieving the brawl.`);
+            await interaction.reply(`There was an error retrieving the brawl.`);
             return;
         }
 
@@ -192,6 +192,7 @@ module.exports = {
             return;
         }
         const cardCode = match[1];
+
         // Check precondition
         if (setupModel.cards.get(cardCode)) {
             await embedMessage.reply(
@@ -199,7 +200,7 @@ module.exports = {
             );
             return;
         }
-        const cardImage = await botResponseEmbed.thumbnail.url; // Alternative is .proxy_url
+        const cardImage = botResponseEmbed.thumbnail.url; // Alternative is .proxy_url
 
         // Check card requirements
         if (!description.includes(`Owned by <@${interaction.user.id}>`)) {
@@ -276,6 +277,7 @@ module.exports = {
             }
             setupModel.cards.set(cardCode, imageSchema);
             await setupModel.save();
+            
             await channel.send(
                 `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** card brawl!`
             );
@@ -300,10 +302,10 @@ module.exports = {
                     updatedEmbed.setFooter({
                         text: "This Card Brawl is full!",
                     });
-                    message.edit({ embeds: [updatedEmbed] });
+                    message.edit({ 
+                        content: `This Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
+                        embeds: [updatedEmbed] });
                 });
-
-            // Create guild scheduled event
         }
     },
 };

@@ -10,7 +10,7 @@ module.exports = {
             const guild = client.guilds.cache.get(config.guildID);
             const hasSendMessagePermission = interaction.channel
                 .permissionsFor(guild.members.me)
-                .has(PermissionsBitField.Flags.ViewChannel);
+                .has(PermissionsBitField.Flags.SendMessages);
             if (!hasSendMessagePermission) {
                 // Bot doesn't have 'SEND_MESSAGES' permission in this channel
                 interaction.reply({

@@ -9,7 +9,7 @@ module.exports = {
         .setName("instructions")
         .setDescription("Instructions on how to play."),
     async execute(interaction) {
-        interaction.reply({
+        await interaction.reply({
             embeds: [getInstructionsEmbed()],
             ephemeral: true,
         });

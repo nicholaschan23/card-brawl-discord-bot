@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const statsSchema = new mongoose.Schema({
     userID: String,
 
+    // Competitor
     cardsEntered: Number,
     matchesCompeted: Number,
     matchesWon: Number,
@@ -16,6 +17,8 @@ const statsSchema = new mongoose.Schema({
     votesGiven: Number,
     votesReceived: Number,
     votesHighest: Number,
+
+    chatPoints: Number,
 });
 
 const UserStatModel = mongoose.model("user stats", statsSchema);
