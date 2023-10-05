@@ -55,7 +55,7 @@ module.exports = {
             if (setupModel.entries.get(interaction.user.id)) {
                 // Already an entry
                 if (
-                    !interaction.member.roles.cache.some(
+                    interaction.member.roles.cache.some(
                         (role) => role.name === "Server Subscriber"
                     )
                 ) {
