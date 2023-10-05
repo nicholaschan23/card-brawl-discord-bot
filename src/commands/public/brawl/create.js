@@ -3,15 +3,14 @@ const {
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
-    PermissionFlagsBits,
 } = require("discord.js");
-const config = require("../../../../config.json");
-const client = require("../../../index");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+const { createGuildEvent } = require("../../../functions/createGuildEvent");
 const {
     getAnnouncementEmbed,
 } = require("../../../functions/embeds/brawlAnnouncement");
-const { createGuildEvent } = require("../../../functions/createGuildEvent");
+const config = require("../../../../config.json");
+const { client } = require("../../../index");
+const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
     category: "public/brawl",
@@ -56,11 +55,10 @@ module.exports = {
                 (role) => role.name === "Owner"
             )
         ) {
-            await interaction.reply({
+            return await interaction.reply({
                 content: "You do not have permission to use this command.",
                 ephemeral: true,
             });
-            return;
         }
 
         const { formatTitle } = require("../../../functions/formatTitle");
@@ -72,15 +70,15 @@ module.exports = {
         try {
             const setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (setupModel) {
-                interaction.reply(
+                return await interaction.reply(
                     `Another Card Brawl already exists with this name.`
                 );
-                return;
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            await interaction.reply(`There was an error retrieving the brawl.`);
-            return;
+            return await interaction.reply(
+                `There was an error retrieving the brawl.`
+            );
         }
 
         const setupBrawlEmbed = getAnnouncementEmbed(
@@ -168,7 +166,7 @@ module.exports = {
         } catch (error) {
             await interaction.followUp({
                 content:
-                    "Confirmation not received within 1 minute, cancelling.",
+                    "Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }

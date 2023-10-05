@@ -5,17 +5,35 @@ const {
     Partials,
     Collection,
 } = require("discord.js");
-const { Guilds, GuildMembers, GuildMessages, GuildMessageReactions, GuildScheduledEvents, MessageContent } = GatewayIntentBits;
+const {
+    Guilds,
+    GuildMembers,
+    GuildMessages,
+    GuildMessageReactions,
+    GuildScheduledEvents,
+    MessageContent,
+} = GatewayIntentBits;
 const { User, Message, GuildMember } = Partials;
 
 const client = new Client({
-    intents: [Guilds, GuildMembers, GuildMessages, GuildMessageReactions, GuildScheduledEvents, MessageContent],
+    intents: [
+        Guilds,
+        GuildMembers,
+        GuildMessages,
+        GuildMessageReactions,
+        GuildScheduledEvents,
+        MessageContent,
+    ],
     partials: [User, Message, GuildMember],
 });
 
 // Connect to MongoDB
 const { mongooseConnect } = require("./functions/mongooseConnect");
 mongooseConnect();
+
+// Handle concurrent saves to MongoDB
+const TaskQueue = require("./classes/TaskQueue");
+const taskQueue = new TaskQueue();
 
 client.events = new Collection();
 client.cooldowns = new Collection();
@@ -26,4 +44,4 @@ loadEvents(client);
 
 client.login(process.env.TOKEN);
 
-module.exports = client;
+module.exports = { client, taskQueue };

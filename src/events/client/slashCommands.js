@@ -1,6 +1,6 @@
 const { Events, Collection, PermissionsBitField } = require("discord.js");
 const config = require("../../../config.json");
-const client = require("../../index");
+const { client } = require("../../index");
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -13,7 +13,7 @@ module.exports = {
                 .has(PermissionsBitField.Flags.SendMessages);
             if (!hasSendMessagePermission) {
                 // Bot doesn't have 'SEND_MESSAGES' permission in this channel
-                interaction.reply({
+                await interaction.reply({
                     content:
                         "Please use <#1152356454771216415> for Card Brawl commands.",
                     ephemeral: true,
@@ -32,7 +32,8 @@ module.exports = {
             }
 
             // Global command cooldown
-            const { cooldowns } = require("../../index");
+            const cooldowns = client.cooldowns;
+            // const { cooldowns } = require("../../index");
             if (!cooldowns.has(command.data.name)) {
                 cooldowns.set(command.data.name, new Collection());
             }
@@ -48,9 +49,17 @@ module.exports = {
                     timestamps.get(interaction.user.id) + cooldownAmount;
 
                 if (now < expirationTime) {
-                    const expiredTimestamp = Math.round(expirationTime / 1000);
-                    return interaction.reply({
-                        content: `You can run the \`${command.data.name}\` command again <t:${expiredTimestamp}:R>.`,
+                    const secondsLeft = Math.ceil(
+                        (expirationTime - now) / 1000
+                    );
+                    if (secondsLeft === 1) {
+                        return await interaction.reply({
+                            content: `You can run that command again in \`1 second\`.`,
+                            ephemeral: true,
+                        });
+                    }
+                    return await interaction.reply({
+                        content: `You can run that command again in \`${secondsLeft} seconds\`.`,
                         ephemeral: true,
                     });
                 }

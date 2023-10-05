@@ -1,16 +1,16 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
-const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
-const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
 const { delay } = require("../../../functions/delay");
-const client = require("../../../index");
-const config = require("../../../../config.json");
 const {
     getIntroductionEmbed,
 } = require("../../../functions/embeds/brawlIntroduction");
 const {
     getConclusionEmbed,
 } = require("../../../functions/embeds/brawlConclusion");
+const { client } = require("../../../index");
+const config = require("../../../../config.json");
+const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
+const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
 
 module.exports = {
     category: "public/brawl",
@@ -29,11 +29,10 @@ module.exports = {
                 (role) => role.name === "Owner"
             )
         ) {
-            await interaction.reply({
+            return await interaction.reply({
                 content: "You do not have permission to use this command.",
                 ephemeral: true,
             });
-            return;
         }
 
         let name = interaction.options.getString("name");
@@ -44,25 +43,26 @@ module.exports = {
         try {
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
-                await interaction.reply(`No brawl found with the name "${name}".`);
-                return;
+                return await interaction.reply(
+                    `No brawl found with the name "${name}".`
+                );
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            await interaction.reply(`There was an error retrieving the brawl.`);
-            return;
+            return await interaction.reply(
+                `There was an error retrieving the brawl.`
+            );
         }
 
         // Check eligibility
         const current = setupModel.cards.size;
         const goal = setupModel.size;
         if (current !== goal) {
-            await interaction.reply(
+            return await interaction.reply(
                 `This card brawl needs **${
                     goal - current
                 }** more contestant(s)! Only **${current}/${goal}** cards have been submitted.`
             );
-            return;
         }
 
         // Resume brawl
@@ -79,10 +79,9 @@ module.exports = {
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
-            await interaction.reply(
+            return await interaction.reply(
                 "There was an error retrieving the brawl bracket."
             );
-            return;
         }
 
         // Get competitors and create brawl bracket
@@ -95,10 +94,9 @@ module.exports = {
 
         // Check if in progress, finished, etc.
         if (myBrawlBracket.getStatus() === 2) {
-            await interaction.reply(
+            return await interaction.reply(
                 `The **${setupModel.name}** card brawl has already finished!`
             );
-            return;
         }
         if (myBrawlBracket.getStatus() === 1) {
             await interaction.reply(

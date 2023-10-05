@@ -5,7 +5,7 @@ const {
     MessageFlags,
 } = require("discord.js");
 const config = require("../../config.json");
-const client = require("../index");
+const { client } = require("../index");
 const fs = require("fs");
 
 async function createGuildEvent(setupModel) {
@@ -63,9 +63,9 @@ async function createGuildEvent(setupModel) {
     const brawlAnnounce = client.channels.cache.get(
         config.brawlAnnouncementChannelID
     );
-    karutaUpdate.send(link);
-    brawlAnnounce.send(link);
-    event.delete();
+    // karutaUpdate.send(link);
+    // brawlAnnounce.send(link);
+    // event.delete();
 }
 
 module.exports = { createGuildEvent };

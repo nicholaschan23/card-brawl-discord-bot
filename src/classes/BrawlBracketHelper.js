@@ -2,9 +2,10 @@ const { EmbedBuilder } = require("discord.js");
 const { mergeImages } = require("../functions/mergeImages");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
-const UserStatHelper = require("./UserStatHelper");
+const { getWinnerEmbed } = require("../functions/embeds/brawlWinner")
 const config = require("../../config.json");
-const client = require("../index");
+const { client } = require("../index");
+const UserStatHelper = require("./UserStatHelper");
 
 class Match {
     /**
@@ -84,19 +85,19 @@ class Match {
 
         // Bonus votes
         const bonus1 = await this.addBonusVotes(users1, myUserStat);
-        if (bonus1 === 0) {
-            await channel.send("No bonus votes for Card 1...");
-        } else {
-            await channel.send("Adding bonus votes for Card 1!");
-        }
-        await delay(2);
+        // if (bonus1 === 0) {
+        //     await channel.send("No bonus votes for Card 1...");
+        // } else {
+        //     await channel.send("Adding bonus votes for Card 1!");
+        // }
+        // await delay(2);
         const bonus2 = await this.addBonusVotes(users2, myUserStat);
-        if (bonus2 === 0) {
-            await channel.send("No bonus votes for Card 2...");
-        } else {
-            await channel.send("Adding bonus votes for Card 2!");
-        }
-        await delay(2);
+        // if (bonus2 === 0) {
+        //     await channel.send("No bonus votes for Card 2...");
+        // } else {
+        //     await channel.send("Adding bonus votes for Card 2!");
+        // }
+        // await delay(2);
         count1 += bonus1;
         count2 += bonus2;
 
@@ -111,7 +112,7 @@ class Match {
             this.winner = this.card1;
             if (difference === 1) {
                 await channel.send(
-                    `**Card 1** won by just **${difference}** vote! [**${count1}**:**${count2}**]`
+                    `**Card 1** won by just **1** vote! [**${count1}**:**${count2}**]`
                 );
             } else {
                 await channel.send(
@@ -124,7 +125,7 @@ class Match {
             this.winner = this.card2;
             if (difference === 1) {
                 await channel.send(
-                    `**Card 2** won by just **${difference}** vote! [**${count1}**:**${count2}**]`
+                    `**Card 2** won by just **1** vote! [**${count1}**:**${count2}**]`
                 );
             } else {
                 await channel.send(
@@ -309,23 +310,12 @@ class BrawlBracketHelper {
             this.bracketModel.completedMatches.length ===
             this.bracketModel.competitors.length - 1
         ) {
-            const { getWinnerEmbed } = require("../functions/embeds/brawlWinner")
             await this.channel.send({
-                content: "# Winner!",
+                content: "# Congratulations! 🎉",
                 embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
             });
-            await this.channel.send(
-                `Congratulations <@${
-                    this.setupModel.cards.get(winner).userID
-                }>! 🎉\nThis card won out of **${this.setupModel.size}** cards!`
-            );
-
-            // Post winner in winners media channel
-            // TODO: Discord v14.14 upload to media channel
 
             // Edit announcement message with image of winning card
-            const client = require("../index");
-            const config = require("../../config.json");
             const announcementChannel = client.channels.cache.get(
                 config.announcementChannelID
             );

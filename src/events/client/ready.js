@@ -1,6 +1,6 @@
-const { loadCommands } = require("../../handlers/commandHandler");
 const { Events } = require("discord.js")
-const client = require("../../index");
+const { loadCommands } = require("../../handlers/commandHandler");
+const { client } = require("../../index");
 
 module.exports = {
     name: Events.ClientReady,
