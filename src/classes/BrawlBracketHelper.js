@@ -68,7 +68,7 @@ class Match {
         await message.react("2️⃣");
 
         // Voting time
-        await delay(10);
+        await delay(config.voteTime);
 
         // Get the count of users who reacted with the specified emoji.
         const reaction1 = await message.reactions.cache.find(

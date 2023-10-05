@@ -5,6 +5,7 @@
     "karutaID": "646937666251915264",
 
     "globalCooldown": 5,
+    "voteTime": 15,
 
     "announcementChannelID": "1152363749966102559",
     "arenaChannelID": "1152352856247119953",
