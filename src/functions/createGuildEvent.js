@@ -2,22 +2,18 @@ const {
     GuildScheduledEventManager,
     GuildScheduledEventEntityType,
     GuildScheduledEventPrivacyLevel,
-    MessageFlags,
 } = require("discord.js");
 const config = require("../../config.json");
 const { client } = require("../index");
 const fs = require("fs");
 
 async function createGuildEvent(setupModel) {
-    const guild = client.guilds.cache.get(config.guildID);
-    const eventManager = new GuildScheduledEventManager(guild);
-
     // Get date of next Saturday
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getDay();
     const daysUntilSaturday =
-        6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
-
+    6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
+    
     const nextSaturday = new Date(currentDate);
     nextSaturday.setDate(currentDate.getDate() + daysUntilSaturday);
     nextSaturday.setHours(15, 0, 0, 0);
@@ -27,8 +23,10 @@ async function createGuildEvent(setupModel) {
 
     // Load image banner
     const imageBuffer = fs.readFileSync("./images/banner.png");
-
+    
     // Create guild scheduled event
+    const guild = client.guilds.cache.get(config.guildID);
+    const eventManager = new GuildScheduledEventManager(guild);
     const event = await eventManager.create({
         name: `${setupModel.name} Card Brawl`,
         scheduledStartTime: new Date(unixTimestampStart),
@@ -39,15 +37,15 @@ async function createGuildEvent(setupModel) {
             setupModel.theme
         }\nPrize: <@&${config.brawlChampionRole}>\nDate: <t:${
             unixTimestampStart / 1000
-        }:F>\n\n**How to Participate**:\nWant to be a competitor? See <#${
+        }:F>\n\n**How to Participate**:\nBe a competitor! See the <#${
             config.announcementChannelID
-        }> for instructions to submit your card designs.\nWant to be a judge? See <#${
+        }> channel.\nBe a judge! See the <#${
             config.arenaChannelID
-        }> at the designated start time.\n\n**Notifications**:\nGet the below roles in <id:customize> for reminders on Card Brawl events!\n<@&${
+        }> channel at the event start time.\n\n**Notifications**:\nGet the below roles in <id:customize> for reminders on Card Brawl events!\n<@&${
             config.competitorRole
         }>: Get notified to submit cards to compete.\n<@&${
             config.judgeRole
-        }>: Get notified when the event goes live.\n\nSee you at the Card Brawl! 🥊`,
+        }>: Get notified when the event goes live to vote.\n\nSee you at the Card Brawl! 🥊`,
         entityMetadata: { location: `<#${config.arenaChannelID}>` },
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",

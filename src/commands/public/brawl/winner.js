@@ -32,7 +32,7 @@ module.exports = {
                 await interaction.reply(`There is no Card Brawl with that name.`);
             }
         } catch (error) {
-            console.log("Error retrieving brawl bracket:", error);
+            console.log("Error retrieving Card Brawl bracket:", error);
             await interaction.reply(`There was an error retrieving the Card Brawl winner.`);
         }
     },

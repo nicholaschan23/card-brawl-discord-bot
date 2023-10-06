@@ -21,7 +21,7 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName("name")
-                .setDescription("Name of the card brawl you are starting.")
+                .setDescription("Name of the Card Brawl you are starting.")
                 .setRequired(true)
         ),
     async execute(interaction) {
@@ -44,13 +44,13 @@ module.exports = {
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
                 return await interaction.reply(
-                    `No brawl found with the name "${name}".`
+                    `No Card Brawl found with the name **${name}**.`
                 );
             }
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
             return await interaction.reply(
-                `There was an error retrieving the brawl.`
+                `There was an error retrieving the Card Brawl.`
             );
         }
 
@@ -59,7 +59,7 @@ module.exports = {
         const goal = setupModel.size;
         if (current !== goal) {
             return await interaction.reply(
-                `This card brawl needs **${
+                `This Card Brawl needs **${
                     goal - current
                 }** more contestant(s)! Only **${current}/${goal}** cards have been submitted.`
             );
@@ -78,9 +78,9 @@ module.exports = {
                 await bracketModel.save();
             }
         } catch (error) {
-            console.log("Error retrieving brawl setups:", error);
+            console.log("Error retrieving Card Brawl setups:", error);
             return await interaction.reply(
-                "There was an error retrieving the brawl bracket."
+                "There was an error retrieving the Card Brawl bracket."
             );
         }
 
@@ -95,7 +95,7 @@ module.exports = {
         // Check if in progress, finished, etc.
         if (myBrawlBracket.getStatus() === 2) {
             return await interaction.reply(
-                `The **${setupModel.name}** card brawl has already finished!`
+                `The **${setupModel.name}** Card Brawl has already finished!`
             );
         }
         if (myBrawlBracket.getStatus() === 1) {

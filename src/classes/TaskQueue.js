@@ -5,10 +5,10 @@ class TaskQueue {
     }
 
     async enqueue(task) {
-        return new Promise((resolve) => {
-            this.queue.push({ task, resolve });
+        return new Promise(async (resolve, reject) => {
+            this.queue.push({ task, resolve, reject });
             if (!this.running) {
-                this.processQueue();
+                await this.processQueue();
             }
         });
     }
@@ -20,17 +20,17 @@ class TaskQueue {
         }
 
         this.running = true;
-        const { task, resolve } = this.queue.shift();
+        const { task, resolve, reject } = this.queue.shift();
 
         try {
             await task();
-            resolve();
+            resolve(); // Resolve the promise for success
         } catch (error) {
-            reject(error);
+            reject(error); // Reject the promise for failure
         }
 
         // Continue processing the queue
-        this.processQueue();
+        await this.processQueue();
     }
 }
 

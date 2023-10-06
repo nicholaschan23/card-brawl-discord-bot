@@ -77,7 +77,7 @@ module.exports = {
         } catch (error) {
             console.log("Error retrieving brawl setups:", error);
             return await interaction.reply(
-                `There was an error retrieving the brawl.`
+                `There was an error retrieving the Card Brawl.`
             );
         }
 
