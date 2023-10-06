@@ -1,5 +1,6 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
 const { delay } = require("../../../functions/delay");
+const { formatTitle } = require("../../../functions/formatTitle");
 const {
     getIntroductionEmbed,
 } = require("../../../functions/embeds/brawlIntroduction");
@@ -35,8 +36,7 @@ module.exports = {
             });
         }
 
-        let name = interaction.options.getString("name");
-        name = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+        let name = formatTitle(interaction.options.getString("name"));
 
         // Find brawl setup in database
         let setupModel;

@@ -4,6 +4,7 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
+const { formatTitle } = require("../../../functions/formatTitle");
 const { createGuildEvent } = require("../../../functions/createGuildEvent");
 const {
     getAnnouncementEmbed,
@@ -61,7 +62,6 @@ module.exports = {
             });
         }
 
-        const { formatTitle } = require("../../../functions/formatTitle");
         let name = formatTitle(interaction.options.getString("name"));
         let theme = formatTitle(interaction.options.getString("theme"));
         let size = interaction.options.getInteger("size");
