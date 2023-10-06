@@ -28,12 +28,14 @@ module.exports = {
             } else {
                 await interaction.reply({
                     content: `<@${userID}> has not participated in a Card Brawl yet.`,
-                    allowedMentions: [],
+                    allowedMentions: { parse: [] },
                 });
             }
         } catch (error) {
             console.log("Error retrieving user stats:", error);
-            await interaction.reply(`There was an error retrieving user stats.`);
+            await interaction.reply(
+                `There was an error retrieving user stats.`
+            );
         }
     },
 };

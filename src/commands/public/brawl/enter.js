@@ -72,7 +72,7 @@ module.exports = {
                 } else {
                     return await interaction.reply({
                         content: `You already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`,
-                        allowedMentions: [],
+                        allowedMentions: { parse: [] },
                     });
                 }
             }

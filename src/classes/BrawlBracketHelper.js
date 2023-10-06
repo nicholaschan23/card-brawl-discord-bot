@@ -338,7 +338,7 @@ class BrawlBracketHelper {
             await this.channel.send({
                 content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
                 embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
-                allowedMentions: [],
+                allowedMentions: { parse: [] },
             });
 
             // Edit announcement message with image of winning card
