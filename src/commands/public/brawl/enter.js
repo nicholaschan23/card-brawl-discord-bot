@@ -296,7 +296,7 @@ module.exports = {
                         text: "This Card Brawl is full!",
                     });
                     message.edit({
-                        content: `This Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
+                        content: `This \`${setupModel.name}\` Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
                         embeds: [updatedEmbed],
                     });
                 });

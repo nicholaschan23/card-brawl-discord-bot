@@ -330,7 +330,7 @@ class BrawlBracketHelper {
                         text: "This Card Brawl has a winner!",
                     });
                     message.edit({ 
-                        content: `This Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
+                        content: `The \`${this.setupModel.name}\` Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
                         embeds: [updatedEmbed] });
                 });
 
