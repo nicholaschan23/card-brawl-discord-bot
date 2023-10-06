@@ -146,7 +146,6 @@ module.exports = {
                             theme: theme,
                             size: size,
                             messageID: message.id,
-                            hostID: interaction.user.id,
                         });
                         createGuildEvent(setupModel);
                         await setupModel.save();

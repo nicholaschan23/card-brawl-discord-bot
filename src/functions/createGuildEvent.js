@@ -7,23 +7,36 @@ const config = require("../../config.json");
 const { client } = require("../index");
 const fs = require("fs");
 
-async function createGuildEvent(setupModel) {
-    // Get date of next Saturday
+// async function sendReminder(name) {
+//     const brawlArena = client.channels.cache.get(config.brawlArena);
+//     await brawlArena.send(
+//         `The **${name}** Card Brawl will be starting in \`30 minutes\`! <@&${config.judgeRole}>`
+//     );
+// }
+
+function getNextSaturday() {
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getDay();
     const daysUntilSaturday =
-    6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
-    
+        6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
+
     const nextSaturday = new Date(currentDate);
     nextSaturday.setDate(currentDate.getDate() + daysUntilSaturday);
     nextSaturday.setHours(15, 0, 0, 0);
     const unixTimestampStart = Math.floor(nextSaturday.getTime() / 1000) * 1000;
     nextSaturday.setHours(15, 30, 0, 0);
     const unixTimestampEnd = Math.floor(nextSaturday.getTime() / 1000) * 1000;
+    return { start: unixTimestampStart, end: unixTimestampEnd };
+}
+
+async function createGuildEvent(setupModel) {
+    const times = getNextSaturday();
+    const unixTimestampStart = times.start;
+    const unixTimestampEnd = times.end;
 
     // Load image banner
     const imageBuffer = fs.readFileSync("./images/banner.png");
-    
+
     // Create guild scheduled event
     const guild = client.guilds.cache.get(config.guildID);
     const eventManager = new GuildScheduledEventManager(guild);
@@ -63,6 +76,17 @@ async function createGuildEvent(setupModel) {
     );
     karutaUpdate.send(link);
     brawlAnnounce.send(link);
+
+    // try {
+    //     const cronExpression = `30 ${
+    //         nextSaturday.getHours() - 1
+    //     } ${nextSaturday.getDate()} ${
+    //         nextSaturday.getMonth() + 1
+    //     } ${nextSaturday.getDay()}`;
+    //     cron.schedule(cronExpression, sendReminder(setupModel.name));
+    // } catch (error) {
+    //     console.log(`Unable to schedule reminder: ` + error);
+    // }
 }
 
-module.exports = { createGuildEvent };
+module.exports = { createGuildEvent, getNextSaturday };
