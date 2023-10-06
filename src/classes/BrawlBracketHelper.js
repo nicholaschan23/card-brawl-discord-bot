@@ -2,7 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { mergeImages } = require("../functions/mergeImages");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
-const { getWinnerEmbed } = require("../functions/embeds/brawlWinner")
+const { getWinnerEmbed } = require("../functions/embeds/brawlWinner");
 const config = require("../../config.json");
 const { client } = require("../index");
 const UserStatHelper = require("./UserStatHelper");
@@ -48,7 +48,10 @@ class Match {
                     userCount += 5;
                 }
                 count += userCount;
-                await myUserStat.updateVotesGiven(reactedUser.id, userCount + 1);
+                await myUserStat.updateVotesGiven(
+                    reactedUser.id,
+                    userCount + 1
+                );
             }
         });
         return count;
@@ -150,19 +153,35 @@ class Match {
                     msg.edit(
                         `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁 🥁`
                     );
-                    await delay(3);
+                    await delay(2);
                     if (this.winner === this.card1) {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
                         );
-                        await myUserStat.updateMatchesCompeted(user1, true, true);
-                        await myUserStat.updateMatchesCompeted(user2, false, true);
+                        await myUserStat.updateMatchesCompeted(
+                            user1,
+                            true,
+                            true
+                        );
+                        await myUserStat.updateMatchesCompeted(
+                            user2,
+                            false,
+                            true
+                        );
                     } else {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 2**! 🎉`
                         );
-                        await myUserStat.updateMatchesCompeted(user1, false, true);
-                        await myUserStat.updateMatchesCompeted(user2, true, true);
+                        await myUserStat.updateMatchesCompeted(
+                            user1,
+                            false,
+                            true
+                        );
+                        await myUserStat.updateMatchesCompeted(
+                            user2,
+                            true,
+                            true
+                        );
                     }
                 });
         }
@@ -323,15 +342,20 @@ class BrawlBracketHelper {
                 .fetch(this.setupModel.messageID)
                 .then((message) => {
                     const updatedEmbed = new EmbedBuilder(message.embeds[0]);
+                    const winner =
+                        this.bracketModel.completedMatches[
+                            this.bracketModel.completedMatches.length - 1
+                        ].winner;
                     updatedEmbed.setImage(
                         this.setupModel.cards.get(winner).imageLink
                     );
                     updatedEmbed.setFooter({
                         text: "This Card Brawl has a winner!",
                     });
-                    message.edit({ 
+                    message.edit({
                         content: `The \`${this.setupModel.name}\` Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
-                        embeds: [updatedEmbed] });
+                        embeds: [updatedEmbed],
+                    });
                 });
 
             // Give winner Brawl Champion role
