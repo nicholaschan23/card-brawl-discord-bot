@@ -347,10 +347,10 @@ module.exports = {
         // Card Brawl is full
         if (setupModel.cards.size === setupModel.size) {
             // Update announcement embed
-            const announcementChannel = client.channels.cache.get(
-                config.announcementChannelID
+            const competitorsChannel = client.channels.cache.get(
+                config.competitorsChannelID
             );
-            announcementChannel.messages
+            competitorsChannel.messages
                 .fetch(setupModel.messageID)
                 .then((message) => {
                     const updatedEmbed = new EmbedBuilder(message.embeds[0]);

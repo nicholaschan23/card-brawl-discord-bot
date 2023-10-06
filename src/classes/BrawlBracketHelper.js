@@ -342,10 +342,10 @@ class BrawlBracketHelper {
             });
 
             // Edit announcement message with image of winning card
-            const announcementChannel = client.channels.cache.get(
-                config.announcementChannelID
+            const competitorsChannel = client.channels.cache.get(
+                config.competitorsChannelID
             );
-            announcementChannel.messages
+            competitorsChannel.messages
                 .fetch(this.setupModel.messageID)
                 .then((message) => {
                     const updatedEmbed = new EmbedBuilder(message.embeds[0]);

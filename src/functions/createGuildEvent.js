@@ -51,22 +51,22 @@ async function createGuildEvent(setupModel) {
         }\nPrize: <@&${config.brawlChampionRole}>\nDate: <t:${
             unixTimestampStart / 1000
         }:F>\n\n**How to Participate**:\nBe a competitor! See the <#${
-            config.announcementChannelID
+            config.competitorsChannelID
         }> channel.\nBe a judge! See the <#${
-            config.arenaChannelID
+            config.judgesChannelID
         }> channel at the event start time.\n\n**Notifications**:\nGet the below roles in <id:customize> for reminders on Card Brawl events!\n<@&${
             config.competitorRole
         }>: Get notified to submit cards to compete.\n<@&${
             config.judgeRole
         }>: Get notified when the event goes live to vote.\n\nSee you at the Card Brawl! 🥊`,
-        entityMetadata: { location: `<#${config.arenaChannelID}>` },
+        entityMetadata: { location: `<#${config.judgesChannelID}>` },
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",
     });
 
     // Send scheduled event invite link
     const link = await event.createInviteURL({
-        channel: config.arenaChannelID,
+        channel: config.judgesChannelID,
     });
     const karutaUpdate = client.channels.cache.get(
         config.karutaUpdateChannelID

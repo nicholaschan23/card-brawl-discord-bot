@@ -85,9 +85,9 @@ module.exports = {
         }
 
         // Get competitors and create brawl bracket
-        const arenaChannel = client.channels.cache.get(config.arenaChannelID);
+        const judgesChannel = client.channels.cache.get(config.judgesChannelID);
         const myBrawlBracket = new BrawlBracketHelper(
-            arenaChannel,
+            judgesChannel,
             bracketModel,
             setupModel
         );
@@ -102,7 +102,7 @@ module.exports = {
             await interaction.reply(
                 `Resuming the **${setupModel.name}** Card Brawl...`
             );
-            await arenaChannel.send(
+            await judgesChannel.send(
                 `Resuming the **${setupModel.name}** Card Brawl...`
             );
         } else if (myBrawlBracket.getStatus() === 0) {
@@ -112,29 +112,29 @@ module.exports = {
             );
 
             // Introduction
-            const message = await arenaChannel.send({
+            const message = await judgesChannel.send({
                 content: `We'll be starting in \`1 minute\`. <@&${config.judgeRole}>`,
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
             await delay(30);
-            await arenaChannel.send("# 30");
+            await judgesChannel.send("# 30");
             await delay(10);
-            await arenaChannel.send("# 10");
+            await judgesChannel.send("# 10");
             await delay(17);
-            await arenaChannel.send("# 3");
+            await judgesChannel.send("# 3");
             await delay(1);
-            await arenaChannel.send("# 2");
+            await judgesChannel.send("# 2");
             await delay(1);
-            await arenaChannel.send("# 1");
+            await judgesChannel.send("# 1");
             await delay(1);
-            await arenaChannel.send("# Let the Card Brawl begin! 🥊");
+            await judgesChannel.send("# Let the Card Brawl begin! 🥊");
             await delay(2);
         }
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();
         await delay(3);
-        const message = await arenaChannel.send({
+        const message = await judgesChannel.send({
             embeds: [getConclusionEmbed()],
         });
         await message.react("🎉");

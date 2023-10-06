@@ -7,10 +7,10 @@
     "globalCooldown": 5,
     "voteTime": 15,
 
-    "announcementChannelID": "1152363749966102559",
-    "arenaChannelID": "1152352856247119953",
+    "competitorsChannelID": "1152363749966102559",
+    "judgesChannelID": "1152352856247119953",
 
-    "serverAnnouncementChannelID": "1024721644889047071",
+    "brawlInfoChannelID": "1153360255158321162",
     "karutaUpdateChannelID": "1157474189024972860",
     "brawlAnnouncementChannelID": "1157476974671958016",
 
