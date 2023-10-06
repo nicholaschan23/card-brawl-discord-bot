@@ -21,9 +21,9 @@
     "serverSubscriberRole": "1153438579821903974",
     "brawlChampionRole": "1158801902939672668",
 
-    "serverBoosterBonus": "1",
-    "activeBoosterBonus": "3",
-    "serverSubscriberBonus": "5",
+    "serverBoosterBonus": 1,
+    "activeBoosterBonus": 3,
+    "serverSubscriberBonus": 5,
 
     "blue": "#7289da",
     "green": "#43b581",

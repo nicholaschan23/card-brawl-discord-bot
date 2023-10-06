@@ -31,13 +31,13 @@ class Match {
                         (role) => role.name === "Server Booster"
                     )
                 ) {
-                    userCount++;
+                    userCount += config.serverBoosterBonus;
                     if (
                         member.roles.cache.some(
                             (role) => role.name === "Active Booster"
                         )
                     ) {
-                        userCount += 3;
+                        userCount += config.activeBoosterBonus;
                     }
                 }
                 if (
@@ -45,7 +45,7 @@ class Match {
                         (role) => role.name === "Server Subscriber"
                     )
                 ) {
-                    userCount += 5;
+                    userCount += config.serverSubscriberBonus;
                 }
                 count += userCount;
                 await myUserStat.updateVotesGiven(
