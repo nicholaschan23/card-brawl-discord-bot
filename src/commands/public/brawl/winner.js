@@ -1,4 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
+const { formatTitle } = require("../../../functions/formatTitle");
 const { getWinnerEmbed } = require("../../../functions/embeds/brawlWinner")
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
@@ -15,7 +16,6 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const { formatTitle } = require("../../../functions/formatTitle");
         const name = formatTitle(interaction.options.getString("name"));
         try {
             // Check if brawl exists

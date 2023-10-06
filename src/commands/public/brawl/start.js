@@ -117,7 +117,11 @@ module.exports = {
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            await delay(26); // 26
+            await delay(30);
+            await arenaChannel.send("# 30");
+            await delay(10);
+            await arenaChannel.send("# 10");
+            await delay(17);
             await arenaChannel.send("# 3");
             await delay(1);
             await arenaChannel.send("# 2");
@@ -130,8 +134,9 @@ module.exports = {
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();
         await delay(3);
-        await arenaChannel.send({
+        const message = await arenaChannel.send({
             embeds: [getConclusionEmbed()],
         });
+        await message.react("🎉");
     },
 };

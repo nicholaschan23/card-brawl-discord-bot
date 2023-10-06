@@ -28,7 +28,7 @@ module.exports = {
             } else {
                 await interaction.reply({
                     content: `<@${userID}> has not participated in a Card Brawl yet.`,
-                    mentions: [],
+                    allowedMentions: [],
                 });
             }
         } catch (error) {

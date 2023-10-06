@@ -285,7 +285,7 @@ class BrawlBracketHelper {
             this.myUserStat.saveProgress();
             await delay(2);
         }
-        this.announceWinner();
+        await this.announceWinner();
 
         // Update user stats completed Card Brawl
         const userIDs = [];
@@ -329,9 +329,16 @@ class BrawlBracketHelper {
             this.bracketModel.completedMatches.length ===
             this.bracketModel.competitors.length - 1
         ) {
+            const winnerCard =
+                this.bracketModel.completedMatches[
+                    this.bracketModel.completedMatches.length - 1
+                ].winner;
+            const winnerID = this.setupModel.cards.get(winnerCard).userID;
+
             await this.channel.send({
-                content: "# Congratulations! 🎉",
+                content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
                 embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
+                allowedMentions: [],
             });
 
             // Edit announcement message with image of winning card
@@ -342,12 +349,8 @@ class BrawlBracketHelper {
                 .fetch(this.setupModel.messageID)
                 .then((message) => {
                     const updatedEmbed = new EmbedBuilder(message.embeds[0]);
-                    const winner =
-                        this.bracketModel.completedMatches[
-                            this.bracketModel.completedMatches.length - 1
-                        ].winner;
                     updatedEmbed.setImage(
-                        this.setupModel.cards.get(winner).imageLink
+                        this.setupModel.cards.get(winnerCard).imageLink
                     );
                     updatedEmbed.setFooter({
                         text: "This Card Brawl has a winner!",
@@ -360,9 +363,7 @@ class BrawlBracketHelper {
 
             // Give winner Brawl Champion role
             const guild = client.guilds.cache.get(config.guildID);
-            const member = guild.members.cache.get(
-                this.setupModel.cards.get(winner).userID
-            );
+            const member = guild.members.cache.get(winnerID);
             const role = guild.roles.cache.find(
                 (r) => r.name === "Brawl Champion"
             );
