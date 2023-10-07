@@ -4,7 +4,7 @@ const config = require("../../../config.json");
 
 function getAnnouncementEmbed(name, theme, size) {
     const times = getNextSaturday();
-    const unixTimestampStart = Math.ceil(times.start/1000);
+    const unixTimestampStart = Math.floor(times.start / 1000);
 
     const embed = new EmbedBuilder()
         .setColor(config.blue)
