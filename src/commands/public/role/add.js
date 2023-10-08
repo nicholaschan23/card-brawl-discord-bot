@@ -2,7 +2,6 @@ const { SlashCommandSubcommandBuilder } = require("discord.js");
 const { client } = require("../../../index");
 const config = require("../../../../config.json");
 
-
 module.exports = {
     category: "public/role",
     data: new SlashCommandSubcommandBuilder()
@@ -42,6 +41,7 @@ module.exports = {
             "Platinum I",
             "Diamond",
             "Champion",
+            "Server Subscriber",
         ];
 
         const hasRole = eligibleRoles.some((roleName) => {
@@ -58,7 +58,7 @@ module.exports = {
             });
         } else {
             await interaction.reply({
-                content: `You must be <@&789659541586837525> or higher to add the <@&${temp.id}> role. Chat to increase your server activity rank. See the <#776705377226981387> channel to learn more.`,
+                content: `You must be <@&789659541586837525> or higher to add the <@&${temp.id}> role or bypass this requirement with the <@&${config.serverSubscriberRole}> role. Chat to increase your server activity rank. See the <#776705377226981387> channel to learn more.`,
                 allowedMentions: { parse: [] },
             });
         }
