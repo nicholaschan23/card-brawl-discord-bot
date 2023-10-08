@@ -15,16 +15,16 @@ const fs = require("fs");
 // }
 
 function getNextSaturday() {
-    const timeZone = 'America/New_York';
-    const currentDate = new Date().toLocaleString('en-US', { timeZone });
-    const currentDayOfWeek = new Date(currentDate).getDay();
-    const daysUntilSaturday = (6 - currentDayOfWeek + 7) % 7; // Calculate days until next Saturday
+    const currentDate = new Date();
+    const currentDayOfWeek = currentDate.getUTCDay();
+    const daysUntilSaturday = 6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
 
-    const nextSaturday = new Date(new Date(currentDate).getTime() + daysUntilSaturday * 24 * 60 * 60 * 1000); // Add days to the current date
-    nextSaturday.setHours(15, 0, 0, 0);
+    const nextSaturday = new Date(currentDate);
+    nextSaturday.setUTCDate(currentDate.getUTCDate() + daysUntilSaturday);
+    nextSaturday.setUTCHours(7+12, 0, 0, 0);
     const unixTimestampStart = Math.floor(nextSaturday.getTime() / 1000) * 1000;
 
-    nextSaturday.setHours(15, 30, 0, 0);
+    nextSaturday.setUTCHours(7+12, 30, 0, 0);
     const unixTimestampEnd = Math.floor(nextSaturday.getTime() / 1000) * 1000;
 
     return { start: unixTimestampStart, end: unixTimestampEnd };
