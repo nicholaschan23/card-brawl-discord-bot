@@ -9,7 +9,7 @@ const { formatTitle } = require("../../../functions/formatTitle");
 const { getEnterEmbed } = require("../../../functions/embeds/brawlEnter");
 const config = require("../../../../config.json");
 const { client } = require("../../../index");
-const { taskQueue } = require("../../../index");
+const { setupModelQueue } = require("../../../index");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName("name")
-                .setDescription("Card brawl name you will be entering.")
+                .setDescription("Card Brawl name you will be entering.")
                 .setRequired(true)
         ),
     async execute(interaction) {
@@ -309,14 +309,15 @@ module.exports = {
                         await recentSetupModel.save();
                     };
                     try {
-                        await taskQueue.enqueue(task);
+                        await setupModelQueue.enqueue(task);
                         await channel.send(
                             `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                         );
                     } catch (error) {
                         cardEmbed.setColor(config.red);
                         await confirmation.update({
-                            content: "Is this the correct card you want to submit?",
+                            content:
+                                "Is this the correct card you want to submit?",
                             embeds: [cardEmbed],
                             components: [],
                         });
@@ -344,22 +345,48 @@ module.exports = {
             });
         }
 
-        // Card Brawl is full
+        // Update announcement embed
+        const competitorsChannel = client.channels.cache.get(
+            config.competitorsChannelID
+        );
+        const updatedEmbed = new EmbedBuilder(message.embeds[0]);
         if (setupModel.cards.size === setupModel.size) {
-            // Update announcement embed
-            const competitorsChannel = client.channels.cache.get(
-                config.competitorsChannelID
-            );
+            // Card Brawl is full
             competitorsChannel.messages
                 .fetch(setupModel.messageID)
                 .then((message) => {
-                    const updatedEmbed = new EmbedBuilder(message.embeds[0]);
                     updatedEmbed.setColor(config.red);
                     updatedEmbed.setFooter({
                         text: "This Card Brawl is full!",
                     });
                     message.edit({
                         content: `This \`${setupModel.name}\` Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
+                        embeds: [updatedEmbed],
+                    });
+                });
+        } else {
+            competitorsChannel.messages
+                .fetch(setupModel.messageID)
+                .then((message) => {
+                    updatedEmbed.setDescription(
+                        `Size: **${size}** cards\nStatus: **${
+                            setupModel.size - setupModel.cards.size
+                        }/${
+                            setupModel.size
+                        }** spots available\nTheme: **${theme}**\nDate: <t:${unixTimestampStart}:f>\n\n**Bonus Entries**: *(1x = 1 extra)*\n<@&${
+                            config.serverSubscriberRole
+                        }> **1x** entry\n\n**Bonus Votes**:\n<@&${
+                            config.serverBoosterRole
+                        }> **${config.serverBoosterBonus}x** vote\n<@&${
+                            config.activeBoosterRole
+                        }> **${config.activeBoosterBonus}x** votes\n<@&${
+                            config.serverSubscriberRole
+                        }> **${
+                            config.serverSubscriberBonus
+                        }x** votes\n\n**Requirements**:\n🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed`
+                    );
+                    message.edit({
+                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
                         embeds: [updatedEmbed],
                     });
                 });

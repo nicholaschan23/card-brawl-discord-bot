@@ -1,4 +1,5 @@
 const UserStatModel = require("../data/schemas/userStatSchema");
+const { userStatQueue } = require("../index")
 
 class UserStatHelper {
     constructor() {
@@ -90,9 +91,12 @@ class UserStatHelper {
 
     // Save the user stats progress to persistent storage
     async saveProgress() {
-        for (const model of Object.values(this.userStatModels)) {
-            await model.save();
-        }
+        const task = ( async () => {
+            for (const model of Object.values(this.userStatModels)) {
+                await model.save();
+            }
+        })
+        await userStatQueue.enqueue(task);
     }
 }
 

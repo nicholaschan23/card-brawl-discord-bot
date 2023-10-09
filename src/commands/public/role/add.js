@@ -23,6 +23,11 @@ module.exports = {
         const member = guild.members.cache.get(interaction.user.id);
         const role = interaction.options.getString("role");
         const eligibleRoles = [
+            "Copper V",
+            "Copper IV",
+            "Copper III",
+            "Copper II",
+            "Copper 1",
             "Bronze V",
             "Bronze IV",
             "Bronze III",
@@ -57,7 +62,7 @@ module.exports = {
             });
         } else {
             await interaction.reply({
-                content: `You must be <@&789659541586837525> or higher to add the <@&${temp.id}> role. Chat to increase your server activity rank. See the <#776705377226981387> channel to learn more.`,
+                content: `You must be **Level 5** (<@&789659437919895593>) or higher to add the <@&${temp.id}> role. Chat to increase your server activity rank. See the <#776705377226981387> channel to learn more.`,
                 allowedMentions: { parse: [] },
             });
         }

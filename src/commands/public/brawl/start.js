@@ -17,7 +17,7 @@ module.exports = {
     category: "public/brawl",
     data: new SlashCommandSubcommandBuilder()
         .setName("start")
-        .setDescription("Start a card competition.")
+        .setDescription("Start a Card Brawl.")
         .addStringOption((option) =>
             option
                 .setName("name")

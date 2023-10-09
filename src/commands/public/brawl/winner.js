@@ -8,7 +8,7 @@ module.exports = {
     category: "public/brawl",
     data: new SlashCommandSubcommandBuilder()
         .setName("winner")
-        .setDescription("Retrieve a past Card Brawl's winner.")
+        .setDescription("Retrieve a past Card Brawl winner.")
         .addStringOption((option) =>
             option
                 .setName("name")

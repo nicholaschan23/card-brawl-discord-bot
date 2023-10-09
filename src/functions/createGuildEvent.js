@@ -65,10 +65,8 @@ async function createGuildEvent(setupModel) {
         reason: "Create weekend Card Brawl scheduled event.",
     });
 
-    // Send scheduled event invite link
-    const link = await event.createInviteURL({
-        channel: config.judgesChannelID,
-    });
+    // Send scheduled event invite link 
+    const link = `https://discord.gg/farshore?event=${event.id}`
     const karutaUpdate = client.channels.cache.get(
         config.karutaUpdateChannelID
     );

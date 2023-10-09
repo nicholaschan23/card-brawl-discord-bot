@@ -7,6 +7,8 @@
     "globalCooldown": 5,
     "voteTime": 15,
 
+    "karutaDropChannelID": "768727462221578260",
+
     "competitorsChannelID": "1152363749966102559",
     "judgesChannelID": "1152352856247119953",
 

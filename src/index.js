@@ -33,7 +33,8 @@ mongooseConnect();
 
 // Handle concurrent saves to MongoDB
 const TaskQueue = require("./classes/TaskQueue");
-const taskQueue = new TaskQueue();
+const setupModelQueue = new TaskQueue();
+const userStatQueue = new TaskQueue();
 
 client.events = new Collection();
 client.cooldowns = new Collection();
@@ -44,4 +45,4 @@ loadEvents(client);
 
 client.login(process.env.TOKEN);
 
-module.exports = { client, taskQueue };
+module.exports = { client, setupModelQueue, userStatQueue };
