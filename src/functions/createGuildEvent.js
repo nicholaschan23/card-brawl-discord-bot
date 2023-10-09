@@ -67,7 +67,7 @@ async function createGuildEvent(setupModel) {
     });
 
     // Send scheduled event invite link
-    const link = `https://discord.gg/farshore?event=${event.id}`;
+    const link = `https://discord.com/events/${config.guildID}/${event.id}`;
     const karutaUpdate = client.channels.cache.get(
         config.karutaUpdateChannelID
     );
@@ -75,11 +75,11 @@ async function createGuildEvent(setupModel) {
         config.brawlAnnouncementChannelID
     );
     karutaUpdate.send({
-        content: `:shinto_shrine: **Participate in the community (card competition)[${link}] this weekend!** Don't want to be a <@&${config.competitorRole}>, be a <@&${eventDrop.id}>! Get roles in <id:customize>.`,
+        content: `**Participate in the community [card competition](${link}) this weekend!** Don't want to be a <@&${config.competitorRole}>? Be a <@&${config.judgeRole}>! Get roles in <id:customize>.`,
         allowedMentions: { parse: [] },
     });
     brawlAnnounce.send({
-        content: `:shinto_shrine: **Participate in the community (card competition)[${link}] this weekend!** Don't want to be a <@&${config.competitorRole}>, be a <@&${eventDrop.id}>! Get roles in <id:customize>.`,
+        content: `**Participate in the community [card competition](${link}) this weekend!** Don't want to be a <@&${config.competitorRole}>? Be a <@&${config.judgeRole}>! Get roles in <id:customize>.`,
         allowedMentions: { parse: [] },
     });
 
