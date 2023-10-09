@@ -45,4 +45,7 @@ loadEvents(client);
 
 client.login(process.env.TOKEN);
 
+const { autofeedInit } = require("./functions/autofeeds");
+autofeedInit();
+
 module.exports = { client, setupModelQueue, userStatQueue };
