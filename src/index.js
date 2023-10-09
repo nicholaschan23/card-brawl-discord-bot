@@ -28,7 +28,7 @@ const client = new Client({
 });
 
 // Connect to MongoDB
-const { mongooseConnect } = require("./functions/mongooseConnect");
+const { mongooseConnect } = require("./functions/startup/mongooseConnect");
 mongooseConnect();
 
 // Handle concurrent saves to MongoDB
@@ -40,12 +40,12 @@ client.events = new Collection();
 client.cooldowns = new Collection();
 client.commands = new Collection();
 
+const { autofeedInit } = require("./functions/startup/autofeeds");
+autofeedInit(client);
+
 const { loadEvents } = require("./handlers/eventHandler");
 loadEvents(client);
 
 client.login(process.env.TOKEN);
-
-const { autofeedInit } = require("./functions/autofeeds");
-autofeedInit();
 
 module.exports = { client, setupModelQueue, userStatQueue };

@@ -17,14 +17,15 @@ const fs = require("fs");
 function getNextSaturday() {
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getUTCDay();
-    const daysUntilSaturday = 6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
+    const daysUntilSaturday =
+        6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
 
     const nextSaturday = new Date(currentDate);
     nextSaturday.setUTCDate(currentDate.getUTCDate() + daysUntilSaturday);
-    nextSaturday.setUTCHours(7+12, 0, 0, 0);
+    nextSaturday.setUTCHours(7 + 12, 0, 0, 0);
     const unixTimestampStart = Math.floor(nextSaturday.getTime() / 1000) * 1000;
 
-    nextSaturday.setUTCHours(7+12, 30, 0, 0);
+    nextSaturday.setUTCHours(7 + 12, 30, 0, 0);
     const unixTimestampEnd = Math.floor(nextSaturday.getTime() / 1000) * 1000;
 
     return { start: unixTimestampStart, end: unixTimestampEnd };
@@ -65,16 +66,22 @@ async function createGuildEvent(setupModel) {
         reason: "Create weekend Card Brawl scheduled event.",
     });
 
-    // Send scheduled event invite link 
-    const link = `https://discord.gg/farshore?event=${event.id}`
+    // Send scheduled event invite link
+    const link = `https://discord.gg/farshore?event=${event.id}`;
     const karutaUpdate = client.channels.cache.get(
         config.karutaUpdateChannelID
     );
     const brawlAnnounce = client.channels.cache.get(
         config.brawlAnnouncementChannelID
     );
-    karutaUpdate.send(link);
-    brawlAnnounce.send(link);
+    karutaUpdate.send({
+        content: `:shinto_shrine: **Participate in the community (card competition)[${link}] this weekend!** Don't want to be a <@&${config.competitorRole}>, be a <@&${eventDrop.id}>! Get roles in <id:customize>.`,
+        allowedMentions: { parse: [] },
+    });
+    brawlAnnounce.send({
+        content: `:shinto_shrine: **Participate in the community (card competition)[${link}] this weekend!** Don't want to be a <@&${config.competitorRole}>, be a <@&${eventDrop.id}>! Get roles in <id:customize>.`,
+        allowedMentions: { parse: [] },
+    });
 
     // try {
     //     const cronExpression = `30 ${
