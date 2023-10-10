@@ -316,7 +316,7 @@ module.exports = {
                             setupModel.name,
                             setupModel.theme,
                             setupModel.size,
-                            setupModel.cards.size
+                            setupModel.cards.size - 1
                         );
                         const competitorsChannel = client.channels.cache.get(
                             config.competitorsChannelID
