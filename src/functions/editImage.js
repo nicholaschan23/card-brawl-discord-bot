@@ -1,10 +1,5 @@
 const { createCanvas, loadImage } = require("canvas");
 
-async function filterImage(imagePath) {
-    const image = await loadImage(imagePath);
-
-}
-
 async function mergeImages(image1Path, image2Path) {
     try {
         // Load the two images
@@ -23,9 +18,6 @@ async function mergeImages(image1Path, image2Path) {
 
         // Convert the merged image to an image buffer
         const imageBuffer = canvas.toBuffer("image/png");
-
-        // Convert the merged image to a Data URL
-        const mergedImageDataURL = canvas.toDataURL("image/png");
 
         return imageBuffer;
     } catch (error) {

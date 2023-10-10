@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { mergeImages } = require("../functions/mergeImages");
+const { mergeImages } = require("../functions/editImage");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
 const { getWinnerEmbed } = require("../functions/embeds/brawlWinner");
