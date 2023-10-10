@@ -28,7 +28,7 @@ function autofeedInit(client) {
         }
     };
     cron.schedule("0 * * * *", () => {
-        karutaRoles(client);
+        karutaRoles(client, config);
     });
 
     // Card Brawl promotion
@@ -76,7 +76,7 @@ function autofeedInit(client) {
         karutaHelp(client);
     });
 
-    // Karuta help
+    // Karuta wishlist
     const karutaWishlist = (client) => {
         try {
             const karutaDrop = client.channels.cache.get(
