@@ -7,6 +7,9 @@ const {
 } = require("discord.js");
 const { formatTitle } = require("../../../functions/formatTitle");
 const { getEnterEmbed } = require("../../../functions/embeds/brawlEnter");
+const {
+    getAnnouncementEmbed,
+} = require("../../../functions/embeds/brawlAnnouncement");
 const config = require("../../../../config.json");
 const { client } = require("../../../index");
 const { setupModelQueue } = require("../../../index");
@@ -346,15 +349,20 @@ module.exports = {
         }
 
         // Update announcement embed
+        const updatedEmbed = new getAnnouncementEmbed(
+            setupModel.name,
+            setupModel.theme,
+            setupModel.size,
+            setupModel.competitors.length
+        );
         const competitorsChannel = client.channels.cache.get(
             config.competitorsChannelID
         );
-        const updatedEmbed = new EmbedBuilder(message.embeds[0]);
-        if (setupModel.cards.size === setupModel.size) {
-            // Card Brawl is full
-            competitorsChannel.messages
-                .fetch(setupModel.messageID)
-                .then((message) => {
+        competitorsChannel.messages
+            .fetch(setupModel.messageID)
+            .then((message) => {
+                // Card Brawl is full
+                if (setupModel.cards.size === setupModel.size) {
                     updatedEmbed.setColor(config.red);
                     updatedEmbed.setFooter({
                         text: "This Card Brawl is full!",
@@ -363,33 +371,12 @@ module.exports = {
                         content: `This \`${setupModel.name}\` Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
                         embeds: [updatedEmbed],
                     });
-                });
-        } else {
-            competitorsChannel.messages
-                .fetch(setupModel.messageID)
-                .then((message) => {
-                    updatedEmbed.setDescription(
-                        `Size: **${size}** cards\nStatus: **${
-                            setupModel.size - setupModel.cards.size
-                        }/${
-                            setupModel.size
-                        }** spots available\nTheme: **${theme}**\nDate: <t:${unixTimestampStart}:f>\n\n**Bonus Entries**: *(1x = 1 extra)*\n<@&${
-                            config.serverSubscriberRole
-                        }> **1x** entry\n\n**Bonus Votes**:\n<@&${
-                            config.serverBoosterRole
-                        }> **${config.serverBoosterBonus}x** vote\n<@&${
-                            config.activeBoosterRole
-                        }> **${config.activeBoosterBonus}x** votes\n<@&${
-                            config.serverSubscriberRole
-                        }> **${
-                            config.serverSubscriberBonus
-                        }x** votes\n\n**Requirements**:\n🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed`
-                    );
+                } else {
                     message.edit({
                         content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
                         embeds: [updatedEmbed],
                     });
-                });
-        }
+                }
+            });
     },
 };

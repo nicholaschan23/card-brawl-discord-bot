@@ -81,12 +81,7 @@ module.exports = {
             );
         }
 
-        const setupBrawlEmbed = getAnnouncementEmbed(
-            name,
-            theme,
-            size,
-            interaction.user.id
-        );
+        const setupBrawlEmbed = getAnnouncementEmbed(name, theme, size, 0);
 
         const confirm = new ButtonBuilder()
             .setCustomId("confirm")
