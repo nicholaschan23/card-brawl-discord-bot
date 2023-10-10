@@ -27,7 +27,7 @@ module.exports = {
             "Copper IV",
             "Copper III",
             "Copper II",
-            "Copper 1",
+            "Copper I",
             "Bronze V",
             "Bronze IV",
             "Bronze III",

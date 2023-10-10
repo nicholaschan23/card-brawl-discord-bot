@@ -1,5 +1,10 @@
 const { createCanvas, loadImage } = require("canvas");
 
+async function filterImage(imagePath) {
+    const image = await loadImage(imagePath);
+
+}
+
 async function mergeImages(image1Path, image2Path) {
     try {
         // Load the two images
