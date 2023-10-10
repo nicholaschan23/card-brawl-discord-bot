@@ -310,6 +310,37 @@ module.exports = {
                         }
                         recentSetupModel.cards.set(cardCode, imageSchema);
                         await recentSetupModel.save();
+
+                        // Update announcement embed
+                        const updatedEmbed = new getAnnouncementEmbed(
+                            setupModel.name,
+                            setupModel.theme,
+                            setupModel.size,
+                            setupModel.cards.size
+                        );
+                        const competitorsChannel = client.channels.cache.get(
+                            config.competitorsChannelID
+                        );
+                        competitorsChannel.messages
+                            .fetch(setupModel.messageID)
+                            .then((message) => {
+                                // Card Brawl is full
+                                if (setupModel.cards.size === setupModel.size) {
+                                    updatedEmbed.setColor(config.red);
+                                    updatedEmbed.setFooter({
+                                        text: "This Card Brawl is full!",
+                                    });
+                                    message.edit({
+                                        content: `This \`${setupModel.name}\` Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
+                                        embeds: [updatedEmbed],
+                                    });
+                                } else {
+                                    message.edit({
+                                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
+                                        embeds: [updatedEmbed],
+                                    });
+                                }
+                            });
                     };
                     try {
                         await setupModelQueue.enqueue(task);
@@ -347,36 +378,5 @@ module.exports = {
                 ephemeral: true,
             });
         }
-
-        // Update announcement embed
-        const updatedEmbed = new getAnnouncementEmbed(
-            setupModel.name,
-            setupModel.theme,
-            setupModel.size,
-            setupModel.competitors.length
-        );
-        const competitorsChannel = client.channels.cache.get(
-            config.competitorsChannelID
-        );
-        competitorsChannel.messages
-            .fetch(setupModel.messageID)
-            .then((message) => {
-                // Card Brawl is full
-                if (setupModel.cards.size === setupModel.size) {
-                    updatedEmbed.setColor(config.red);
-                    updatedEmbed.setFooter({
-                        text: "This Card Brawl is full!",
-                    });
-                    message.edit({
-                        content: `This \`${setupModel.name}\` Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
-                        embeds: [updatedEmbed],
-                    });
-                } else {
-                    message.edit({
-                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
-                        embeds: [updatedEmbed],
-                    });
-                }
-            });
     },
 };
