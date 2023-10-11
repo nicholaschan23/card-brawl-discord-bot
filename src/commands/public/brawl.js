@@ -1,12 +1,11 @@
-const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
-const { client } = require("../../index");
-const config = require("../../../config.json")
+const { SlashCommandBuilder } = require("discord.js");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");
 const start = require("./brawl/start");
 const instructions = require("./brawl/instructions");
 const stats = require("./brawl/stats");
 const winner = require("./brawl/winner");
+const view = require("./brawl/view");
 
 module.exports = {
     category: "public",
@@ -18,22 +17,9 @@ module.exports = {
         .addSubcommand(start.data)
         .addSubcommand(instructions.data)
         .addSubcommand(stats.data)
-        .addSubcommand(winner.data),
+        .addSubcommand(winner.data)
+        .addSubcommand(view.data),
     async execute(interaction) {
-        // // Keep slash commands in designated channels
-        // const guild = client.guilds.cache.get(config.guildID);
-        // const hasSendMessagePermission = interaction.channel
-        //     .permissionsFor(guild.members.me)
-        //     .has(PermissionsBitField.Flags.EmbedLinks);
-        // if (!hasSendMessagePermission) {
-        //     // Bot doesn't have 'SEND_MESSAGES' permission in this channel
-        //     await interaction.reply({
-        //         content: "I am missing the `Embed Links` permission.",
-        //         ephemeral: true,
-        //     });
-        //     return;
-        // }
-
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
             case "create": {
@@ -58,6 +44,10 @@ module.exports = {
             }
             case "winner": {
                 await winner.execute(interaction);
+                break;
+            }
+            case "view": {
+                await view.execute(interaction);
                 break;
             }
             default: {
