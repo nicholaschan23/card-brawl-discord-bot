@@ -30,10 +30,10 @@ module.exports = {
                     await interaction.reply({embeds: [getWinnerEmbed(bracketModel, setupModel)]})
                 }
                 else {
-                    await interaction.reply(`This Card Brawl has no winner yet.`);
+                    await interaction.reply(`That Card Brawl has no winner yet.`);
                 }
             } else {
-                await interaction.reply(`This Card Brawl has not started yet.`);
+                await interaction.reply(`That Card Brawl has not started yet.`);
             }
         } catch (error) {
             console.log("Error retrieving Card Brawl:", error);
