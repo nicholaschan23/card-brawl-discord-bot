@@ -19,9 +19,13 @@ module.exports = {
         const name = formatTitle(interaction.options.getString("name"));
         try {
             // Check if brawl exists
+            const setupModel = await BrawlSetupModel.findOne({ name }).exec();
+            if (!setupModel) {
+                return await interaction.reply(`That Card Brawl does not exist.`);
+            }
+
             const bracketModel = await BrawlBracketModel.findOne({ name }).exec();
             if (bracketModel) {
-                const setupModel = await BrawlSetupModel.findOne({ name }).exec();
                 if (bracketModel.completedMatches.length === bracketModel.competitors.length - 1) {
                     await interaction.reply({embeds: [getWinnerEmbed(bracketModel, setupModel)]})
                 }
@@ -29,10 +33,10 @@ module.exports = {
                     await interaction.reply(`This Card Brawl has no winner yet.`);
                 }
             } else {
-                await interaction.reply(`There is no Card Brawl with that name.`);
+                await interaction.reply(`This Card Brawl has not started yet.`);
             }
         } catch (error) {
-            console.log("Error retrieving Card Brawl bracket:", error);
+            console.log("Error retrieving Card Brawl:", error);
             await interaction.reply(`There was an error retrieving the Card Brawl winner.`);
         }
     },
