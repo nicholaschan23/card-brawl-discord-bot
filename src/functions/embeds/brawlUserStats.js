@@ -16,7 +16,7 @@ function getUserStatEmbed(userStatModel) {
         "Matches won",
         "Ties lost",
         "Ties won",
-        "Wins",
+        "Tournament Wins",
     ];
     const competitorContent = alignTextToLongest(
         competitorStats,

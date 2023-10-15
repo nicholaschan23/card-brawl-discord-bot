@@ -83,7 +83,8 @@ class Match {
         );
         const users1 = await reaction1.users.fetch();
         const users2 = await reaction2.users.fetch();
-        let count1 = (await reaction1.count) - 1;
+
+        let count1 = (await reaction1.count) - 1; // Remove 1 for bot reaction
         let count2 = (await reaction2.count) - 1;
 
         // Bonus votes
@@ -115,11 +116,11 @@ class Match {
             this.winner = this.card1;
             if (difference === 1) {
                 await channel.send(
-                    `**Card 1** won by just **1** vote! [**${count1}**:**${count2}**]`
+                    `**Card 1** won by just **1** vote, with ${bonus1} bonus! [**${count1}**:**${count2}**]`
                 );
             } else {
                 await channel.send(
-                    `**Card 1** won by **${difference}** votes! [**${count1}**:**${count2}**]`
+                    `**Card 1** won by **${difference}** votes, with ${bonus1} bonus! [**${count1}**:**${count2}**]`
                 );
             }
             await myUserStat.updateMatchesCompeted(user1, true, false);
@@ -128,11 +129,11 @@ class Match {
             this.winner = this.card2;
             if (difference === 1) {
                 await channel.send(
-                    `**Card 2** won by just **1** vote! [**${count1}**:**${count2}**]`
+                    `**Card 2** won by just **1** vote, with ${bonus2} bonus! [**${count1}**:**${count2}**]`
                 );
             } else {
                 await channel.send(
-                    `**Card 2** won by **${difference}** votes! [**${count1}**:**${count2}**]`
+                    `**Card 2** won by **${difference}** votes, with ${bonus2} bonus! [**${count1}**:**${count2}**]`
                 );
             }
             await myUserStat.updateMatchesCompeted(user1, false, false);
@@ -303,7 +304,6 @@ class BrawlBracketHelper {
             this.bracketModel.completedMatches.length ===
             this.bracketModel.competitors.length - 1
         ) {
-            // Update user stats for win
             return;
         }
 
@@ -334,6 +334,9 @@ class BrawlBracketHelper {
                     this.bracketModel.completedMatches.length - 1
                 ].winner;
             const winnerID = this.setupModel.cards.get(winnerCard).userID;
+
+            // Update user stats for win
+            await this.myUserStat.updateWin(winnerID);
 
             await this.channel.send({
                 content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
