@@ -113,15 +113,13 @@ module.exports = {
 
             // Introduction
             const message = await judgesChannel.send({
-                content: `We'll be starting in \`1 minute\`. <@&${config.judgeRole}>`,
+                content: `We'll be starting in \`5 minutes\`. <@&${config.judgeRole}>`,
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            await delay(30);
-            await judgesChannel.send("# 30");
-            await delay(10);
-            await judgesChannel.send("# 10");
-            await delay(17);
+            await delay(360);
+            await judgesChannel.send("## 1 minute");
+            await delay(27);
             await judgesChannel.send("# 3");
             await delay(1);
             await judgesChannel.send("# 2");
