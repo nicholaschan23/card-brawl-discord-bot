@@ -116,17 +116,17 @@ module.exports = {
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            // await delay(360);
-            // await judgesChannel.send("## 1 minute");
-            // await delay(27);
-            // await judgesChannel.send("# 3");
-            // await delay(1);
-            // await judgesChannel.send("# 2");
-            // await delay(1);
-            // await judgesChannel.send("# 1");
-            // await delay(1);
-            // await judgesChannel.send("# Let the Card Brawl begin! 🥊");
-            // await delay(2);
+            await delay(360);
+            await judgesChannel.send("## 1 minute");
+            await delay(27);
+            await judgesChannel.send("# 3");
+            await delay(1);
+            await judgesChannel.send("# 2");
+            await delay(1);
+            await judgesChannel.send("# 1");
+            await delay(1);
+            await judgesChannel.send("# Let the Card Brawl begin! 🥊");
+            await delay(2);
         }
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();
