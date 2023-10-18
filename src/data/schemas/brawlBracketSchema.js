@@ -20,12 +20,24 @@ const bracketSchema = new mongoose.Schema({
         default: 1,
     },
     leastVotes: {
-        type: [Number, String], // An array with two elements: number and string
-        default: [9999, ""], // Default values
+        count: {
+            type: Number,
+            default: 9999, // Default number value
+        },
+        card: {
+            type: String,
+            default: "", // Default string value
+        },
     },
     mostVotes: {
-        type: [Number, String],
-        default: [-1, ""],
+        count: {
+            type: Number,
+            default: -1, // Default number value
+        },
+        card: {
+            type: String,
+            default: "", // Default string value
+        },
     },
 });
 
