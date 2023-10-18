@@ -12,7 +12,6 @@ const { getWinnerEmbed } = require("../functions/embeds/brawlWinner");
 const config = require("../../config.json");
 const { client } = require("../index");
 const UserStatHelper = require("./UserStatHelper");
-const { deleteMany } = require("../data/schemas/userStatSchema");
 
 class Match {
     /**
@@ -26,10 +25,10 @@ class Match {
     }
 
     addBonusVotes(users, myUserStat) {
-        let count = 1;
+        let count = 0;
         users.forEach(async (reactedUser) => {
             const guild = client.guilds.cache.get(config.guildID);
-            const member = guild.members.cache.get(reactedUser.id);
+            const member = guild.members.cache.get(reactedUser);
 
             if (
                 member.roles.cache.some(
@@ -68,13 +67,11 @@ class Match {
         const button1 = new ButtonBuilder()
             .setCustomId("button1")
             .setEmoji("1️⃣")
-            .setStyle(ButtonStyle.Success);
-
+            .setStyle(ButtonStyle.Primary);
         const button2 = new ButtonBuilder()
             .setCustomId("button2")
             .setEmoji("2️⃣")
-            .setStyle(ButtonStyle.Success);
-
+            .setStyle(ButtonStyle.Primary);
         const row = new ActionRowBuilder().addComponents(button1, button2);
 
         // Display matchup as a png with reactions for the audience to vote
@@ -84,70 +81,73 @@ class Match {
             components: [row],
         });
 
-        const collector = await message.createMessageComponentCollector({
-            componentType: ComponentType.Button,
-            time: 30000,
-        });
-
         const user1 = setupModel.cards.get(this.card1).userID;
         const user2 = setupModel.cards.get(this.card2).userID;
         const users1 = new Set();
         const users2 = new Set();
 
-        collector.on("collect", async (i) => {
+        // Button listeners
+        const collector1 = await message.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 30000,
+        });
+
+        collector1.on("collect", async (i) => {
             await i.deferUpdate();
 
             // Contestants cannot vote on rounds with their card
-            if (i.user === user1 || i.user === user2) {
-                i.reply({
+            if (i.user.id === user1 || i.user.id === user2) {
+                return i.followUp({
                     content: "Your card is in this round. You cannot vote.",
                     ephemeral: true,
                 });
             }
 
             if (i.customId === "button1") {
-                if (users2.has(i.user)) {
-                    users2.delete(i.user);
-                    users1.add(i.user);
-                    i.reply({
+                if (users2.has(i.user.id)) {
+                    users2.delete(i.user.id);
+                    users1.add(i.user.id);
+                    i.followUp({
                         content: "You switched your vote to Card 1!",
                         ephemeral: true,
                     });
                 } else {
-                    users1.add(i.user);
-                    i.reply({
+                    users1.add(i.user.id);
+                    i.followUp({
                         content: "You voted for Card 1!",
                         ephemeral: true,
                     });
                 }
-            }
-            if (i.customId === "button2") {
-                if (users1.has(i.user)) {
-                    users1.delete(i.user);
-                    users2.add(i.user);
-                    i.reply({
+            } else if (i.customId === "button2") {
+                if (users1.has(i.user.id)) {
+                    users1.delete(i.user.id);
+                    users2.add(i.user.id);
+                    i.followUp({
                         content: "You switched your vote to Card 2!",
                         ephemeral: true,
                     });
                 } else {
-                    users2.add(i.user);
-                    i.reply({
+                    users2.add(i.user.id);
+                    i.followUp({
                         content: "You voted for Card 2!",
                         ephemeral: true,
                     });
                 }
             }
+            console.log(users1)
+            console.log(users2)
         });
+        await delay(config.voteTime);
 
         // End the collector
-        collector.on("end", async (i) => {
+        collector1.on("end", async (i) => {
             await message.edit({
                 content: `### Round ${round}: Match ${match}`,
                 files: [imageBuffer],
                 components: [],
             });
         });
-
+        
         let count1 = users1.size;
         let count2 = users2.size;
 
@@ -158,17 +158,21 @@ class Match {
         count2 += bonus2;
 
         // Update honorable mentions
-        if (count1 < bracketModel.leastVotes[0]) {
-            bracketModel.leastVotes = [count1, this.card1];
+        if (count1 < bracketModel.leastVotes.count) {
+            bracketModel.leastVotes.count = count1;
+            bracketModel.leastVotes.card = this.card1;
         }
-        if (count1 > bracketModel.mostVotes[0]) {
-            bracketModel.mostVotes = [count1, this.card1];
+        if (count1 > bracketModel.mostVotes.count) {
+            bracketModel.mostVotes.count = count1;
+            bracketModel.mostVotes.card = this.card1;
         }
-        if (count2 < bracketModel.leastVotes[0]) {
-            bracketModel.leastVotes = [count2, this.card2];
+        if (count2 < bracketModel.leastVotes.count) {
+            bracketModel.leastVotes.count = count2;
+            bracketModel.leastVotes.card = this.card2;
         }
-        if (count2 > bracketModel.mostVotes[0]) {
-            bracketModel.mostVotes = [count2, this.card2];
+        if (count2 > bracketModel.mostVotes.count) {
+            bracketModel.mostVotes.count = count2;
+            bracketModel.mostVotes.card = this.card2;
         }
 
         // Update user stats
@@ -260,10 +264,11 @@ class Match {
 }
 
 class BrawlBracketHelper {
-    constructor(channel, bracketModel, setupModel) {
-        this.channel = channel;
+    constructor(bracketModel, setupModel) {
         this.bracketModel = bracketModel;
         this.setupModel = setupModel;
+
+        this.channel = client.channels.cache.get(config.judgesChannelID);
         this.myUserStat = new UserStatHelper();
     }
 
@@ -388,13 +393,13 @@ class BrawlBracketHelper {
         await this.channel.send("# Honorable Mentions");
         await delay(2);
 
-        const leastInfo = this.bracketModel.leastVotes;
-        const leastID = this.setupModel.cards.get(leastInfo[1]).userID;
-        const leastImage = this.setupModel.cards.get(leastInfo[1]).imageLink;
+        const leastVotes = this.bracketModel.leastVotes;
+        const leastID = this.setupModel.cards.get(leastVotes.card).userID;
+        const leastImage = this.setupModel.cards.get(leastVotes.card).imageLink;
         const leastEmbed = new EmbedBuilder()
             .setTitle("Least Votes")
             .setDescription(
-                `Received the least votes out of all the matches: **${leastInfo[0]}**.\nCard: \`${leastInfo[1]}\` by <@${leastID}>`
+                `Votes: **${leastVotes.count}**\nCard: \`${leastVotes.card}\` by <@${leastID}>`
             )
             .setImage(leastImage);
         await this.channel.send({
@@ -403,13 +408,13 @@ class BrawlBracketHelper {
         await this.myUserStat.updateMentions(leastID);
         await delay(2);
 
-        const mostInfo = this.bracketModel.mostVotes;
-        const mostID = this.setupModel.cards.get(mostInfo[1]).userID;
-        const mostImage = this.setupModel.cards.get(mostInfo[1]).imageLink;
+        const mostVotes = this.bracketModel.mostVotes;
+        const mostID = this.setupModel.cards.get(mostVotes.card).userID;
+        const mostImage = this.setupModel.cards.get(mostVotes.card).imageLink;
         const mostEmbed = new EmbedBuilder()
             .setTitle("Most Votes")
             .setDescription(
-                `Received the most votes out of all the matches: **${mostInfo[0]}**.\nCard: \`${mostInfo[1]}\` by <@${mostID}>`
+                `Votes: **${mostVotes.count}**\nCard: \`${mostVotes.card}\` by <@${mostID}>`
             )
             .setImage(mostImage);
         await this.channel.send({

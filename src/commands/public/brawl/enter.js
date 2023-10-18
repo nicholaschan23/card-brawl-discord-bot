@@ -262,34 +262,36 @@ module.exports = {
 
                         // Check if user is eligible for multiple entries
                         if (interaction.user.id === interaction.user.id) {
-                            // if (interaction.user.id !== config.developerID) {
-                            // Debugging
-                            if (
-                                recentSetupModel.entries.get(
-                                    interaction.user.id
-                                )
-                            ) {
-                                // Already an entry
+                            if (interaction.user.id !== config.developerID) {
+                                // Debugging
                                 if (
-                                    interaction.member.roles.cache.some(
-                                        (role) =>
-                                            role.name === "Server Subscriber"
+                                    recentSetupModel.entries.get(
+                                        interaction.user.id
                                     )
                                 ) {
-                                    // Server subscriber gets max 2 entries
+                                    // Already an entry
                                     if (
-                                        setupModel.entries.get(
-                                            interaction.user.id
-                                        ).length === 2
+                                        interaction.member.roles.cache.some(
+                                            (role) =>
+                                                role.name ===
+                                                "Server Subscriber"
+                                        )
                                     ) {
+                                        // Server subscriber gets max 2 entries
+                                        if (
+                                            setupModel.entries.get(
+                                                interaction.user.id
+                                            ).length === 2
+                                        ) {
+                                            throw new Error(
+                                                `You already entered **2 cards** for the **${setupModel.name}** Card Brawl.`
+                                            );
+                                        }
+                                    } else {
                                         throw new Error(
-                                            `You already entered **2 cards** for the **${setupModel.name}** Card Brawl.`
+                                            `You already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`
                                         );
                                     }
-                                } else {
-                                    throw new Error(
-                                        `You already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`
-                                    );
                                 }
                             }
                         }
@@ -325,7 +327,10 @@ module.exports = {
                             .fetch(recentSetupModel.messageID)
                             .then((message) => {
                                 // Card Brawl is full
-                                if (recentSetupModel.cards.size === recentSetupModel.size) {
+                                if (
+                                    recentSetupModel.cards.size ===
+                                    recentSetupModel.size
+                                ) {
                                     updatedEmbed.setColor(config.red);
                                     updatedEmbed.setFooter({
                                         text: "This Card Brawl is full!",
