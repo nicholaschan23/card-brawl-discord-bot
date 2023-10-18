@@ -1,4 +1,10 @@
-const { EmbedBuilder } = require("discord.js");
+const {
+    EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+    ComponentType,
+} = require("discord.js");
 const { mergeImages } = require("../functions/editImage");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
@@ -6,6 +12,7 @@ const { getWinnerEmbed } = require("../functions/embeds/brawlWinner");
 const config = require("../../config.json");
 const { client } = require("../index");
 const UserStatHelper = require("./UserStatHelper");
+const { deleteMany } = require("../data/schemas/userStatSchema");
 
 class Match {
     /**
@@ -19,95 +26,152 @@ class Match {
     }
 
     addBonusVotes(users, myUserStat) {
-        let count = 0;
+        let count = 1;
         users.forEach(async (reactedUser) => {
             const guild = client.guilds.cache.get(config.guildID);
             const member = guild.members.cache.get(reactedUser.id);
 
-            if (reactedUser.id != config.clientID) {
-                let userCount = 0;
-                if (
-                    member.roles.cache.some(
-                        (role) => role.name === "Server Booster"
-                    )
-                ) {
-                    userCount += config.serverBoosterBonus;
-                    if (
-                        member.roles.cache.some(
-                            (role) => role.name === "Active Booster"
-                        )
-                    ) {
-                        userCount += config.activeBoosterBonus;
-                    }
-                }
-                if (
-                    member.roles.cache.some(
-                        (role) => role.name === "Server Subscriber"
-                    )
-                ) {
-                    userCount += config.serverSubscriberBonus;
-                }
-                count += userCount;
-                await myUserStat.updateVotesGiven(
-                    reactedUser.id,
-                    userCount + 1
-                );
+            if (
+                member.roles.cache.some(
+                    (role) => role.name === "Server Booster"
+                )
+            ) {
+                count += config.serverBoosterBonus;
+            } else if (
+                member.roles.cache.some(
+                    (role) => role.name === "Active Booster"
+                )
+            ) {
+                count += config.activeBoosterBonus;
+            } else if (
+                member.roles.cache.some(
+                    (role) => role.name === "Server Subscriber"
+                )
+            ) {
+                count += config.serverSubscriberBonus;
             }
+            await myUserStat.updateVotesGiven(reactedUser.id, count);
         });
         return count;
     }
 
-    async conductMatch(channel, round, match, setupModel, myUserStat) {
+    async conductMatch(channel, bracketModel, setupModel, myUserStat) {
+        const round = bracketModel.currentRound;
+        const match = bracketModel.currentMatch;
+
         // Combine card images
         const image1 = setupModel.cards.get(this.card1).imageLink;
         const image2 = setupModel.cards.get(this.card2).imageLink;
         const imageBuffer = await mergeImages(image1, image2);
 
+        // Vote buttons
+        const button1 = new ButtonBuilder()
+            .setCustomId("button1")
+            .setEmoji("1️⃣")
+            .setStyle(ButtonStyle.Success);
+
+        const button2 = new ButtonBuilder()
+            .setCustomId("button2")
+            .setEmoji("2️⃣")
+            .setStyle(ButtonStyle.Success);
+
+        const row = new ActionRowBuilder().addComponents(button1, button2);
+
         // Display matchup as a png with reactions for the audience to vote
         const message = await channel.send({
             content: `### Round ${round}: Match ${match}`,
             files: [imageBuffer],
+            components: [row],
         });
-        await message.react("1️⃣");
-        await message.react("2️⃣");
 
-        // Voting time
-        await delay(config.voteTime);
+        const collector = await message.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 30000,
+        });
 
-        // Get the count of users who reacted with the specified emoji.
-        const reaction1 = await message.reactions.cache.find(
-            (reaction) => reaction.emoji.name === "1️⃣"
-        );
-        const reaction2 = await message.reactions.cache.find(
-            (reaction) => reaction.emoji.name === "2️⃣"
-        );
-        const users1 = await reaction1.users.fetch();
-        const users2 = await reaction2.users.fetch();
+        const user1 = setupModel.cards.get(this.card1).userID;
+        const user2 = setupModel.cards.get(this.card2).userID;
+        const users1 = new Set();
+        const users2 = new Set();
 
-        let count1 = (await reaction1.count) - 1; // Remove 1 for bot reaction
-        let count2 = (await reaction2.count) - 1;
+        collector.on("collect", async (i) => {
+            await i.deferUpdate();
+
+            // Contestants cannot vote on rounds with their card
+            if (i.user === user1 || i.user === user2) {
+                i.reply({
+                    content: "Your card is in this round. You cannot vote.",
+                    ephemeral: true,
+                });
+            }
+
+            if (i.customId === "button1") {
+                if (users2.has(i.user)) {
+                    users2.delete(i.user);
+                    users1.add(i.user);
+                    i.reply({
+                        content: "You switched your vote to Card 1!",
+                        ephemeral: true,
+                    });
+                } else {
+                    users1.add(i.user);
+                    i.reply({
+                        content: "You voted for Card 1!",
+                        ephemeral: true,
+                    });
+                }
+            }
+            if (i.customId === "button2") {
+                if (users1.has(i.user)) {
+                    users1.delete(i.user);
+                    users2.add(i.user);
+                    i.reply({
+                        content: "You switched your vote to Card 2!",
+                        ephemeral: true,
+                    });
+                } else {
+                    users2.add(i.user);
+                    i.reply({
+                        content: "You voted for Card 2!",
+                        ephemeral: true,
+                    });
+                }
+            }
+        });
+
+        // End the collector
+        collector.on("end", async (i) => {
+            await message.edit({
+                content: `### Round ${round}: Match ${match}`,
+                files: [imageBuffer],
+                components: [],
+            });
+        });
+
+        let count1 = users1.size;
+        let count2 = users2.size;
 
         // Bonus votes
         const bonus1 = await this.addBonusVotes(users1, myUserStat);
-        // if (bonus1 === 0) {
-        //     await channel.send("No bonus votes for Card 1...");
-        // } else {
-        //     await channel.send("Adding bonus votes for Card 1!");
-        // }
-        // await delay(2);
         const bonus2 = await this.addBonusVotes(users2, myUserStat);
-        // if (bonus2 === 0) {
-        //     await channel.send("No bonus votes for Card 2...");
-        // } else {
-        //     await channel.send("Adding bonus votes for Card 2!");
-        // }
-        // await delay(2);
         count1 += bonus1;
         count2 += bonus2;
 
+        // Update honorable mentions
+        if (count1 < bracketModel.leastVotes[0]) {
+            bracketModel.leastVotes = [count1, this.card1];
+        }
+        if (count1 > bracketModel.mostVotes[0]) {
+            bracketModel.mostVotes = [count1, this.card1];
+        }
+        if (count2 < bracketModel.leastVotes[0]) {
+            bracketModel.leastVotes = [count2, this.card2];
+        }
+        if (count2 > bracketModel.mostVotes[0]) {
+            bracketModel.mostVotes = [count2, this.card2];
+        }
+
         // Update user stats
-        const user1 = setupModel.cards.get(this.card1).userID;
-        const user2 = setupModel.cards.get(this.card2).userID;
         await myUserStat.updateVotesReceived(user1, count1);
         await myUserStat.updateVotesReceived(user2, count2);
 
@@ -140,7 +204,6 @@ class Match {
             await myUserStat.updateMatchesCompeted(user2, true, false);
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
-            // TODO: Add player stat for ties won
             await channel
                 .send(
                     `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`
@@ -186,9 +249,6 @@ class Match {
                     }
                 });
         }
-
-        // TODO: Update player stats
-
         // Return completed match
         const completedMatchSchema = {
             card1: this.card1,
@@ -264,8 +324,7 @@ class BrawlBracketHelper {
             const currentMatch = new Match(this.bracketModel.matches.shift());
             const completedMatchSchema = await currentMatch.conductMatch(
                 this.channel,
-                this.bracketModel.currentRound,
-                this.bracketModel.currentMatch,
+                this.bracketModel,
                 this.setupModel,
                 this.myUserStat
             ); // Determine the winner of the match
@@ -286,6 +345,7 @@ class BrawlBracketHelper {
             this.myUserStat.saveProgress();
             await delay(2);
         }
+        await this.announceMentions();
         await this.announceWinner();
 
         // Update user stats completed Card Brawl
@@ -322,6 +382,41 @@ class BrawlBracketHelper {
         }
         this.bracketModel.startIndex =
             this.bracketModel.completedMatches.length;
+    }
+
+    async announceMentions() {
+        await this.channel.send("# Honorable Mentions");
+        await delay(2);
+
+        const leastInfo = this.bracketModel.leastVotes;
+        const leastID = this.setupModel.cards.get(leastInfo[1]).userID;
+        const leastImage = this.setupModel.cards.get(leastInfo[1]).imageLink;
+        const leastEmbed = new EmbedBuilder()
+            .setTitle("Least Votes")
+            .setDescription(
+                `Received the least votes out of all the matches: **${leastInfo[0]}**.\nCard: \`${leastInfo[1]}\` by <@${leastID}>`
+            )
+            .setImage(leastImage);
+        await this.channel.send({
+            embeds: [leastEmbed],
+        });
+        await this.myUserStat.updateMentions(leastID);
+        await delay(2);
+
+        const mostInfo = this.bracketModel.mostVotes;
+        const mostID = this.setupModel.cards.get(mostInfo[1]).userID;
+        const mostImage = this.setupModel.cards.get(mostInfo[1]).imageLink;
+        const mostEmbed = new EmbedBuilder()
+            .setTitle("Most Votes")
+            .setDescription(
+                `Received the most votes out of all the matches: **${mostInfo[0]}**.\nCard: \`${mostInfo[1]}\` by <@${mostID}>`
+            )
+            .setImage(mostImage);
+        await this.channel.send({
+            embeds: [mostEmbed],
+        });
+        await this.myUserStat.updateMentions(mostID);
+        await delay(2);
     }
 
     async announceWinner() {
