@@ -1,5 +1,5 @@
 const UserStatModel = require("../data/schemas/userStatSchema");
-const { userStatQueue } = require("../index")
+const { userStatQueue } = require("../index");
 
 class UserStatHelper {
     constructor() {
@@ -17,18 +17,6 @@ class UserStatHelper {
                 if (!statModel) {
                     statModel = new UserStatModel({
                         userID: userID,
-                        cardsEntered: 0,
-
-                        matchesCompeted: 0,
-                        matchesWon: 0,
-                        tiesLost: 0,
-                        tiesWon: 0,
-                        wins: 0,
-
-                        matchesJudged: 0,
-                        votesGiven: 0,
-                        votesReceived: 0,
-                        votesHighest: 0,
                     });
                 }
                 this.userStatModels[userID] = statModel;
@@ -65,6 +53,12 @@ class UserStatHelper {
         statModel.matchesCompeted += 1;
     }
 
+    // honorableMentions
+    async updateMentions(userID) {
+        const statModel = await this.getUserStatModel(userID);
+        statModel.honorableMentions += 1;
+    }
+
     // wins
     async updateWin(userID) {
         const statModel = await this.getUserStatModel(userID);
@@ -91,11 +85,11 @@ class UserStatHelper {
 
     // Save the user stats progress to persistent storage
     async saveProgress() {
-        const task = ( async () => {
+        const task = async () => {
             for (const model of Object.values(this.userStatModels)) {
                 await model.save();
             }
-        })
+        };
         await userStatQueue.enqueue(task);
     }
 }

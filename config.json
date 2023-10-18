@@ -1,11 +1,11 @@
 {
     "guildID": "727898987285315736",
-    "clientID": "1146594862108508161",
+    "clientID": "1160952315050729582",
     "developerID": "195592343771021312",
     "karutaID": "646937666251915264",
 
     "globalCooldown": 5,
-    "voteTime": 15,
+    "voteTime": 30,
 
     "karutaDropChannelID": "768727462221578260",
 
@@ -23,9 +23,9 @@
     "serverSubscriberRole": "1153438565796155405",
     "brawlChampionRole": "1158801902939672668",
 
-    "serverBoosterBonus": 1,
-    "activeBoosterBonus": 3,
-    "serverSubscriberBonus": 5,
+    "serverBoosterBonus": 0,
+    "activeBoosterBonus": 1,
+    "serverSubscriberBonus": 1,
 
     "blue": "#7289da",
     "green": "#43b581",

@@ -5,20 +5,57 @@ const statsSchema = new mongoose.Schema({
     userID: String,
 
     // Competitor
-    cardsEntered: Number,
-    matchesCompeted: Number,
-    matchesWon: Number,
-    tiesLost: Number,
-    tiesWon: Number,
-    wins: Number,
+    cardsEntered: {
+        type: Number,
+        default: 0,
+    },
+    matchesCompeted: {
+        type: Number,
+        default: 0,
+    },
+    matchesWon: {
+        type: Number,
+        default: 0,
+    },
+    tiesLost: {
+        type: Number,
+        default: 0,
+    },
+    tiesWon: {
+        type: Number,
+        default: 0,
+    },
+    honorableMentions: {
+        type: Number,
+        default: 0,
+    },
+    wins: {
+        type: Number,
+        default: 0,
+    },
 
     // Votes
-    matchesJudged: Number,
-    votesGiven: Number,
-    votesReceived: Number,
-    votesHighest: Number,
+    matchesJudged: {
+        type: Number,
+        default: 0,
+    },
+    votesGiven: {
+        type: Number,
+        default: 0,
+    },
+    votesReceived: {
+        type: Number,
+        default: 0,
+    },
+    votesHighest: {
+        type: Number,
+        default: 0,
+    },
 
-    chatPoints: Number,
+    chatPoints: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const UserStatModel = mongoose.model("user stats", statsSchema);

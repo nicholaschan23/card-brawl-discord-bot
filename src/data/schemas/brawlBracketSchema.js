@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const matchSchema = require("./brawlMatchSchema")
+const matchSchema = require("./brawlMatchSchema");
 
 // Define a schema for storing bracket data
 const bracketSchema = new mongoose.Schema({
@@ -9,15 +9,23 @@ const bracketSchema = new mongoose.Schema({
     completedMatches: [matchSchema],
     startIndex: {
         type: Number,
-        default: 0
+        default: 0,
     },
     currentRound: {
         type: Number,
-        default: 1
+        default: 1,
     },
     currentMatch: {
         type: Number,
-        default: 1
+        default: 1,
+    },
+    leastVotes: {
+        type: [Number, String], // An array with two elements: number and string
+        default: [9999, ""], // Default values
+    },
+    mostVotes: {
+        type: [Number, String],
+        default: [-1, ""],
     },
 });
 
