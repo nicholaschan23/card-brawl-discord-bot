@@ -55,6 +55,16 @@ class Match {
     }
 
     async conductMatch(channel, bracketModel, setupModel, myUserStat) {
+        // Free match
+        if (this.winner !== null) {
+            const completedMatchSchema = {
+                card1: null,
+                card2: null,
+                winner: this.winner,
+            };
+            return completedMatchSchema;
+        }
+
         const round = bracketModel.currentRound;
         const match = bracketModel.currentMatch;
 
@@ -134,8 +144,8 @@ class Match {
                     });
                 }
             }
-            console.log(users1)
-            console.log(users2)
+            console.log(users1);
+            console.log(users2);
         });
         await delay(config.voteTime);
 
@@ -147,7 +157,7 @@ class Match {
                 components: [],
             });
         });
-        
+
         let count1 = users1.size;
         let count2 = users2.size;
 
@@ -292,12 +302,26 @@ class BrawlBracketHelper {
             this.bracketModel.competitors
         );
 
-        // Assign round 1
-        for (let i = 0; i < this.bracketModel.competitors.length; i += 2) {
+        const competitorsSize = this.bracketModel.competitors.length;
+        const idealSize = Math.pow(2, Math.ceil(Math.log2(competitorsSize)));
+
+        const diff = idealSize - competitorsSize;
+        let i = 0;
+        // Normal matchmaking
+        for (; i < competitorsSize - diff; i += 2) {
             const matchSchema = {
                 card1: this.bracketModel.competitors[i],
                 card2: this.bracketModel.competitors[i + 1],
                 winner: null,
+            };
+            this.bracketModel.matches.push(matchSchema);
+        }
+        // Free passes
+        for (; i < competitorsSize; i++) {
+            const matchSchema = {
+                card1: null,
+                card2: null,
+                winner: this.bracketModel.competitors[i],
             };
             this.bracketModel.matches.push(matchSchema);
         }
@@ -389,6 +413,7 @@ class BrawlBracketHelper {
             this.bracketModel.completedMatches.length;
     }
 
+    // Honoralbe mentions
     async announceMentions() {
         await this.channel.send("# Honorable Mentions");
         await delay(2);
@@ -439,7 +464,7 @@ class BrawlBracketHelper {
             await this.myUserStat.updateWin(winnerID);
 
             await this.channel.send({
-                content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
+                content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>! Use the \`/brawl stats\` command to view your overall stats.`,
                 embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
                 allowedMentions: { parse: [] },
             });
