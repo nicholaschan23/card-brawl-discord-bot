@@ -1,10 +1,4 @@
-const {
-    EmbedBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ActionRowBuilder,
-    ComponentType,
-} = require("discord.js");
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require("discord.js");
 const { mergeImages } = require("../functions/editImage");
 const { shuffleArray } = require("../functions/shuffleArray");
 const { delay } = require("../functions/delay");
@@ -62,14 +56,8 @@ class Match {
         const imageBuffer = await mergeImages(image1, image2);
 
         // Vote buttons
-        const button1 = new ButtonBuilder()
-            .setCustomId("button1")
-            .setEmoji("1️⃣")
-            .setStyle(ButtonStyle.Primary);
-        const button2 = new ButtonBuilder()
-            .setCustomId("button2")
-            .setEmoji("2️⃣")
-            .setStyle(ButtonStyle.Primary);
+        const button1 = new ButtonBuilder().setCustomId("button1").setEmoji("1️⃣").setStyle(ButtonStyle.Primary);
+        const button2 = new ButtonBuilder().setCustomId("button2").setEmoji("2️⃣").setStyle(ButtonStyle.Primary);
         const row = new ActionRowBuilder().addComponents(button1, button2);
 
         // Display matchup as a png with reactions for the audience to vote
@@ -207,14 +195,10 @@ class Match {
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             await channel
-                .send(
-                    `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`
-                )
+                .send(`Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`)
                 .then(async (msg) => {
                     await delay(1); // Suspense
-                    msg.edit(
-                        `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁`
-                    );
+                    msg.edit(`Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁`);
                     await delay(1);
                     msg.edit(
                         `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁 🥁`
@@ -257,11 +241,7 @@ class BrawlBracketHelper {
     getStatus() {
         if (this.bracketModel.matches.length === 0) {
             if (this.bracketModel.completedMatches.length === 0) return 0; // Brawl has not started
-            if (
-                this.bracketModel.completedMatches.length ===
-                this.bracketModel.competitors.length - 1
-            )
-                return 2; // Brawl is finished
+            if (this.bracketModel.completedMatches.length === this.bracketModel.competitors.length - 1) return 2; // Brawl is finished
         }
         return 1; // Brawl is in progress
     }
@@ -272,10 +252,11 @@ class BrawlBracketHelper {
         // Randomize competitors
         this.bracketModel.competitors = shuffleArray(this.bracketModel.competitors);
 
+        // Calculate error
         const competitorsSize = this.bracketModel.competitors.length;
         const idealSize = Math.pow(2, Math.ceil(Math.log2(competitorsSize)));
-
         const diff = idealSize - competitorsSize;
+
         let i = 0;
         // Normal matchmaking
         for (; i < competitorsSize - diff; i += 2) {
@@ -322,14 +303,14 @@ class BrawlBracketHelper {
                 }
             }
 
+            // Determine the winner of the match
             const currentMatch = new Match(this.bracketModel.matches.shift());
             const completedMatchSchema = await currentMatch.conductMatch(
                 this.channel,
                 this.bracketModel,
                 this.setupModel,
                 this.myUserStat
-            ); // Determine the winner of the match
-
+            );
             // Save the match result and update the bracket
             await this.bracketModel.completedMatches.push(completedMatchSchema);
 
@@ -342,10 +323,14 @@ class BrawlBracketHelper {
             } else {
                 this.bracketModel.currentMatch++;
             }
-            this.saveProgress(); // Save after every completed match
+
+            // Save progress and stats after every completed match
+            this.saveProgress();
             this.myUserStat.saveProgress();
             await delay(2);
         }
+
+        // Card Brawl finished
         await this.announceMentions();
         await this.announceWinner();
 
@@ -361,19 +346,12 @@ class BrawlBracketHelper {
     // Generate matches for the next round based on the winners of the current round
     generateNextRound() {
         // Bracket finished
-        if (
-            this.bracketModel.completedMatches.length ===
-            this.bracketModel.competitors.length - 1
-        ) {
+        if (this.bracketModel.completedMatches.length === this.bracketModel.competitors.length - 1) {
             return;
         }
 
         // Generate next round matches
-        for (
-            let i = this.bracketModel.startIndex;
-            i < this.bracketModel.completedMatches.length;
-            i += 2
-        ) {
+        for (let i = this.bracketModel.startIndex; i < this.bracketModel.completedMatches.length; i += 2) {
             const matchSchema = {
                 card1: this.bracketModel.completedMatches[i].winner,
                 card2: this.bracketModel.completedMatches[i + 1].winner,
@@ -384,19 +362,18 @@ class BrawlBracketHelper {
         this.bracketModel.startIndex = this.bracketModel.completedMatches.length;
     }
 
-    // Honoralbe mentions
+    // Honorable mentions
     async announceMentions() {
         await this.channel.send("# Honorable Mentions");
         await delay(2);
 
+        // Least votes embed
         const leastVotes = this.bracketModel.leastVotes;
         const leastID = this.setupModel.cards.get(leastVotes.card).userID;
         const leastImage = this.setupModel.cards.get(leastVotes.card).imageLink;
         const leastEmbed = new EmbedBuilder()
             .setTitle("Least Votes")
-            .setDescription(
-                `Votes: **${leastVotes.count}**\nCard: \`${leastVotes.card}\` by <@${leastID}>`
-            )
+            .setDescription(`Votes: **${leastVotes.count}**\nCard: \`${leastVotes.card}\` by <@${leastID}>`)
             .setImage(leastImage);
         await this.channel.send({
             embeds: [leastEmbed],
@@ -404,14 +381,13 @@ class BrawlBracketHelper {
         await this.myUserStat.updateMentions(leastID);
         await delay(2);
 
+        // Most votes embed
         const mostVotes = this.bracketModel.mostVotes;
         const mostID = this.setupModel.cards.get(mostVotes.card).userID;
         const mostImage = this.setupModel.cards.get(mostVotes.card).imageLink;
         const mostEmbed = new EmbedBuilder()
             .setTitle("Most Votes")
-            .setDescription(
-                `Votes: **${mostVotes.count}**\nCard: \`${mostVotes.card}\` by <@${mostID}>`
-            )
+            .setDescription(`Votes: **${mostVotes.count}**\nCard: \`${mostVotes.card}\` by <@${mostID}>`)
             .setImage(mostImage);
         await this.channel.send({
             embeds: [mostEmbed],
@@ -421,44 +397,39 @@ class BrawlBracketHelper {
     }
 
     async announceWinner() {
-        if (
-            this.bracketModel.completedMatches.length ===
-            this.bracketModel.competitors.length - 1
-        ) {
-            const winnerCard =
-                this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1]
-                    .winner;
-            const winnerID = this.setupModel.cards.get(winnerCard).userID;
+        const winnerCard = this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1].winner;
+        const winnerID = this.setupModel.cards.get(winnerCard).userID;
 
-            // Update user stats for win
-            await this.myUserStat.updateWin(winnerID);
+        // Update user stats for win
+        await this.myUserStat.updateWin(winnerID);
 
-            await this.channel.send({
-                content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
-                embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
-                allowedMentions: { parse: [] },
+        // Send winner embed
+        await this.channel.send({
+            content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
+            embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
+            allowedMentions: { parse: [] },
+        });
+
+        // Edit announcement message with image of winning card
+        const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
+        competitorsChannel.messages.fetch(this.setupModel.messageID).then((message) => {
+            const updatedEmbed = new EmbedBuilder(message.embeds[0]);
+            updatedEmbed.setColor(config.yellow);
+            updatedEmbed.setImage(this.setupModel.cards.get(winnerCard).imageLink);
+            updatedEmbed.setFooter({
+                text: "This Card Brawl has a winner!",
             });
-
-            // Edit announcement message with image of winning card
-            const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
-            competitorsChannel.messages.fetch(this.setupModel.messageID).then((message) => {
-                const updatedEmbed = new EmbedBuilder(message.embeds[0]);
-                updatedEmbed.setImage(this.setupModel.cards.get(winnerCard).imageLink);
-                updatedEmbed.setFooter({
-                    text: "This Card Brawl has a winner!",
-                });
-                message.edit({
-                    content: `The \`${this.setupModel.name}\` Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
-                    embeds: [updatedEmbed],
-                });
+            message.edit({
+                content: `The \`${this.setupModel.name}\` Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
+                embeds: [updatedEmbed],
             });
+        });
 
-            // Give winner Brawl Champion role
-            const guild = client.guilds.cache.get(config.guildID);
-            const member = guild.members.cache.get(winnerID);
-            const role = guild.roles.cache.find((r) => r.name === "Brawl Champion");
-            member.roles.add(role);
-        }
+        // Give winner Brawl Champion role
+        const guild = client.guilds.cache.get(config.guildID);
+        const member = guild.members.cache.get(winnerID);
+        const role = guild.roles.cache.find((r) => r.name === "Brawl Champion");
+        member.roles.add(role);
     }
 
     // Save the tournament progress to database
