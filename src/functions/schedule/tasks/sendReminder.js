@@ -9,8 +9,8 @@ async function reminder(data) {
     });
 
     // Delete schedule
+    const name = data.scheduleName;
     try {
-        const name = data.scheduleName;
         await ScheduleModel.deleteOne({ name }).exec();
         console.log(`[INFO] ${name} schedule deleted.`);
     } catch (error) {
