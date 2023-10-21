@@ -7,12 +7,9 @@ const {
 } = require("discord.js");
 const { formatTitle } = require("../../../functions/formatTitle");
 const { getEnterEmbed } = require("../../../functions/embeds/brawlEnter");
-const {
-    getAnnouncementEmbed,
-} = require("../../../functions/embeds/brawlAnnouncement");
+const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
+const { client, setupModelQueue } = require("../../../index");
 const config = require("../../../../config.json");
-const { client } = require("../../../index");
-const { setupModelQueue } = require("../../../index");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -30,7 +27,6 @@ module.exports = {
         const name = formatTitle(interaction.options.getString("name"));
         const channel = client.channels.cache.get(interaction.channel.id);
         const userID = interaction.user.id;
-        let message;
 
         // Find brawl setup in database
         let setupModel;
@@ -43,28 +39,24 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.log("Error retrieving Card Brawl setups:", error);
+            console.error("Error retrieving BrawlSetupModel: ", error);
             return await interaction.reply(
                 `There was an error retrieving the Card Brawl. Notifying <@${config.developerID}>.`
             );
         }
 
         // Check preconditions
-        if (setupModel.cards.size === setupModel.size) {
-            return await interaction.reply(
-                `The **${setupModel.name}** Card Brawl is full!`
-            );
+        if (!setupModel.cards.open) {
+            return await interaction.reply(`The **${setupModel.name}** Card Brawl is closed!`);
         }
 
-        // Check if user is eligible for multiple entries
+        // Developer debugging bypass
         if (userID !== config.developerID) {
-            // Debugging
+            // Check if user is eligible for multiple entries
             if (setupModel.entries.get(userID)) {
                 // Already an entry
                 if (
-                    interaction.member.roles.cache.some(
-                        (role) => role.name === "Server Subscriber"
-                    )
+                    interaction.member.roles.cache.some((role) => role.name === "Server Subscriber")
                 ) {
                     // Server subscriber gets max 2 entries
                     if (setupModel.entries.get(userID).length === 2) {
@@ -135,12 +127,13 @@ module.exports = {
         } catch (error) {
             enterEmbed.setColor(config.red);
             return await interaction.followUp({
-                content:
-                    "Confirmation not received within `1 minute`, cancelling.",
+                content: "Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }
-        message = await channel.send({
+
+        // Ask for card details
+        const message = await channel.send({
             content: `<@${userID}>, show the card you want to submit: \`kci <card code>\``,
             allowedMentions: { parse: [] },
         });
@@ -153,10 +146,10 @@ module.exports = {
         let embedMessage, botResponseEmbed, description;
         try {
             const collected = await interaction.channel.awaitMessages({
+                filter: botResponseFilter,
                 max: 1,
                 time: 60000,
                 errors: ["time"],
-                filter: botResponseFilter,
             });
 
             embedMessage = collected.first();
@@ -180,10 +173,9 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.log("Error while waiting for response:", error);
+            console.error("Error while waiting for response:", error);
             return await message.reply({
-                content:
-                    "Card details not received within `1 minute`, cancelling.",
+                content: "Card details not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }
@@ -194,9 +186,7 @@ module.exports = {
         const regex = /`([^`]+)`/;
         const match = regex.exec(botResponseEmbed.description);
         if (!match) {
-            console.log(
-                `Error finding card code between backticks. Found "${cardCode}".`
-            );
+            console.error(`Error finding card code between backticks. Found "${cardCode}".`);
             return await embedMessage.reply(
                 `Error finding card code. Found \`${cardCode}\`. Notifying <@${config.developerID}>.`
             );
@@ -215,6 +205,10 @@ module.exports = {
         // Check card requirements
         if (!description.includes(`Owned by <@${userID}>`)) {
             return await embedMessage.reply("You do not own this card.");
+        } else if (setupModel.series !== null && !description.includes(setupModel.series)) {
+            return await embedMessage.reply(
+                `This card is not from the \`${setupModel.series}\` series.`
+            );
         } else if (!description.includes(`Framed with`)) {
             return await embedMessage.reply("This card is not framed.");
         } else if (!description.includes(`Morphed by`)) {
@@ -224,9 +218,7 @@ module.exports = {
         }
 
         // Display card confirmation
-        const cardEmbed = new EmbedBuilder()
-            .setColor(botResponseEmbed.color)
-            .setImage(cardImage);
+        const cardEmbed = new EmbedBuilder().setColor(botResponseEmbed.color).setImage(cardImage);
         response = await channel.send({
             content: `<@${userID}>, is this the correct card you want to sumbit?`,
             embeds: [cardEmbed],
@@ -255,17 +247,12 @@ module.exports = {
                     // Get the most recent setupModel queue to handle concurrent saving
                     const task = async () => {
                         // Get most recent setupModel at the head of the queue
-                        const recentSetupModel = await BrawlSetupModel.findOne({
-                            name,
-                        }).exec();
+                        const recentSetupModel = await BrawlSetupModel.findOne({ name }).exec();
 
                         // Check eligibility again
-                        if (
-                            recentSetupModel.cards.size ===
-                            recentSetupModel.size
-                        ) {
+                        if (!recentSetupModel.open) {
                             throw new Error(
-                                `The **${recentSetupModel.name}** Card Brawl is full!`
+                                `The **${recentSetupModel.name}** Card Brawl is closed!`
                             );
                         }
 
@@ -276,46 +263,39 @@ module.exports = {
                         }
 
                         // Check if user is eligible for multiple entries
-                        if (userID === userID) {
-                            if (userID !== config.developerID) {
-                                // Debugging
-                                if (recentSetupModel.entries.get(userID)) {
-                                    // Already an entry
-                                    if (
-                                        interaction.member.roles.cache.some(
-                                            (role) =>
-                                                role.name ===
-                                                "Server Subscriber"
-                                        )
-                                    ) {
-                                        // Server subscriber gets max 2 entries
-                                        if (
-                                            setupModel.entries.get(userID)
-                                                .length === 2
-                                        ) {
-                                            throw new Error(
-                                                `<@${userID}>, you already entered **2 cards** for the **${setupModel.name}** Card Brawl.`
-                                            );
-                                        }
-                                    } else {
+                        if (userID !== config.developerID) {
+                            // Debugging
+                            if (recentSetupModel.entries.get(userID)) {
+                                // Already an entry
+                                if (
+                                    interaction.member.roles.cache.some(
+                                        (role) => role.name === "Server Subscriber"
+                                    )
+                                ) {
+                                    // Server subscriber gets max 2 entries
+                                    if (setupModel.entries.get(userID).length === 2) {
                                         throw new Error(
-                                            `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`
+                                            `<@${userID}>, you already entered **2 cards** for the **${setupModel.name}** Card Brawl.`
                                         );
                                     }
+                                } else {
+                                    throw new Error(
+                                        `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`
+                                    );
                                 }
                             }
                         }
 
                         // Add card to the brawl in database
-                        const imageSchema = {
-                            imageLink: cardImage,
-                            userID: userID,
-                        };
                         if (recentSetupModel.entries.get(userID)) {
                             recentSetupModel.entries.get(userID).push(cardCode);
                         } else {
                             recentSetupModel.entries.set(userID, [cardCode]);
                         }
+                        const imageSchema = {
+                            imageLink: cardImage,
+                            userID: userID,
+                        };
                         recentSetupModel.cards.set(cardCode, imageSchema);
                         await recentSetupModel.save();
 
@@ -323,7 +303,7 @@ module.exports = {
                         const updatedEmbed = new getAnnouncementEmbed(
                             recentSetupModel.name,
                             recentSetupModel.theme,
-                            recentSetupModel.size,
+                            recentSetupModel.series,
                             recentSetupModel.cards.size
                         );
                         const competitorsChannel = client.channels.cache.get(
@@ -332,25 +312,10 @@ module.exports = {
                         competitorsChannel.messages
                             .fetch(recentSetupModel.messageID)
                             .then((message) => {
-                                // Card Brawl is full
-                                if (
-                                    recentSetupModel.cards.size ===
-                                    recentSetupModel.size
-                                ) {
-                                    updatedEmbed.setColor(config.red);
-                                    updatedEmbed.setFooter({
-                                        text: "This Card Brawl is full!",
-                                    });
-                                    message.edit({
-                                        content: `The \`${recentSetupModel.name}\` Card Brawl is full! 🥊 <@&${config.competitorRole}>`,
-                                        embeds: [updatedEmbed],
-                                    });
-                                } else {
-                                    message.edit({
-                                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
-                                        embeds: [updatedEmbed],
-                                    });
-                                }
+                                message.edit({
+                                    content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
+                                    embeds: [updatedEmbed],
+                                });
                             });
                     };
                     try {
@@ -385,8 +350,7 @@ module.exports = {
         } catch (error) {
             enterEmbed.setColor(config.red);
             return await response.reply({
-                content:
-                    "Confirmation not received within `1 minute`, cancelling.",
+                content: "Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }

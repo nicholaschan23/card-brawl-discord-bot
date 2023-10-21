@@ -1,7 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const {
-    getInstructionsEmbed,
-} = require("../../../functions/embeds/brawlInstructions");
+const { getInstructionsEmbed } = require("../../../functions/embeds/brawlInstructions");
 
 module.exports = {
     category: "public/brawl",

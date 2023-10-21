@@ -1,7 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const {
-    getUserStatEmbed,
-} = require("../../../functions/embeds/brawlUserStats");
+const { getUserStatEmbed } = require("../../../functions/embeds/brawlUserStats");
 const UserStatModel = require("../../../data/schemas/userStatSchema");
 
 module.exports = {
@@ -10,9 +8,7 @@ module.exports = {
         .setName("stats")
         .setDescription("Retrieve a user's stats.")
         .addUserOption((option) =>
-            option
-                .setName("user")
-                .setDescription("User you want to get stats for.")
+            option.setName("user").setDescription("User you want to get stats for.")
         ),
     async execute(interaction) {
         const user = interaction.options.getUser("user") ?? interaction.user;
@@ -33,9 +29,7 @@ module.exports = {
             }
         } catch (error) {
             console.log("Error retrieving user stats:", error);
-            await interaction.reply(
-                `There was an error retrieving user stats.`
-            );
+            await interaction.reply(`There was an error retrieving user stats.`);
         }
     },
 };

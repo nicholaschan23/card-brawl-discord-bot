@@ -4,13 +4,11 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
-const { formatTitle } = require("../../../functions/formatTitle");
 const { createGuildEvent } = require("../../../functions/createGuildEvent");
-const {
-    getAnnouncementEmbed,
-} = require("../../../functions/embeds/brawlAnnouncement");
-const config = require("../../../../config.json");
+const { formatTitle } = require("../../../functions/formatTitle");
+const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
 const { client } = require("../../../index");
+const config = require("../../../../config.json");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -21,9 +19,7 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName("name")
-                .setDescription(
-                    "Name contestants will use to enter the card competition."
-                )
+                .setDescription("Name contestants will use to enter the card competition.")
                 .setRequired(true)
         )
         .addStringOption((option) =>
@@ -34,82 +30,58 @@ module.exports = {
                 )
                 .setRequired(true)
         )
-        .addIntegerOption((option) =>
+        .addStringOption((option) =>
             option
-                .setName("size")
+                .setName("series")
                 .setDescription(
-                    "How many cards can enter the card competition?"
+                    "Set the series the card must be from to enter the the card competition."
                 )
-                .addChoices(
-                    { name: "2", value: 2 },
-                    { name: "4", value: 4 },
-                    { name: "8", value: 8 },
-                    { name: "16", value: 16 },
-                    { name: "32", value: 32 },
-                    { name: "64", value: 64 }
-                )
-                .setRequired(true)
         ),
     async execute(interaction) {
-        if (
-            !interaction.member.roles.cache.some(
-                (role) => role.name === "Owner"
-            )
-        ) {
+        // Owner permissions
+        if (!interaction.member.roles.cache.some((role) => role.name === "Owner")) {
             return await interaction.reply({
                 content: "You do not have permission to use this command.",
                 ephemeral: true,
             });
         }
 
-        let name = formatTitle(interaction.options.getString("name"));
-        let theme = formatTitle(interaction.options.getString("theme"));
-        let size = interaction.options.getInteger("size");
+        const name = formatTitle(interaction.options.getString("name"));
+        const theme = formatTitle(interaction.options.getString("theme"));
+        const series = interaction.options.getString("series") ?? null;
 
         // Check if name already exists
         try {
             const setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (setupModel) {
-                return await interaction.reply(
-                    `Another Card Brawl already exists with this name.`
-                );
+                return await interaction.reply(`Another Card Brawl already exists with this name.`);
             }
         } catch (error) {
-            console.log("Error retrieving brawl setups:", error);
+            console.error("Error retrieving BrawlSetupModel: ", error);
             return await interaction.reply(
-                `There was an error retrieving the Card Brawl.`
+                `There was an error retrieving the Card Brawl. Notifying <@${config.developerID}>.`
             );
         }
 
-        const setupBrawlEmbed = getAnnouncementEmbed(name, theme, size, 0);
-
+        // Review create embed
+        const setupBrawlEmbed = getAnnouncementEmbed(name, theme, series, 0);
         const confirm = new ButtonBuilder()
-            .setCustomId("confirm")
+            .setCustomId("confirmCreate")
             .setLabel("Confirm")
             .setStyle(ButtonStyle.Success);
-
         const cancel = new ButtonBuilder()
-            .setCustomId("cancel")
+            .setCustomId("cancelCreate")
             .setLabel("Cancel")
             .setStyle(ButtonStyle.Danger);
-
-        // TODO: Add edit button options for changing requirements
-        // const edit = new ButtonBuilder()
-        //     .setDisabled(true)
-        //     .setCustomId("edit")
-        //     .setLabel("Edit")
-        //     .setStyle(ButtonStyle.Primary);
-
         const row = new ActionRowBuilder().addComponents(cancel, confirm);
-        // const row2 = new ActionRowBuilder().addComponents(cancel);
-
         const response = await interaction.reply({
             content: "Review your Card Brawl details.",
             embeds: [setupBrawlEmbed],
             components: [row],
         });
 
-        const collectorFilter = (i) => i.user.id === interaction.user.id; // Only user who triggered command can use the buttons
+        // Collect button response
+        const collectorFilter = (i) => i.user.id === interaction.user.id;
         try {
             const confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
@@ -117,7 +89,7 @@ module.exports = {
             });
 
             switch (confirmation.customId) {
-                case "cancel": {
+                case "cancelCreate": {
                     setupBrawlEmbed.setColor(config.red);
                     await confirmation.update({
                         embeds: [setupBrawlEmbed],
@@ -125,28 +97,36 @@ module.exports = {
                     });
                     break;
                 }
-                case "confirm": {
+                case "confirmCreate": {
+                    const setupModel = new BrawlSetupModel({
+                        name: name,
+                        theme: theme,
+                        series: series,
+                        messageID: message.id,
+                    });
+
+                    // Save BrawlSetupModel
+                    try {
+                        await setupModel.save();
+                    } catch (error) {
+                        console.error("Error saving BrawlSetupModel: ", error);
+                        setupBrawlEmbed.setColor(config.red);
+                        await confirmation.update({
+                            embeds: [setupBrawlEmbed],
+                            components: [],
+                        });
+                        return;
+                    }
+
                     // Announce brawl bracket creation for contestants to join
-                    const channel = client.channels.cache.get(
-                        config.competitorsChannelID
-                    );
+                    const channel = client.channels.cache.get(config.competitorsChannelID);
                     const message = await channel.send({
                         content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
                         embeds: [setupBrawlEmbed],
                     });
 
-                    try {
-                        const setupModel = new BrawlSetupModel({
-                            name: name,
-                            theme: theme,
-                            size: size,
-                            messageID: message.id,
-                        });
-                        createGuildEvent(setupModel);
-                        await setupModel.save();
-                    } catch (error) {
-                        console.error("Error saving brawl setup:", error);
-                    }
+                    // Create server event
+                    createGuildEvent(setupModel);
 
                     setupBrawlEmbed.setColor(config.green);
                     await confirmation.update({
@@ -154,13 +134,14 @@ module.exports = {
                         embeds: [setupBrawlEmbed],
                         components: [],
                     });
+
+                    console.log("Successfully created a Card Brawl.");
                     break;
                 }
             }
         } catch (error) {
             await interaction.followUp({
-                content:
-                    "Confirmation not received within `1 minute`, cancelling.",
+                content: "Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }

@@ -1,6 +1,7 @@
 const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
-const { formatTitle } = require("../../../functions/formatTitle");
 const { buttonPages } = require("../../../functions/pagination");
+const { formatTitle } = require("../../../functions/formatTitle");
+const config = require ("../../../../config.json")
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -11,9 +12,7 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName("name")
-                .setDescription(
-                    "Name of the Card Brawl to view competitors for."
-                )
+                .setDescription("Name of the Card Brawl to view competitors for.")
                 .setRequired(true)
         ),
     async execute(interaction) {
@@ -24,32 +23,23 @@ module.exports = {
             // Check if brawl exists
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
-                await interaction.reply(
-                    `There is no Card Brawl with that name.`
-                );
+                return await interaction.reply(`There is no Card Brawl with that name.`);
             }
         } catch (error) {
-            console.log("Error retrieving Card Brawl setup:", error);
-            await interaction.reply(
-                `There was an error retrieving the Card Brawl competitors.`
-            );
+            console.error("Error retrieving BrawlSetupModel: ", error);
+            return await interaction.reply(`There was an error retrieving the Card Brawl competitors. Notifying <@${config.developerID}>.`);
         }
 
         // Format competitors into lines
         let lines = [];
         const mapArray = Array.from(setupModel.entries.entries());
         mapArray.forEach(([key, value]) => {
-            const entries =
-                value.length == 1
-                    ? "(**1** entry)"
-                    : `(**${value.length}** entries)`;
+            const entries = value.length == 1 ? "(**1** entry)" : `(**${value.length}** entries)`;
             lines.push(`${lines.length + 1}. <@${key}> ${entries}`);
         });
 
         // Create page embeds
         let pages = [];
-        // const numPages =
-        //     lines.length % 10 === 0 ? lines.length / 10 : lines.length / 10 + 1;
         let description = "";
         for (let i = 0, lineNum = 0, pageNum = 1; i < lines.length; i++) {
             description += lines[i] + "\n";

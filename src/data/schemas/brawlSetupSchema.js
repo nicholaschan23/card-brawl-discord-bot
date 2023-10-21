@@ -5,7 +5,10 @@ const mongoose = require("mongoose");
 const setupSchema = new mongoose.Schema({
     name: String,
     theme: String,
-    size: Number,
+    series: {
+        type: String,
+        default: null,
+    },
     entries: {
         type: Map,
         of: [String],
@@ -17,7 +20,10 @@ const setupSchema = new mongoose.Schema({
         default: new Map(),
     },
     messageID: String,
-    hostID: String,
+    open: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const BrawlSetupModel = mongoose.model("brawl setup", setupSchema);

@@ -1,9 +1,4 @@
-const {
-    ButtonBuilder,
-    ButtonStyle,
-    ActionRowBuilder,
-    ComponentType,
-} = require("discord.js");
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require("discord.js");
 
 async function buttonPages(interaction, pages) {
     await interaction.deferReply();
@@ -73,8 +68,8 @@ async function buttonPages(interaction, pages) {
         await currentPage.edit({
             embeds: [pages[index]],
             components: [],
-        })
-    })
+        });
+    });
     return currentPage;
 }
 

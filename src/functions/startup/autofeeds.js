@@ -45,7 +45,7 @@ function autofeedInit(client) {
                 if (event.name.includes("Card Brawl")) {
                     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
                     karutaDrop.send({
-                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Don't want to be a <@&${config.competitorRole}>? Be a <@&${config.judgeRole}>! Get roles in <id:customize>.`,
+                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
                         allowedMentions: { parse: [] },
                     });
                     return;

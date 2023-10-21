@@ -1,10 +1,16 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require("discord.js");
-const { mergeImages } = require("../functions/editImage");
-const { shuffleArray } = require("../functions/shuffleArray");
+const {
+    EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+    ComponentType,
+} = require("discord.js");
 const { delay } = require("../functions/delay");
 const { getWinnerEmbed } = require("../functions/embeds/brawlWinner");
-const config = require("../../config.json");
+const { mergeImages } = require("../functions/editImage");
+const { shuffleArray } = require("../functions/shuffleArray");
 const { client } = require("../index");
+const config = require("../../config.json");
 const UserStatHelper = require("./UserStatHelper");
 
 class Match {
@@ -56,8 +62,14 @@ class Match {
         const imageBuffer = await mergeImages(image1, image2);
 
         // Vote buttons
-        const button1 = new ButtonBuilder().setCustomId("button1").setEmoji("1️⃣").setStyle(ButtonStyle.Primary);
-        const button2 = new ButtonBuilder().setCustomId("button2").setEmoji("2️⃣").setStyle(ButtonStyle.Primary);
+        const button1 = new ButtonBuilder()
+            .setCustomId("button1")
+            .setEmoji("1️⃣")
+            .setStyle(ButtonStyle.Primary);
+        const button2 = new ButtonBuilder()
+            .setCustomId("button2")
+            .setEmoji("2️⃣")
+            .setStyle(ButtonStyle.Primary);
         const row = new ActionRowBuilder().addComponents(button1, button2);
 
         // Display matchup as a png with reactions for the audience to vote
@@ -195,10 +207,14 @@ class Match {
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             await channel
-                .send(`Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`)
+                .send(
+                    `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁`
+                )
                 .then(async (msg) => {
                     await delay(1); // Suspense
-                    msg.edit(`Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁`);
+                    msg.edit(
+                        `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁`
+                    );
                     await delay(1);
                     msg.edit(
                         `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... 🥁 🥁 🥁`
@@ -234,6 +250,7 @@ class BrawlBracketHelper {
         this.bracketModel = bracketModel;
         this.setupModel = setupModel;
 
+        this.idealSize = Math.pow(2, Math.ceil(Math.log2(this.setupModel.cards.size)));
         this.channel = client.channels.cache.get(config.judgesChannelID);
         this.myUserStat = new UserStatHelper();
     }
@@ -241,7 +258,7 @@ class BrawlBracketHelper {
     getStatus() {
         if (this.bracketModel.matches.length === 0) {
             if (this.bracketModel.completedMatches.length === 0) return 0; // Brawl has not started
-            if (this.bracketModel.completedMatches.length === this.bracketModel.competitors.length - 1) return 2; // Brawl is finished
+            if (this.bracketModel.completedMatches.length === this.idealSize - 1) return 2; // Brawl is finished
         }
         return 1; // Brawl is in progress
     }
@@ -254,8 +271,7 @@ class BrawlBracketHelper {
 
         // Calculate error
         const competitorsSize = this.bracketModel.competitors.length;
-        const idealSize = Math.pow(2, Math.ceil(Math.log2(competitorsSize)));
-        const diff = idealSize - competitorsSize;
+        const diff = this.idealSize - competitorsSize;
 
         let i = 0;
         // Normal matchmaking
@@ -281,8 +297,7 @@ class BrawlBracketHelper {
 
     // Conduct the tournament
     async conductTournament() {
-        const idealSize = Math.pow(2, Math.ceil(Math.log2(this.setupModel.cards.size)));
-        const totalRounds = Math.log2(idealSize);
+        const totalRounds = Math.log2(this.idealSize);
 
         while (this.bracketModel.matches.length > 0) {
             // Finals announcements
@@ -346,12 +361,19 @@ class BrawlBracketHelper {
     // Generate matches for the next round based on the winners of the current round
     generateNextRound() {
         // Bracket finished
-        if (this.bracketModel.completedMatches.length === this.bracketModel.competitors.length - 1) {
+        if (
+            this.bracketModel.completedMatches.length ===
+            this.bracketModel.competitors.length - 1
+        ) {
             return;
         }
 
         // Generate next round matches
-        for (let i = this.bracketModel.startIndex; i < this.bracketModel.completedMatches.length; i += 2) {
+        for (
+            let i = this.bracketModel.startIndex;
+            i < this.bracketModel.completedMatches.length;
+            i += 2
+        ) {
             const matchSchema = {
                 card1: this.bracketModel.completedMatches[i].winner,
                 card2: this.bracketModel.completedMatches[i + 1].winner,
@@ -373,7 +395,9 @@ class BrawlBracketHelper {
         const leastImage = this.setupModel.cards.get(leastVotes.card).imageLink;
         const leastEmbed = new EmbedBuilder()
             .setTitle("Least Votes")
-            .setDescription(`Votes: **${leastVotes.count}**\nCard: \`${leastVotes.card}\` by <@${leastID}>`)
+            .setDescription(
+                `Votes: **${leastVotes.count}**\nCard: \`${leastVotes.card}\` by <@${leastID}>`
+            )
             .setImage(leastImage);
         await this.channel.send({
             embeds: [leastEmbed],
@@ -387,7 +411,9 @@ class BrawlBracketHelper {
         const mostImage = this.setupModel.cards.get(mostVotes.card).imageLink;
         const mostEmbed = new EmbedBuilder()
             .setTitle("Most Votes")
-            .setDescription(`Votes: **${mostVotes.count}**\nCard: \`${mostVotes.card}\` by <@${mostID}>`)
+            .setDescription(
+                `Votes: **${mostVotes.count}**\nCard: \`${mostVotes.card}\` by <@${mostID}>`
+            )
             .setImage(mostImage);
         await this.channel.send({
             embeds: [mostEmbed],
@@ -397,7 +423,9 @@ class BrawlBracketHelper {
     }
 
     async announceWinner() {
-        const winnerCard = this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1].winner;
+        const winnerCard =
+            this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1]
+                .winner;
         const winnerID = this.setupModel.cards.get(winnerCard).userID;
 
         // Update user stats for win
