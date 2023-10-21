@@ -4,7 +4,7 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
-const { createGuildEvent } = require("../../../functions/createGuildEvent");
+const { createGuildEvent } = require("../../../functions/schedule/scheduleEvent");
 const { formatTitle } = require("../../../functions/formatTitle");
 const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
 const { client } = require("../../../index");

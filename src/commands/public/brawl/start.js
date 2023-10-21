@@ -44,30 +44,32 @@ module.exports = {
         }
 
         // Close card competition
-        const task = async () => {
-            const recentSetupModel = await BrawlSetupModel.findOne({ name }).exec();
-            recentSetupModel.open === false;
-            await recentSetupModel.save();
+        if (setupModel.open) {
+            const task = async () => {
+                const recentSetupModel = await BrawlSetupModel.findOne({ name }).exec();
+                recentSetupModel.open === false;
+                await recentSetupModel.save();
 
-            const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
-            competitorsChannel.messages.fetch(recentSetupModel.messageID).then((message) => {
-                const updatedEmbed = new getAnnouncementEmbed(
-                    recentSetupModel.name,
-                    recentSetupModel.theme,
-                    recentSetupModel.series,
-                    recentSetupModel.cards.size
-                );
-                updatedEmbed.setColor(config.red);
-                updatedEmbed.setFooter({
-                    text: "This Card Brawl is closed!",
+                const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
+                competitorsChannel.messages.fetch(recentSetupModel.messageID).then((message) => {
+                    const updatedEmbed = new getAnnouncementEmbed(
+                        recentSetupModel.name,
+                        recentSetupModel.theme,
+                        recentSetupModel.series,
+                        recentSetupModel.cards.size
+                    );
+                    updatedEmbed.setColor(config.red);
+                    updatedEmbed.setFooter({
+                        text: "This Card Brawl is closed!",
+                    });
+                    message.edit({
+                        content: `The \`${recentSetupModel.name}\` Card Brawl is closed! 🥊 <@&${config.competitorRole}>`,
+                        embeds: [updatedEmbed],
+                    });
                 });
-                message.edit({
-                    content: `The \`${recentSetupModel.name}\` Card Brawl is closed! 🥊 <@&${config.competitorRole}>`,
-                    embeds: [updatedEmbed],
-                });
-            });
-        };
-        await setupModelQueue.enqueue(task);
+            };
+            await setupModelQueue.enqueue(task);
+        }
 
         // Resume brawl
         let bracketModel;

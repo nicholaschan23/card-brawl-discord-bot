@@ -3,16 +3,23 @@ const {
     GuildScheduledEventEntityType,
     GuildScheduledEventPrivacyLevel,
 } = require("discord.js");
-const config = require("../../config.json");
-const { client } = require("../index");
+const loadSchedules = require("./loadSchedules");
+const { client } = require("../../index");
+const config = require("../../../config.json");
+const ScheduleModel = require("../../data/schemas/scheduleSchema");
 const fs = require("fs");
 
-// async function sendReminder(name) {
-//     const brawlArena = client.channels.cache.get(config.brawlArena);
-//     await brawlArena.send(
-//         `The **${name}** Card Brawl will be starting in \`30 minutes\`! <@&${config.judgeRole}>`
-//     );
-// }
+function unixTimestampToCron(unixTimestamp) {
+    const date = new Date(unixTimestamp);
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth() + 1; // Months are 0-indexed, so add 1
+    const day = date.getUTCDate();
+    const hour = date.getUTCHours();
+    const minute = date.getUTCMinutes();
+
+    // Format the components into a cron expression
+    return `${minute} ${hour} ${day} ${month} * ${year}`;
+}
 
 function getNextSaturday() {
     const currentDate = new Date();
@@ -70,24 +77,34 @@ async function createGuildEvent(setupModel) {
     const karutaUpdate = client.channels.cache.get(config.karutaUpdateChannelID);
     const brawlAnnounce = client.channels.cache.get(config.brawlAnnouncementChannelID);
     karutaUpdate.send({
-        content: `**Participate in the community [card competition](${link}) this weekend!** Don't want to be a <@&${config.competitorRole}>? Be a <@&${config.judgeRole}>! Get roles in <id:customize>.`,
+        content: `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
         allowedMentions: { parse: [] },
     });
     brawlAnnounce.send({
-        content: `**Participate in the community [card competition](${link}) this weekend!** Don't want to be a <@&${config.competitorRole}>? Be a <@&${config.judgeRole}>! Get roles in <id:customize>.`,
+        content: `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
         allowedMentions: { parse: [] },
     });
 
-    // try {
-    //     const cronExpression = `30 ${
-    //         nextSaturday.getHours() - 1
-    //     } ${nextSaturday.getDate()} ${
-    //         nextSaturday.getMonth() + 1
-    //     } ${nextSaturday.getDay()}`;
-    //     cron.schedule(cronExpression, sendReminder(setupModel.name));
-    // } catch (error) {
-    //     console.log(`Unable to schedule reminder: ` + error);
-    // }
+    const remind = new ScheduleModel({
+        name: `Reminder ${setupModel.name}`,
+        task: "sendReminder",
+        cron: `${unixTimestampToCron(unixTimestampStart - 3600000)}`,
+        data: {
+            message: `The Card Brawl will be starting in \`1 hour\`! <@&${config.judgeRole}>`,
+            scheduleName: `Reminder ${setupModel.name}`,
+        },
+    });
+    await remind.save();
+
+    const start = new ScheduleModel({
+        name: `Start ${setupModel.name}`,
+        task: "startBrawl",
+        cron: `${unixTimestampToCron(unixTimestampStart)}`,
+        data: { name: setupModel.name, scheduleName: `Start ${setupModel.name}` },
+    });
+    await start.save();
+
+    loadSchedules();
 }
 
 module.exports = { createGuildEvent, getNextSaturday };
