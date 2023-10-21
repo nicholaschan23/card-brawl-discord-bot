@@ -220,7 +220,7 @@ module.exports = {
         // Display card confirmation
         const cardEmbed = new EmbedBuilder().setColor(botResponseEmbed.color).setImage(cardImage);
         response = await channel.send({
-            content: `<@${userID}>, is this the correct card you want to sumbit?`,
+            content: `<@${userID}>, is this the correct card you want to submit?`,
             embeds: [cardEmbed],
             components: [row],
             allowedMentions: { parse: [] },
@@ -237,7 +237,7 @@ module.exports = {
                 case "cancelEnter": {
                     cardEmbed.setColor(config.red);
                     return await confirmation.update({
-                        content: `<@${userID}>, is this the correct card you want to sumbit?`,
+                        content: `<@${userID}>, is this the correct card you want to submit?`,
                         embeds: [cardEmbed],
                         components: [],
                         allowedMentions: { parse: [] },
@@ -326,7 +326,7 @@ module.exports = {
                     } catch (error) {
                         cardEmbed.setColor(config.red);
                         await confirmation.update({
-                            content: `<@${userID}>, is this the correct card you want to sumbit?`,
+                            content: `<@${userID}>, is this the correct card you want to submit?`,
                             embeds: [cardEmbed],
                             components: [],
                             allowedMentions: { parse: [] },
@@ -339,7 +339,7 @@ module.exports = {
 
                     cardEmbed.setColor(config.green);
                     await confirmation.update({
-                        content: `<@${userID}>, is this the correct card you want to sumbit?`,
+                        content: `<@${userID}>, is this the correct card you want to submit?`,
                         embeds: [cardEmbed],
                         components: [],
                         allowedMentions: { parse: [] },
