@@ -1,4 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
+const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
 const { delay } = require("../../../functions/delay");
 const { formatTitle } = require("../../../functions/formatTitle");
 const { getIntroductionEmbed } = require("../../../functions/embeds/brawlIntroduction");

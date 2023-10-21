@@ -300,7 +300,7 @@ module.exports = {
                         await recentSetupModel.save();
 
                         // Update announcement embed
-                        const updatedEmbed = new getAnnouncementEmbed(
+                        const updatedEmbed = getAnnouncementEmbed(
                             recentSetupModel.name,
                             recentSetupModel.theme,
                             recentSetupModel.series,

@@ -1,4 +1,5 @@
 const { delay } = require("../../delay");
+const { getAnnouncementEmbed } = require("../../embeds/brawlAnnouncement");
 const { getIntroductionEmbed } = require("../../embeds/brawlIntroduction");
 const { getConclusionEmbed } = require("../../embeds/brawlConclusion");
 const { client, setupModelQueue } = require("../../../index");
@@ -19,7 +20,7 @@ async function startBrawl(data) {
 
         const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
         competitorsChannel.messages.fetch(recentSetupModel.messageID).then((message) => {
-            const updatedEmbed = new getAnnouncementEmbed(
+            const updatedEmbed = getAnnouncementEmbed(
                 recentSetupModel.name,
                 recentSetupModel.theme,
                 recentSetupModel.series,
