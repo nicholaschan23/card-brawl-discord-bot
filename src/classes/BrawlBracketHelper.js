@@ -274,21 +274,21 @@ class BrawlBracketHelper {
         const diff = this.idealSize - competitorsSize;
 
         let i = 0;
-        // Normal matchmaking
-        for (; i < competitorsSize - diff; i += 2) {
-            const matchSchema = {
-                card1: this.bracketModel.competitors[i],
-                card2: this.bracketModel.competitors[i + 1],
-                winner: null,
-            };
-            this.bracketModel.matches.push(matchSchema);
-        }
         // Free passes
-        for (; i < competitorsSize; i++) {
+        for (; i < diff; i++) {
             const matchSchema = {
                 card1: null,
                 card2: null,
                 winner: this.bracketModel.competitors[i],
+            };
+            this.bracketModel.matches.push(matchSchema);
+        }
+        // Normal matchmaking
+        for (; i < competitorsSize; i += 2) {
+            const matchSchema = {
+                card1: this.bracketModel.competitors[i],
+                card2: this.bracketModel.competitors[i + 1],
+                winner: null,
             };
             this.bracketModel.matches.push(matchSchema);
         }
