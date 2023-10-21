@@ -42,9 +42,11 @@ module.exports = {
             console.error("Error retrieving BrawlSetupModel: ", error);
             return await interaction.reply(`There was an error retrieving the Card Brawl.`);
         }
+        console.log("[BRAWL START] Found BrawlSetupModel")
 
         // Close card competition
         if (setupModel.open) {
+            console.log("[BRAWL START] Closing Card Brawl")
             const task = async () => {
                 const recentSetupModel = await BrawlSetupModel.findOne({ name }).exec();
                 recentSetupModel.open === false;
@@ -52,7 +54,7 @@ module.exports = {
 
                 const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
                 competitorsChannel.messages.fetch(recentSetupModel.messageID).then((message) => {
-                    const updatedEmbed = new getAnnouncementEmbed(
+                    const updatedEmbed = getAnnouncementEmbed(
                         recentSetupModel.name,
                         recentSetupModel.theme,
                         recentSetupModel.series,
@@ -84,7 +86,7 @@ module.exports = {
                 await bracketModel.save();
             }
         } catch (error) {
-            console.error("Error retrieving BrawlBracketModel: ", error);
+            console.error("[BRAWL START] Error retrieving BrawlBracketModel: ", error);
             return await interaction.reply("There was an error retrieving the Card Brawl bracket.");
         }
 

@@ -293,6 +293,7 @@ class BrawlBracketHelper {
             this.bracketModel.matches.push(matchSchema);
         }
         this.saveProgress();
+        console.log("[TOURNAMENT] Generated intitial bracket.")
     }
 
     // Conduct the tournament
