@@ -51,9 +51,7 @@ module.exports = {
                 break;
             }
             default: {
-                await interaction.reply(
-                    "There was no case for the subcommand. Go fix the code."
-                );
+                await interaction.reply("There was no case for the subcommand. Go fix the code.");
             }
         }
     },

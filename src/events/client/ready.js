@@ -1,4 +1,4 @@
-const { Events } = require("discord.js")
+const { Events } = require("discord.js");
 const { loadCommands } = require("../../handlers/commandHandler");
 const { client } = require("../../index");
 

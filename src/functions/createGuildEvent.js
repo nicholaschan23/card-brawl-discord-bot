@@ -17,8 +17,7 @@ const fs = require("fs");
 function getNextSaturday() {
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getUTCDay();
-    const daysUntilSaturday =
-        6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
+    const daysUntilSaturday = 6 - currentDayOfWeek + (currentDayOfWeek === 6 ? 7 : 0);
 
     const nextSaturday = new Date(currentDate);
     nextSaturday.setUTCDate(currentDate.getUTCDate() + daysUntilSaturday);
@@ -68,12 +67,8 @@ async function createGuildEvent(setupModel) {
 
     // Send scheduled event invite link
     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
-    const karutaUpdate = client.channels.cache.get(
-        config.karutaUpdateChannelID
-    );
-    const brawlAnnounce = client.channels.cache.get(
-        config.brawlAnnouncementChannelID
-    );
+    const karutaUpdate = client.channels.cache.get(config.karutaUpdateChannelID);
+    const brawlAnnounce = client.channels.cache.get(config.brawlAnnouncementChannelID);
     karutaUpdate.send({
         content: `**Participate in the community [card competition](${link}) this weekend!** Don't want to be a <@&${config.competitorRole}>? Be a <@&${config.judgeRole}>! Get roles in <id:customize>.`,
         allowedMentions: { parse: [] },

@@ -14,10 +14,11 @@ module.exports = {
     data: new SlashCommandSubcommandBuilder()
         .setName("start")
         .setDescription("Start a Card Brawl.")
-        .addStringOption((option) => option
-            .setName("name")
-            .setDescription("Name of the Card Brawl you are starting.")
-            .setRequired(true)
+        .addStringOption((option) =>
+            option
+                .setName("name")
+                .setDescription("Name of the Card Brawl you are starting.")
+                .setRequired(true)
         ),
     async execute(interaction) {
         // Owner permissions
@@ -49,24 +50,22 @@ module.exports = {
             await recentSetupModel.save();
 
             const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
-            competitorsChannel.messages
-                .fetch(recentSetupModel.messageID)
-                .then((message) => {
-                    const updatedEmbed = new getAnnouncementEmbed(
-                        recentSetupModel.name,
-                        recentSetupModel.theme,
-                        recentSetupModel.series,
-                        recentSetupModel.cards.size
-                    );
-                    updatedEmbed.setColor(config.red);
-                    updatedEmbed.setFooter({
-                        text: "This Card Brawl is closed!",
-                    });
-                    message.edit({
-                        content: `The \`${recentSetupModel.name}\` Card Brawl is closed! 🥊 <@&${config.competitorRole}>`,
-                        embeds: [updatedEmbed],
-                    });
+            competitorsChannel.messages.fetch(recentSetupModel.messageID).then((message) => {
+                const updatedEmbed = new getAnnouncementEmbed(
+                    recentSetupModel.name,
+                    recentSetupModel.theme,
+                    recentSetupModel.series,
+                    recentSetupModel.cards.size
+                );
+                updatedEmbed.setColor(config.red);
+                updatedEmbed.setFooter({
+                    text: "This Card Brawl is closed!",
                 });
+                message.edit({
+                    content: `The \`${recentSetupModel.name}\` Card Brawl is closed! 🥊 <@&${config.competitorRole}>`,
+                    embeds: [updatedEmbed],
+                });
+            });
         };
         await setupModelQueue.enqueue(task);
 
@@ -93,7 +92,9 @@ module.exports = {
 
         // Check if in progress, finished, etc.
         if (myBrawlBracket.getStatus() === 2) {
-            return await interaction.reply(`The **${setupModel.name}** Card Brawl has already finished!`);
+            return await interaction.reply(
+                `The **${setupModel.name}** Card Brawl has already finished!`
+            );
         }
         if (myBrawlBracket.getStatus() === 1) {
             await interaction.reply(`Resuming the **${setupModel.name}** Card Brawl...`);

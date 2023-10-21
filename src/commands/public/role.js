@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const add = require("./role/add");
 const remove = require("./role/remove");
 
@@ -21,10 +21,8 @@ module.exports = {
                 break;
             }
             default: {
-                await interaction.reply(
-                    "There was no case for the subcommand. Go fix the code."
-                );
+                await interaction.reply("There was no case for the subcommand. Go fix the code.");
             }
         }
-    }
+    },
 };

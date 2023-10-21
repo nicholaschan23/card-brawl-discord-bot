@@ -1,7 +1,7 @@
 const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
 const { buttonPages } = require("../../../functions/pagination");
 const { formatTitle } = require("../../../functions/formatTitle");
-const config = require ("../../../../config.json")
+const config = require("../../../../config.json");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -27,7 +27,9 @@ module.exports = {
             }
         } catch (error) {
             console.error("Error retrieving BrawlSetupModel: ", error);
-            return await interaction.reply(`There was an error retrieving the Card Brawl competitors. Notifying <@${config.developerID}>.`);
+            return await interaction.reply(
+                `There was an error retrieving the Card Brawl competitors. Notifying <@${config.developerID}>.`
+            );
         }
 
         // Format competitors into lines

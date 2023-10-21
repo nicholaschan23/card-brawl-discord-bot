@@ -6,19 +6,11 @@ function autofeedInit(client) {
     const karutaRoles = (client, config) => {
         try {
             const guild = client.guilds.cache.get(config.guildID);
-            const karutaDrop = client.channels.cache.get(
-                config.karutaDropChannelID
-            );
+            const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
 
-            const serverDrop = guild.roles.cache.find(
-                (r) => r.name === "Server Drop"
-            );
-            const wishlistDrop = guild.roles.cache.find(
-                (r) => r.name === "Wishlist Drop"
-            );
-            const eventDrop = guild.roles.cache.find(
-                (r) => r.name === "Event Drop"
-            );
+            const serverDrop = guild.roles.cache.find((r) => r.name === "Server Drop");
+            const wishlistDrop = guild.roles.cache.find((r) => r.name === "Wishlist Drop");
+            const eventDrop = guild.roles.cache.find((r) => r.name === "Event Drop");
             karutaDrop.send({
                 content: `:shinto_shrine: Want to get notified for <@&${serverDrop.id}>, <@&${wishlistDrop.id}>, or <@&${eventDrop.id}>? Use command \`/role add\`!`,
                 allowedMentions: { parse: [] },
@@ -35,9 +27,7 @@ function autofeedInit(client) {
     const brawlPromotion = async (client, config) => {
         try {
             const guild = client.guilds.cache.get(config.guildID);
-            const karutaDrop = client.channels.cache.get(
-                config.karutaDropChannelID
-            );
+            const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
 
             let events = await guild.scheduledEvents.fetch();
             events = [...events.values()];
@@ -62,9 +52,7 @@ function autofeedInit(client) {
     // Karuta help
     const karutaHelp = (client) => {
         try {
-            const karutaDrop = client.channels.cache.get(
-                config.karutaDropChannelID
-            );
+            const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
             karutaDrop.send(
                 `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
             );
@@ -79,9 +67,7 @@ function autofeedInit(client) {
     // Karuta wishlist
     const karutaWishlist = (client) => {
         try {
-            const karutaDrop = client.channels.cache.get(
-                config.karutaDropChannelID
-            );
+            const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
             karutaDrop.send(
                 `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`!`
             );

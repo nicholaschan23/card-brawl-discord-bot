@@ -23,9 +23,7 @@ module.exports = {
         const member = guild.members.cache.get(interaction.user.id);
         const role = interaction.options.getString("role");
 
-        const hasRole = interaction.member.roles.cache.some(
-            (roleName) => roleName.name === role
-        );
+        const hasRole = interaction.member.roles.cache.some((roleName) => roleName.name === role);
 
         const temp = guild.roles.cache.find((r) => r.name === role);
         if (hasRole) {

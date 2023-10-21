@@ -1,6 +1,6 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
 const { formatTitle } = require("../../../functions/formatTitle");
-const { getWinnerEmbed } = require("../../../functions/embeds/brawlWinner")
+const { getWinnerEmbed } = require("../../../functions/embeds/brawlWinner");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
 
@@ -27,9 +27,8 @@ module.exports = {
             const bracketModel = await BrawlBracketModel.findOne({ name }).exec();
             if (bracketModel) {
                 if (bracketModel.completedMatches.length === bracketModel.competitors.length - 1) {
-                    await interaction.reply({embeds: [getWinnerEmbed(bracketModel, setupModel)]})
-                }
-                else {
+                    await interaction.reply({ embeds: [getWinnerEmbed(bracketModel, setupModel)] });
+                } else {
                     await interaction.reply(`That Card Brawl has no winner yet.`);
                 }
             } else {

@@ -37,17 +37,17 @@ async function mongooseConnect() {
 }
 
 async function getConnectionStatus() {
-    switch(mongoose.connection.readyState) {
+    switch (mongoose.connection.readyState) {
         case 0:
-            return "Disconnected"
+            return "Disconnected";
         case 1:
-            return "Connected"
+            return "Connected";
         case 2:
-            return "Connecting"
+            return "Connecting";
         case 3:
-            return "Disconnecting"
+            return "Disconnecting";
         default:
-            return "Something went wrong retrieving database connection status."
+            return "Something went wrong retrieving database connection status.";
     }
 }
 
