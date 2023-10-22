@@ -304,7 +304,8 @@ module.exports = {
                             recentSetupModel.name,
                             recentSetupModel.theme,
                             recentSetupModel.series,
-                            recentSetupModel.cards.size
+                            recentSetupModel.cards.size,
+                            recentSetupModel.unixStartTime
                         );
                         const competitorsChannel = client.channels.cache.get(
                             config.competitorsChannelID

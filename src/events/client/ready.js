@@ -7,7 +7,7 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     execute() {
-        console.log(`[INFO] Client logged in as ${client.user.tag}`);
+        console.log(`[READY] Client logged in as ${client.user.tag}`);
         client.user.setActivity("in the Far Shore");
         loadCommands(client);
         loadSchedules();

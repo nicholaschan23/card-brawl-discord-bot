@@ -28,18 +28,18 @@ function getNextSaturday() {
     const nextSaturday = new Date(currentDate);
     nextSaturday.setUTCDate(currentDate.getUTCDate() + daysUntilSaturday);
     nextSaturday.setUTCHours(7 + 12, 0, 0, 0);
-    const unixTimestampStart = Math.floor(nextSaturday.getTime() / 1000) * 1000;
+    const unixStartTime = Math.floor(nextSaturday.getTime() / 1000) * 1000;
 
     nextSaturday.setUTCHours(7 + 12, 30, 0, 0);
-    const unixTimestampEnd = Math.floor(nextSaturday.getTime() / 1000) * 1000;
+    const unixEndTime = Math.floor(nextSaturday.getTime() / 1000) * 1000;
 
-    return { start: unixTimestampStart, end: unixTimestampEnd };
+    return { start: unixStartTime, end: unixEndTime };
 }
 
 async function createGuildEvent(setupModel) {
     const times = getNextSaturday();
-    const unixTimestampStart = times.start;
-    const unixTimestampEnd = times.end;
+    const unixStartTime = times.start;
+    const unixEndTime = times.end;
 
     // Load image banner
     const imageBuffer = fs.readFileSync("./images/banner.png");
@@ -49,14 +49,14 @@ async function createGuildEvent(setupModel) {
     const eventManager = new GuildScheduledEventManager(guild);
     const event = await eventManager.create({
         name: `${setupModel.name} Card Brawl`,
-        scheduledStartTime: new Date(unixTimestampStart),
-        scheduledEndTime: new Date(unixTimestampEnd),
+        scheduledStartTime: new Date(unixStartTime),
+        scheduledEndTime: new Date(unixEndTime),
         privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
         entityType: GuildScheduledEventEntityType.External,
         description: `Get ready for a showdown of creativity in our card competition live event! It's your chance to showcase your card-styling skills and vote for your favorite designs. 🥊\n\n**Event Details**:\nTheme: ${
             setupModel.theme
         }\nPrize: <@&${config.brawlChampionRole}>\nDate: <t:${
-            unixTimestampStart / 1000
+            unixStartTime / 1000
         }:F>\n\n**How to Participate**:\nBe a competitor! See the <#${
             config.competitorsChannelID
         }> channel.\nBe a judge! See the <#${
@@ -87,7 +87,7 @@ async function createGuildEvent(setupModel) {
     const remind24 = new ScheduleModel({
         name: `Reminder ${setupModel.name}`,
         task: "sendReminder",
-        cron: `${unixTimestampToCron(unixTimestampStart - 3600000 * 24)}`,
+        cron: `${unixTimestampToCron(unixStartTime - 3600000 * 24)}`,
         data: {
             message: `This is the last chance to enter the Card Brawl! Submissions close in \`1 day\`. <@&${config.competitorRole}>`,
             scheduleName: `Reminder ${setupModel.name}`,
@@ -98,7 +98,7 @@ async function createGuildEvent(setupModel) {
     const remind1 = new ScheduleModel({
         name: `Reminder ${setupModel.name}`,
         task: "sendReminder",
-        cron: `${unixTimestampToCron(unixTimestampStart - 3600000)}`,
+        cron: `${unixTimestampToCron(unixStartTime - 3600000)}`,
         data: {
             message: `The Card Brawl will be starting soon! Be back in \`1 hour\`. <@&${config.judgeRole}>`,
             scheduleName: `Reminder ${setupModel.name}`,
@@ -109,7 +109,7 @@ async function createGuildEvent(setupModel) {
     const start = new ScheduleModel({
         name: `Start ${setupModel.name}`,
         task: "startBrawl",
-        cron: `${unixTimestampToCron(unixTimestampStart)}`,
+        cron: `${unixTimestampToCron(unixStartTime)}`,
         data: { name: setupModel.name, scheduleName: `Start ${setupModel.name}` },
     });
     await start.save();

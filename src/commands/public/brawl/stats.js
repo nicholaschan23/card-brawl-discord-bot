@@ -28,7 +28,7 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.log("Error retrieving user stats:", error);
+            console.error("[ERROR] [STATS] Couldn't retrieve UserStatModel:", error);
             await interaction.reply(`There was an error retrieving user stats.`);
         }
     },

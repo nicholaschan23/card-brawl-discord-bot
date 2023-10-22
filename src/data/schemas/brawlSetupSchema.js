@@ -24,6 +24,7 @@ const setupSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    unixStartTime: String,
 });
 
 const BrawlSetupModel = mongoose.model("brawl setup", setupSchema);

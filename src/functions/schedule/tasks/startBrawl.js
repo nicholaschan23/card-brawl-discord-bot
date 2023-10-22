@@ -24,7 +24,8 @@ async function startBrawl(data) {
                 recentSetupModel.name,
                 recentSetupModel.theme,
                 recentSetupModel.series,
-                recentSetupModel.cards.size
+                recentSetupModel.cards.size,
+                recentSetupModel.unixStartTime
             );
             updatedEmbed.setColor(config.red);
             updatedEmbed.setFooter({
@@ -84,9 +85,9 @@ async function startBrawl(data) {
         try {
             const name = data.scheduleName
             await ScheduleModel.deleteOne({ name }).exec();
-            console.log(`[INFO] ${name} schedule deleted.`)
+            console.log(`[BRAWL START] ${name} schedule deleted`)
         } catch (error) {
-            console.error(`[ERROR] Deleting schedule ${name}:`, error)
+            console.error(`[ERROR] [BRAWL START] Deleting schedule ${name}:`, error)
         }
     };
 }

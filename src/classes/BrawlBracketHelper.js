@@ -9,7 +9,7 @@ const { delay } = require("../functions/delay");
 const { getWinnerEmbed } = require("../functions/embeds/brawlWinner");
 const { mergeImages } = require("../functions/editImage");
 const { shuffleArray } = require("../functions/shuffleArray");
-const { client } = require("../index");
+const { client, bracketModelQueue } = require("../index");
 const config = require("../../config.json");
 const UserStatHelper = require("./UserStatHelper");
 
@@ -21,7 +21,7 @@ class Match {
     constructor(matchSchema) {
         this.card1 = matchSchema.card1;
         this.card2 = matchSchema.card2;
-        this.winner = null;
+        this.winner = matchSchema.winner;
     }
 
     addBonusVotes(users, myUserStat) {
@@ -45,6 +45,9 @@ class Match {
     async conductMatch(channel, bracketModel, setupModel, myUserStat) {
         // Free match
         if (this.winner !== null) {
+            console.log(
+                `[BRAWL BRACKET] Round ${bracketModel.currentRound}: Match${bracketModel.currentRound} already has winner`
+            );
             const completedMatchSchema = {
                 card1: null,
                 card2: null,
@@ -52,7 +55,11 @@ class Match {
             };
             return completedMatchSchema;
         }
+        console.log(
+            `[BRAWL BRACKET] Round ${bracketModel.currentRound}: Match ${bracketModel.currentMatch} conducting match...`
+        );
 
+        await delay(2);
         const round = bracketModel.currentRound;
         const match = bracketModel.currentMatch;
 
@@ -132,8 +139,6 @@ class Match {
                     });
                 }
             }
-            console.log(users1);
-            console.log(users2);
         });
         await delay(config.voteTime);
 
@@ -272,6 +277,11 @@ class BrawlBracketHelper {
         // Calculate error
         const competitorsSize = this.bracketModel.competitors.length;
         const diff = this.idealSize - competitorsSize;
+        console.log(
+            `[BRAWL BRACKET] ${diff} free pass matches + ${
+                competitorsSize - diff
+            } normal matches = ${competitorsSize} total competitors`
+        );
 
         let i = 0;
         // Free passes
@@ -293,7 +303,7 @@ class BrawlBracketHelper {
             this.bracketModel.matches.push(matchSchema);
         }
         this.saveProgress();
-        console.log("[TOURNAMENT] Generated intitial bracket.")
+        console.log("[BRAWL BRACKET] Generated initial bracket");
     }
 
     // Conduct the tournament
@@ -343,7 +353,6 @@ class BrawlBracketHelper {
             // Save progress and stats after every completed match
             this.saveProgress();
             this.myUserStat.saveProgress();
-            await delay(2);
         }
 
         // Card Brawl finished
@@ -362,10 +371,7 @@ class BrawlBracketHelper {
     // Generate matches for the next round based on the winners of the current round
     generateNextRound() {
         // Bracket finished
-        if (
-            this.bracketModel.completedMatches.length ===
-            this.bracketModel.competitors.length - 1
-        ) {
+        if (this.bracketModel.completedMatches.length === this.idealSize - 1) {
             return;
         }
 
@@ -463,7 +469,10 @@ class BrawlBracketHelper {
 
     // Save the tournament progress to database
     async saveProgress() {
-        await this.bracketModel.save();
+        const task = async () => {
+            await this.bracketModel.save();
+        };
+        bracketModelQueue.enqueue(task);
     }
 }
 

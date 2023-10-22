@@ -15,7 +15,7 @@ function autofeedInit(client) {
                 content: `:shinto_shrine: Want to get notified for <@&${serverDrop.id}>, <@&${wishlistDrop.id}>, or <@&${eventDrop.id}>? Use command \`/role add\`!`,
                 allowedMentions: { parse: [] },
             });
-            console.log("[AUTOFEED] Sent Karuta ping roles message.")
+            console.log("[AUTOFEED] Sent Karuta ping roles message")
         } catch (error) {
             console.error("Error sending Karuta roles reminder: " + error);
         }
@@ -39,11 +39,11 @@ function autofeedInit(client) {
                         content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
                         allowedMentions: { parse: [] },
                     });
-                    console.log("[AUTOFEED] Sent Card Brawl promotion message.")
+                    console.log("[AUTOFEED] Sent Card Brawl promotion message")
                     return;
                 }
             });
-            console.log("[AUTOFEED] Didn't find active Card Brawl event for promotion message.")
+            console.log("[AUTOFEED] Didn't find active Card Brawl event for promotion message")
         } catch (error) {
             console.error("Error sending Card Brawl reminder: " + error);
         }
@@ -59,7 +59,7 @@ function autofeedInit(client) {
             karutaDrop.send(
                 `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
             );
-            console.log("[AUTOFEED] Sent Karuta help message.")
+            console.log("[AUTOFEED] Sent Karuta help message")
         } catch (error) {
             console.error("Error sending Karuta help reminder: " + error);
         }
@@ -75,7 +75,7 @@ function autofeedInit(client) {
             karutaDrop.send(
                 `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`!`
             );
-            console.log("[AUTOFEED] Sent Karuta wishlist message.")
+            console.log("[AUTOFEED] Sent Karuta wishlist message")
         } catch (error) {
             console.error("Error sending Karuta wishlist reminder: " + error);
         }

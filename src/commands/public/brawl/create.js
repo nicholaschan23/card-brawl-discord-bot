@@ -4,7 +4,7 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
-const { createGuildEvent } = require("../../../functions/schedule/scheduleEvent");
+const { getNextSaturday, createGuildEvent } = require("../../../functions/schedule/scheduleEvent");
 const { formatTitle } = require("../../../functions/formatTitle");
 const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
 const { client } = require("../../../index");
@@ -63,8 +63,12 @@ module.exports = {
             );
         }
 
+        // Get start time
+        const times = getNextSaturday();
+        const unixStartTime = Math.floor(times.start / 1000);
+        
         // Review create embed
-        const setupBrawlEmbed = getAnnouncementEmbed(name, theme, series, 0);
+        const setupBrawlEmbed = getAnnouncementEmbed(name, theme, series, 0, unixStartTime);
         const confirm = new ButtonBuilder()
             .setCustomId("confirmCreate")
             .setLabel("Confirm")
@@ -103,6 +107,7 @@ module.exports = {
                         theme: theme,
                         series: series,
                         messageID: message.id,
+                        unixStartTime: unixStartTime,
                     });
 
                     // Save BrawlSetupModel
@@ -135,7 +140,7 @@ module.exports = {
                         components: [],
                     });
 
-                    console.log("Successfully created a Card Brawl.");
+                    console.log("[BRAWL CREATE] Successfully created a Card Brawl");
                     break;
                 }
             }
