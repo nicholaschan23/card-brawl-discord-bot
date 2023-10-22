@@ -49,7 +49,7 @@ class Match {
         // Free match
         if (this.winner !== null) {
             console.log(
-                `[BRAWL BRACKET] Round ${round}: Match${match} already has winner`
+                `[BRAWL BRACKET] Round ${round}: Match ${match} already has winner`
             );
             const completedMatchSchema = {
                 card1: null,
