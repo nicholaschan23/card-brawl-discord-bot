@@ -26,7 +26,8 @@ module.exports = {
 
             const bracketModel = await BrawlBracketModel.findOne({ name }).exec();
             if (bracketModel) {
-                if (bracketModel.completedMatches.length === bracketModel.competitors.length - 1) {
+                const idealSize = Math.pow(2, Math.ceil(Math.log2(setupModel.cards.size)));
+                if (bracketModel.completedMatches.length === idealSize - 1) {
                     await interaction.reply({ embeds: [getWinnerEmbed(bracketModel, setupModel)] });
                 } else {
                     await interaction.reply(`That Card Brawl has no winner yet.`);
