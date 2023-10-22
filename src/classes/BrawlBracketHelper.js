@@ -74,7 +74,13 @@ class Match {
             .setCustomId("button2")
             .setEmoji("2️⃣")
             .setStyle(ButtonStyle.Primary);
-        const row = new ActionRowBuilder().addComponents(button1, button2);
+        const buttonTotal = new ButtonBuilder()
+            .setCustomId("buttonTotal")
+            .setEmoji("🤚")
+            .setLabel("0")
+            .setDisabled(true)
+            .setStyle(ButtonStyle.Secondary);
+        const row = new ActionRowBuilder().addComponents(button1, button2, buttonTotal);
 
         // Display matchup as a png with reactions for the audience to vote
         const message = await channel.send({
@@ -137,6 +143,7 @@ class Match {
                     });
                 }
             }
+            buttonTotal.setLabel(`${users1.size + users2.size}`);
         });
 
         // End the collector
