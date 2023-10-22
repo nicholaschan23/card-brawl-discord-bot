@@ -87,34 +87,34 @@ async function createGuildEvent(setupModel) {
     console.log("[GUILD EVENT] Sent event links");
 
     const remind24 = new ScheduleModel({
-        name: `Reminder ${setupModel.name}`,
+        name: "24H",
         task: "sendReminder",
         cron: `${unixTimestampToCron(unixStartTime - 3600000 * 24)}`,
         data: {
             message: `This is the last chance to enter the Card Brawl! Submissions close in \`1 day\`. <@&${config.competitorRole}>`,
-            scheduleName: `Reminder ${setupModel.name}`,
+            scheduleName: "24H",
         },
     });
     await remind24.save();
     console.log("[GUILD EVENT] Defined 24 hour reminder schema");
 
     const remind1 = new ScheduleModel({
-        name: `Reminder ${setupModel.name}`,
+        name: "1H",
         task: "sendReminder",
         cron: `${unixTimestampToCron(unixStartTime - 3600000)}`,
         data: {
             message: `The Card Brawl will be starting soon! Be back in \`1 hour\`. <@&${config.judgeRole}>`,
-            scheduleName: `Reminder ${setupModel.name}`,
+            scheduleName: "1H",
         },
     });
     await remind1.save();
     console.log("[GUILD EVENT] Defined 1 hour reminder schema");
 
     const start = new ScheduleModel({
-        name: `Start ${setupModel.name}`,
+        name: setupModel.name,
         task: "startBrawl",
         cron: `${unixTimestampToCron(unixStartTime)}`,
-        data: { name: setupModel.name, scheduleName: `Start ${setupModel.name}` },
+        data: { name: setupModel.name, scheduleName: setupModel.name },
     });
     await start.save();
     console.log("[GUILD EVENT] Defined start schema");
