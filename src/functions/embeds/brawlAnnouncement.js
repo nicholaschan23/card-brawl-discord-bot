@@ -22,9 +22,9 @@ function getAnnouncementEmbed(setupModel) {
     }
 
     // Description
-    const headers = `Size: **${size}** cards submitted\nTheme: **${theme}**\nSeries: **${
-        series ?? "Any"
-    }**\nDate: <t:${unixStartTime}:f>`;
+    const headers = `Size: **${size}** card${
+        size === 1 ? "" : "s"
+    } submitted\nTheme: **${theme}**\nSeries: **${series ?? "Any"}**\nDate: <t:${unixStartTime}:f>`;
 
     const requirements = `\n\n**Requirements**:${
         series ? "\n🏷️ Match series" : ""
