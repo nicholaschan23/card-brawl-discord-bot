@@ -46,7 +46,8 @@ module.exports = {
         console.log("[BRAWL START] Found BrawlSetupModel")
 
         // Close card competition
-        if (setupModel.open) {
+        if (true) {
+        // if (setupModel.open) {
             const task = async () => {
                 setupModel = await BrawlSetupModel.findOne({ name }).exec();
                 setupModel.open === false;
@@ -114,14 +115,14 @@ module.exports = {
                 content: `We'll be starting in \`5 minutes\`. <@&${config.judgeRole}>`,
                 embeds: [getIntroductionEmbed(setupModel)],
             });
-            // await message.react("🥳");
-            // await delay(297);
-            // await judgesChannel.send("# 3");
-            // await delay(1);
-            // await judgesChannel.send("# 2");
-            // await delay(1);
-            // await judgesChannel.send("# 1");
-            // await delay(1);
+            await message.react("🥳");
+            await delay(297);
+            await judgesChannel.send("# 3");
+            await delay(1);
+            await judgesChannel.send("# 2");
+            await delay(1);
+            await judgesChannel.send("# 1");
+            await delay(1);
             await judgesChannel.send("# Let the Card Brawl begin! 🥊");
             await delay(2);
             await judgesChannel.send(
