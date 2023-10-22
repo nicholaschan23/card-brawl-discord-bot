@@ -125,6 +125,7 @@ module.exports = {
                 }
             }
         } catch (error) {
+            console.error("[BRAWL ENTER]:", error);
             enterEmbed.setColor(config.red);
             return await interaction.followUp({
                 content: "Confirmation not received within `1 minute`, cancelling.",
@@ -329,6 +330,7 @@ module.exports = {
                             `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                         );
                     } catch (error) {
+                        console.error("[BRAWL ENTER]:", error);
                         cardEmbed.setColor(config.red);
                         await confirmation.update({
                             content: `<@${userID}>, is this the correct card you want to submit?`,
@@ -353,6 +355,7 @@ module.exports = {
                 }
             }
         } catch (error) {
+            console.error("[BRAWL ENTER]:", error);
             enterEmbed.setColor(config.red);
             return await response.reply({
                 content: "Confirmation not received within `1 minute`, cancelling.",
