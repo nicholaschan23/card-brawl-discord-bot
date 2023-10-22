@@ -9,6 +9,8 @@ const setupSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    messageID: String,
+    unixStartTime: String,
     entries: {
         type: Map,
         of: [String],
@@ -19,12 +21,10 @@ const setupSchema = new mongoose.Schema({
         of: imageSchema,
         default: new Map(),
     },
-    messageID: String,
     open: {
         type: Boolean,
         default: true,
     },
-    unixStartTime: String,
 });
 
 const BrawlSetupModel = mongoose.model("brawl setup", setupSchema);

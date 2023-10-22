@@ -69,14 +69,14 @@ module.exports = {
 
         // Review create embed
         const setupBrawlEmbed = getAnnouncementEmbed(name, theme, series, 0, unixStartTime);
-        const confirm = new ButtonBuilder()
-            .setCustomId("confirmCreate")
-            .setLabel("Confirm")
-            .setStyle(ButtonStyle.Success);
         const cancel = new ButtonBuilder()
             .setCustomId("cancelCreate")
             .setLabel("Cancel")
             .setStyle(ButtonStyle.Danger);
+        const confirm = new ButtonBuilder()
+            .setCustomId("confirmCreate")
+            .setLabel("Confirm")
+            .setStyle(ButtonStyle.Success);
         const row = new ActionRowBuilder().addComponents(cancel, confirm);
         const response = await interaction.reply({
             content: "Review your Card Brawl details.",
@@ -102,6 +102,13 @@ module.exports = {
                     break;
                 }
                 case "confirmCreate": {
+                    // Announce brawl bracket creation for contestants to join
+                    const channel = client.channels.cache.get(config.competitorsChannelID);
+                    const message = await channel.send({
+                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
+                        embeds: [setupBrawlEmbed],
+                    });
+
                     const setupModel = new BrawlSetupModel({
                         name: name,
                         theme: theme,
@@ -109,6 +116,7 @@ module.exports = {
                         messageID: message.id,
                         unixStartTime: unixStartTime,
                     });
+                    console.log("[BRAWL CREATE] New BrawlSetupModel defined");
 
                     // Save BrawlSetupModel
                     try {
@@ -123,13 +131,6 @@ module.exports = {
                         return;
                     }
 
-                    // Announce brawl bracket creation for contestants to join
-                    const channel = client.channels.cache.get(config.competitorsChannelID);
-                    const message = await channel.send({
-                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
-                        embeds: [setupBrawlEmbed],
-                    });
-
                     // Create server event
                     createGuildEvent(setupModel);
 
@@ -139,12 +140,12 @@ module.exports = {
                         embeds: [setupBrawlEmbed],
                         components: [],
                     });
-
                     console.log("[BRAWL CREATE] Successfully created a Card Brawl");
                     break;
                 }
             }
         } catch (error) {
+            console.error("[BRAWL CREATE]", error);
             await interaction.followUp({
                 content: "Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,

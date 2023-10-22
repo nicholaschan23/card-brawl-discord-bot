@@ -70,6 +70,7 @@ async function createGuildEvent(setupModel) {
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",
     });
+    console.log("[GUILD EVENT] Successfully created guild scheduled event");
 
     // Send scheduled event invite link
     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
@@ -83,6 +84,7 @@ async function createGuildEvent(setupModel) {
         content: `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
         allowedMentions: { parse: [] },
     });
+    console.log("[GUILD EVENT] Sent event links");
 
     const remind24 = new ScheduleModel({
         name: `Reminder ${setupModel.name}`,
@@ -94,6 +96,7 @@ async function createGuildEvent(setupModel) {
         },
     });
     await remind24.save();
+    console.log("[GUILD EVENT] Defined 24 hour reminder schema");
 
     const remind1 = new ScheduleModel({
         name: `Reminder ${setupModel.name}`,
@@ -105,6 +108,7 @@ async function createGuildEvent(setupModel) {
         },
     });
     await remind1.save();
+    console.log("[GUILD EVENT] Defined 1 hour reminder schema");
 
     const start = new ScheduleModel({
         name: `Start ${setupModel.name}`,
@@ -113,6 +117,7 @@ async function createGuildEvent(setupModel) {
         data: { name: setupModel.name, scheduleName: `Start ${setupModel.name}` },
     });
     await start.save();
+    console.log("[GUILD EVENT] Defined start schema");
 
     loadSchedules();
 }
