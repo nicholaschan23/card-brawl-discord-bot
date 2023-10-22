@@ -143,7 +143,13 @@ class Match {
                     });
                 }
             }
-            buttonTotal.setLabel(`${users1.size + users2.size}`);
+
+            // Update total votes label
+            try {
+                buttonTotal.setLabel(`${users1.size + users2.size}`);
+            } catch (error) {
+                console.error("[BRAWL BRACKET] Error setting total votes label:", error);
+            }
         });
 
         // End the collector
