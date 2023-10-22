@@ -21,7 +21,7 @@ async function mergeImages(image1Path, image2Path) {
 
         return imageBuffer;
     } catch (error) {
-        console.error("Error:", error);
+        console.error(`[MERGE IMAGES] Something went processing images:`, error);
         return null;
     }
 }

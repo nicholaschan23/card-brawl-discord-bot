@@ -39,9 +39,9 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.error("Error retrieving BrawlSetupModel: ", error);
+            console.error("[BRAWL ENTER] Error retrieving BrawlSetupModel:", error);
             return await interaction.reply(
-                `There was an error retrieving the Card Brawl. Notifying <@${config.developerID}>.`
+                `Error retrieving Card Brawl. Notifying <@${config.developerID}>.`
             );
         }
 
@@ -152,8 +152,8 @@ module.exports = {
                 errors: ["time"],
             });
 
-            embedMessage = collected.first();
             try {
+                embedMessage = collected.first();
                 botResponseEmbed = embedMessage.embeds[0].data;
                 description = botResponseEmbed.description;
                 if (
@@ -173,7 +173,6 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.error("Error while waiting for response:", error);
             return await message.reply({
                 content: "Card details not received within `1 minute`, cancelling.",
                 ephemeral: true,
@@ -186,7 +185,9 @@ module.exports = {
         const regex = /`([^`]+)`/;
         const match = regex.exec(botResponseEmbed.description);
         if (!match) {
-            console.error(`Error finding card code between backticks. Found "${cardCode}".`);
+            console.warn(
+                `[BRAWL ENTER] Coudn't finding card code between backticks. Found "${cardCode}"`
+            );
             return await embedMessage.reply(
                 `Error finding card code. Found \`${cardCode}\`. Notifying <@${config.developerID}>.`
             );

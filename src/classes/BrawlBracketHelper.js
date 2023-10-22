@@ -43,10 +43,13 @@ class Match {
     }
 
     async conductMatch(channel, bracketModel, setupModel, myUserStat) {
+        const round = bracketModel.currentRound;
+        const match = bracketModel.currentMatch;
+
         // Free match
         if (this.winner !== null) {
             console.log(
-                `[BRAWL BRACKET] Round ${bracketModel.currentRound}: Match${bracketModel.currentRound} already has winner`
+                `[BRAWL BRACKET] Round ${round}: Match${match} already has winner`
             );
             const completedMatchSchema = {
                 card1: null,
@@ -56,12 +59,10 @@ class Match {
             return completedMatchSchema;
         }
         console.log(
-            `[BRAWL BRACKET] Round ${bracketModel.currentRound}: Match ${bracketModel.currentMatch} conducting match...`
+            `[BRAWL BRACKET] Round ${round}: Match ${match} conducting match...`
         );
 
         await delay(2);
-        const round = bracketModel.currentRound;
-        const match = bracketModel.currentMatch;
 
         // Combine card images
         const image1 = setupModel.cards.get(this.card1).imageLink;
@@ -92,12 +93,13 @@ class Match {
         const users2 = new Set();
 
         // Button listeners
-        const collector1 = await message.createMessageComponentCollector({
+        const collector = await message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 30000,
+            time: config.voteTime * 1000,
         });
 
-        collector1.on("collect", async (i) => {
+        // Collect responses
+        collector.on("collect", async (i) => {
             await i.deferUpdate();
 
             // Contestants cannot vote on rounds with their card
@@ -143,7 +145,7 @@ class Match {
         await delay(config.voteTime);
 
         // End the collector
-        collector1.on("end", async (i) => {
+        collector.on("end", async (i) => {
             await message.edit({
                 content: `### Round ${round}: Match ${match}`,
                 files: [imageBuffer],

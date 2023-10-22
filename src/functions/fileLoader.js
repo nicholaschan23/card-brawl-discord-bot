@@ -20,7 +20,7 @@ async function loadFiles(dirPath) {
                     jsFiles.push(itemPath);
                 }
             } catch (error) {
-                console.error(`Error loading files from directory ${itemPath}: ${error}`);
+                console.error(`[FILE LOADER] Error load files from directory ${itemPath}`);
                 throw error;
             }
         }

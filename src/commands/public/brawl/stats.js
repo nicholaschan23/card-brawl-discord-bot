@@ -28,8 +28,10 @@ module.exports = {
                 });
             }
         } catch (error) {
-            console.error("[ERROR] [STATS] Couldn't retrieve UserStatModel:", error);
-            await interaction.reply(`There was an error retrieving user stats.`);
+            console.error("[BRAWL STATS] Error retrieving UserStatModel:", error);
+            await interaction.reply(
+                `Error retrieving user stats. Notifying <@${config.developerID}>.`
+            );
         }
     },
 };

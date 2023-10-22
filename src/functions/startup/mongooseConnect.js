@@ -10,27 +10,25 @@ async function mongooseConnect() {
     const db = mongoose.connection;
 
     db.on("error", (error) => {
-        console.error("MongoDB connection error:", error);
+        console.error("[MONGODB] MongoDB connection error:", error);
     });
 
     db.once("open", () => {
-        console.info("\n\x1b[36m%s\x1b[0m", "Mongoose connected.");
+        console.log("[MONGODB] Mongoose connected");
     });
 
     // Listen for the process exit event
     process.on("exit", () => {
         // Close the Mongoose connection before exiting
         mongoose.connection.close();
-        console.info("\n\x1b[36m%s\x1b[0m", "Mongoose connection closed.");
+        console.log("[MONGODB] Mongoose connection closed");
     });
 
     // Handle process termination signals (e.g., Ctrl+C)
     process.on("SIGINT", () => {
         // Close the Mongoose connection when the process is terminated
         mongoose.connection.close();
-        console.info(
-            "\n\x1b[36m%s\x1b[0m",
-            "Mongoose connection closed due to process termination."
+        console.log("[MONGODB] Mongoose connection closed due to process termination"
         );
         process.exit(0); // Exit the process gracefully
     });

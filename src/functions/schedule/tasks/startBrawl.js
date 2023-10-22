@@ -7,7 +7,7 @@ const config = require("../../../../config.json");
 const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
 const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
-const ScheduleModel = require("../../../data/schemas/scheduleSchema")
+const ScheduleModel = require("../../../data/schemas/scheduleSchema");
 
 async function startBrawl(data) {
     const name = data.name;
@@ -83,11 +83,11 @@ async function startBrawl(data) {
 
         // Delete schedule
         try {
-            const name = data.scheduleName
+            const name = data.scheduleName;
             await ScheduleModel.deleteOne({ name }).exec();
-            console.log(`[BRAWL START] ${name} schedule deleted`)
+            console.log(`[BRAWL START] ${name} schedule deleted`);
         } catch (error) {
-            console.error(`[ERROR] [BRAWL START] Deleting schedule ${name}:`, error)
+            console.error(`[BRAWL START] Error deleting schedule ${name}:`, error);
         }
     };
 }

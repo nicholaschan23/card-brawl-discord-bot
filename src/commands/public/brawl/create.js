@@ -57,16 +57,16 @@ module.exports = {
                 return await interaction.reply(`Another Card Brawl already exists with this name.`);
             }
         } catch (error) {
-            console.error("Error retrieving BrawlSetupModel: ", error);
+            console.error("[BRAWL CREATE] Error retrieving BrawlSetupModel:", error);
             return await interaction.reply(
-                `There was an error retrieving the Card Brawl. Notifying <@${config.developerID}>.`
+                `Error retrieving Card Brawl. Notifying <@${config.developerID}>.`
             );
         }
 
         // Get start time
         const times = getNextSaturday();
         const unixStartTime = Math.floor(times.start / 1000);
-        
+
         // Review create embed
         const setupBrawlEmbed = getAnnouncementEmbed(name, theme, series, 0, unixStartTime);
         const confirm = new ButtonBuilder()
@@ -114,7 +114,7 @@ module.exports = {
                     try {
                         await setupModel.save();
                     } catch (error) {
-                        console.error("Error saving BrawlSetupModel: ", error);
+                        console.error("[BRAWL CREATE] Error saving BrawlSetupModel:", error);
                         setupBrawlEmbed.setColor(config.red);
                         await confirmation.update({
                             embeds: [setupBrawlEmbed],

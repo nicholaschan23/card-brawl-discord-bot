@@ -35,9 +35,9 @@ module.exports = {
             interaction.client.commands.set(newCommand.data.name, newCommand);
             await interaction.reply(`Command \`${newCommand.data.name}\` was reloaded!`);
         } catch (error) {
-            console.error(error);
+            console.error("[RELOAD] Error reloading a command");
             await interaction.reply(
-                `There was an error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``
+                `Error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``
             );
         }
     },

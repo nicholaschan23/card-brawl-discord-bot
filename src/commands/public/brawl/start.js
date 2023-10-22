@@ -40,14 +40,14 @@ module.exports = {
                 return await interaction.reply(`No Card Brawl found with the name **${name}**.`);
             }
         } catch (error) {
-            console.error("Error retrieving BrawlSetupModel: ", error);
-            return await interaction.reply(`There was an error retrieving the Card Brawl.`);
+            console.error("[BRAWL START] Error retrieving BrawlSetupModel:", error);
+            return await interaction.reply(`Error retrieving Card Brawl.`);
         }
-        console.log("[BRAWL START] Found BrawlSetupModel")
+        console.log("[BRAWL START] Found BrawlSetupModel");
 
         // Close card competition
         if (true) {
-        // if (setupModel.open) {
+            // if (setupModel.open) {
             const task = async () => {
                 setupModel = await BrawlSetupModel.findOne({ name }).exec();
                 setupModel.open === false;
@@ -73,7 +73,7 @@ module.exports = {
                 });
             };
             await setupModelQueue.enqueue(task);
-            console.log("[BRAWL START] Closed Card Brawl")
+            console.log("[BRAWL START] Closed Card Brawl");
         }
 
         // Resume brawl
@@ -89,8 +89,8 @@ module.exports = {
                 await bracketModel.save();
             }
         } catch (error) {
-            console.error("[BRAWL START] Error retrieving BrawlBracketModel: ", error);
-            return await interaction.reply("There was an error retrieving the Card Brawl bracket.");
+            console.error("[BRAWL START] Error retrieving BrawlBracketModel:", error);
+            return await interaction.reply("Error retrieving the Card Brawl bracket.");
         }
 
         // Get competitors and create brawl bracket

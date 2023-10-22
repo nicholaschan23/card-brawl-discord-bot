@@ -26,9 +26,9 @@ module.exports = {
                 return await interaction.reply(`There is no Card Brawl with that name.`);
             }
         } catch (error) {
-            console.error("Error retrieving BrawlSetupModel: ", error);
+            console.error("[BRAWL VIEW] Error retrieving BrawlSetupModel:", error);
             return await interaction.reply(
-                `There was an error retrieving the Card Brawl competitors. Notifying <@${config.developerID}>.`
+                `Error retrieving the Card Brawl competitors. Notifying <@${config.developerID}>.`
             );
         }
 

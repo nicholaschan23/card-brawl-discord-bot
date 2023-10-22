@@ -1,7 +1,7 @@
 const { loadFiles } = require("../functions/fileLoader");
 
 async function loadCommands(client) {
-    console.time("Commands loaded");
+    console.time("[COMMAND HANDLER] Commands loaded");
 
     const tableArray = new Array();
     const commandFiles = await loadFiles("src/commands");
@@ -18,8 +18,7 @@ async function loadCommands(client) {
     }
 
     console.table(tableArray, ["Command", "Status"]);
-    console.info("\n\x1b[36m%s\x1b[0m", "Loaded Commands."); // Cyan
-    console.timeEnd("Commands loaded");
+    console.timeEnd("[COMMAND HANDLER] Commands loaded");
 }
 
 module.exports = { loadCommands };

@@ -35,8 +35,8 @@ module.exports = {
                 await interaction.reply(`That Card Brawl has not started yet.`);
             }
         } catch (error) {
-            console.error("[ERROR] [WINER] Couldn't retrieve BrawkBracketModel:", error);
-            await interaction.reply(`There was an error retrieving the Card Brawl winner.`);
+            console.error("[BRAWL WINNER] Error retrieving BrawkBracketModel:", error);
+            await interaction.reply(`Error retrieving the Card Brawl winner.`);
         }
     },
 };

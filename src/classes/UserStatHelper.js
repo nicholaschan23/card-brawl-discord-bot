@@ -23,7 +23,7 @@ class UserStatHelper {
             }
             return statModel;
         } catch (error) {
-            console.error("[ERROR] [USER STAT HELPER] Couldn't receive or create UserStatModel:", error);
+            console.error("[USER STAT] Error retrieving UserStatModel:", error);
             return;
         }
     }
