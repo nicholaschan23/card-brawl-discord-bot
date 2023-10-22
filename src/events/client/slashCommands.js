@@ -52,7 +52,7 @@ module.exports = {
                 await command.execute(interaction);
             } catch (error) {
                 console.error(
-                    `[SLASH COMMANDS] Error execute command ${command.data.name}:`,
+                    `[SLASH COMMANDS] Error executing command ${command.data.name}:`,
                     error
                 );
                 if (interaction.replied || interaction.deferred) {

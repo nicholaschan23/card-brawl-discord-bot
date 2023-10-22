@@ -48,9 +48,7 @@ class Match {
 
         // Free match
         if (this.winner !== null) {
-            console.log(
-                `[BRAWL BRACKET] Round ${round}: Match ${match} already has winner`
-            );
+            console.log(`[BRAWL BRACKET] Round ${round}: Match ${match} already has winner`);
             const completedMatchSchema = {
                 card1: null,
                 card2: null,
@@ -58,9 +56,7 @@ class Match {
             };
             return completedMatchSchema;
         }
-        console.log(
-            `[BRAWL BRACKET] Round ${round}: Match ${match} conducting match...`
-        );
+        console.log(`[BRAWL BRACKET] Round ${round}: Match ${match} conducting match...`);
 
         await delay(2);
 
@@ -142,7 +138,6 @@ class Match {
                 }
             }
         });
-        await delay(config.voteTime);
 
         // End the collector
         collector.on("end", async (i) => {
@@ -152,6 +147,7 @@ class Match {
                 components: [],
             });
         });
+        await delay(config.voteTime);
 
         let count1 = users1.size;
         let count2 = users2.size;
@@ -463,14 +459,22 @@ class BrawlBracketHelper {
         });
 
         // Give winner Brawl Champion role
-        const guild = client.guilds.cache.get(config.guildID);
-        const member = guild.members.cache.get(winnerID);
-        const role = guild.roles.cache.find((r) => r.name === "Brawl Champion");
-        member.roles.add(role);
+        try {
+            const guild = await client.guilds.cache.get(config.guildID);
+            const member = await guild.members.cache.get(winnerID);
+            const role = await guild.roles.cache.find((r) => r.name === "Brawl Champion");
+            if (member) {
+                member.roles.add(role);
+            } else {
+                console.warn("[BRAWL BRACKET] User not found to give Brawl Champion role");
+            }
+        } catch (error) {
+            console.error("[BRAWL BRACKET] Error giving Brawl Champion role:", error);
+        }
     }
 
     // Save the tournament progress to database
-    async saveProgress() {
+    saveProgress() {
         const task = async () => {
             await this.bracketModel.save();
         };
