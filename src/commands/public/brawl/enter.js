@@ -46,7 +46,7 @@ module.exports = {
         }
 
         // Check preconditions
-        if (!setupModel.cards.open) {
+        if (!setupModel.open) {
             return await interaction.reply(`The **${setupModel.name}** Card Brawl is closed!`);
         }
 
