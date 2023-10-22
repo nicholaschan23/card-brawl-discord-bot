@@ -36,6 +36,21 @@ module.exports = {
                 .setDescription(
                     "Set the series the card must be from to enter the the card competition."
                 )
+        )
+        .addStringOption((option) =>
+            option
+                .setName("sketch")
+                .setDescription("Set requirements of sketched cards.")
+                .addChoices(
+                    {
+                        name: "Prohibited",
+                        value: "prohibited",
+                    },
+                    {
+                        name: "Optional",
+                        value: "optional",
+                    }
+                )
         ),
     async execute(interaction) {
         // Owner permissions
@@ -49,6 +64,7 @@ module.exports = {
         const name = formatTitle(interaction.options.getString("name"));
         const theme = formatTitle(interaction.options.getString("theme"));
         const series = interaction.options.getString("series") ?? null;
+        const sketch = interaction.options.getString("sketch") ?? "prohibited";
 
         // Check if name already exists
         try {
@@ -67,8 +83,17 @@ module.exports = {
         const times = getNextSaturday();
         const unixStartTime = Math.floor(times.start / 1000);
 
+        // Temporary setup model for announcement embed
+        const temp = new BrawlSetupModel({
+            name: name,
+            theme: theme,
+            series: series,
+            sketch: sketch,
+            unixStartTime: unixStartTime,
+        });
+
         // Review create embed
-        const setupBrawlEmbed = getAnnouncementEmbed(name, theme, series, 0, unixStartTime);
+        const setupBrawlEmbed = getAnnouncementEmbed(temp);
         const cancel = new ButtonBuilder()
             .setCustomId("cancelCreate")
             .setLabel("Cancel")
@@ -109,10 +134,12 @@ module.exports = {
                         embeds: [setupBrawlEmbed],
                     });
 
+                    // Define setup model
                     const setupModel = new BrawlSetupModel({
                         name: name,
                         theme: theme,
                         series: series,
+                        sketch: sketch,
                         messageID: message.id,
                         unixStartTime: unixStartTime,
                     });

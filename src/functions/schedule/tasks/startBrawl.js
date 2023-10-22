@@ -20,13 +20,7 @@ async function startBrawl(data) {
 
         const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
         competitorsChannel.messages.fetch(recentSetupModel.messageID).then((message) => {
-            const updatedEmbed = getAnnouncementEmbed(
-                recentSetupModel.name,
-                recentSetupModel.theme,
-                recentSetupModel.series,
-                recentSetupModel.cards.size,
-                recentSetupModel.unixStartTime
-            );
+            const updatedEmbed = getAnnouncementEmbed(recentSetupModel);
             updatedEmbed.setColor(config.red);
             updatedEmbed.setFooter({
                 text: "This Card Brawl is closed!",

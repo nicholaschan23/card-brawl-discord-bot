@@ -54,13 +54,7 @@ module.exports = {
 
                 const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
                 competitorsChannel.messages.fetch(setupModel.messageID).then((message) => {
-                    const updatedEmbed = getAnnouncementEmbed(
-                        setupModel.name,
-                        setupModel.theme,
-                        setupModel.series,
-                        setupModel.cards.size,
-                        setupModel.unixStartTime
-                    );
+                    const updatedEmbed = getAnnouncementEmbed(setupModel);
                     updatedEmbed.setColor(config.red);
                     updatedEmbed.setFooter({
                         text: "This Card Brawl is closed!",

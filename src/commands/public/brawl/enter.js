@@ -167,12 +167,14 @@ module.exports = {
                     });
                 }
             } catch (error) {
+                console.error("[BRAWL ENTER]:", error);
                 return await embedMessage.reply({
                     content: `Karuta embeded message not found.`,
                     ephemeral: true,
                 });
             }
         } catch (error) {
+            console.error("[BRAWL ENTER]:", error);
             return await message.reply({
                 content: "Card details not received within `1 minute`, cancelling.",
                 ephemeral: true,
@@ -206,16 +208,23 @@ module.exports = {
         // Check card requirements
         if (!description.includes(`Owned by <@${userID}>`)) {
             return await embedMessage.reply("You do not own this card.");
-        } else if (setupModel.series !== null && !description.includes(setupModel.series)) {
+        }
+        if (setupModel.series !== null && !description.includes(setupModel.series)) {
             return await embedMessage.reply(
                 `This card is not from the \`${setupModel.series}\` series.`
             );
-        } else if (!description.includes(`Framed with`)) {
+        }
+        if (!description.includes(`Framed with`)) {
             return await embedMessage.reply("This card is not framed.");
-        } else if (!description.includes(`Morphed by`)) {
+        }
+        if (!description.includes(`Morphed by`)) {
             return await embedMessage.reply("This card is not morphed.");
-        } else if (description.includes(`Sketched by`)) {
-            return await embedMessage.reply("This card is sketched.");
+        }
+        // Check sketch
+        if (setupModel.sketch === "prohibited") {
+            if (description.includes(`Sketched by`)) {
+                return await embedMessage.reply("This card is sketched.");
+            }
         }
 
         // Display card confirmation
@@ -301,13 +310,7 @@ module.exports = {
                         await recentSetupModel.save();
 
                         // Update announcement embed
-                        const updatedEmbed = getAnnouncementEmbed(
-                            recentSetupModel.name,
-                            recentSetupModel.theme,
-                            recentSetupModel.series,
-                            recentSetupModel.cards.size,
-                            recentSetupModel.unixStartTime
-                        );
+                        const updatedEmbed = getAnnouncementEmbed(recentSetupModel);
                         const competitorsChannel = client.channels.cache.get(
                             config.competitorsChannelID
                         );

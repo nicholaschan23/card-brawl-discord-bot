@@ -9,6 +9,7 @@ const setupSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
+    sketch: String,
     messageID: String,
     unixStartTime: String,
     entries: {
