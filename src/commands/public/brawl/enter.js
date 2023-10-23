@@ -143,7 +143,10 @@ module.exports = {
         const botResponseFilter = (response) =>
             response.author.id === config.karutaID &&
             response.channelId === interaction.channel.id &&
-            response.mentions.repliedUser.id === userID;
+            response.mentions.repliedUser.id === userID &&
+            response.embeds.length > 0 &&
+            response.embeds[0].data.title === "Card Details" &&
+            response.embeds[0].data.description.includes("Dropped in server ID");
         let embedMessage, botResponseEmbed, description;
         try {
             const collected = await interaction.channel.awaitMessages({
@@ -153,20 +156,11 @@ module.exports = {
                 errors: ["time"],
             });
 
+            console.log("[BRAWL ENTER] Found Card Details embed for: " + interaction.user.tag)
             try {
                 embedMessage = collected.first();
                 botResponseEmbed = embedMessage.embeds[0].data;
                 description = botResponseEmbed.description;
-                if (
-                    botResponseEmbed.title !== "Card Details" ||
-                    (botResponseEmbed.title === "Card Details" &&
-                        !description.includes("Dropped in server ID"))
-                ) {
-                    return await embedMessage.reply({
-                        content: `Karuta embeded message found. Wrong Karuta command.`,
-                        ephemeral: true,
-                    });
-                }
             } catch (error) {
                 console.error("[BRAWL ENTER]:", error);
                 return await embedMessage.reply({
