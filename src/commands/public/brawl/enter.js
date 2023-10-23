@@ -372,5 +372,6 @@ module.exports = {
                 break;
             }
         }
+        console.log(`[BRAWL ENTER] Successfully submitted ${cardCode} to the ${setupModel.name} Card Brawl:`, interaction.user.tag);
     },
 };
