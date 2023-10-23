@@ -43,7 +43,6 @@ function autofeedInit(client) {
                     return;
                 }
             });
-            console.warn("[AUTOFEED] Didn't find active Card Brawl event for promotion reminder");
         } catch (error) {
             console.error("[AUTOFEED] Error sending Card Brawl reminder:", error);
         }
