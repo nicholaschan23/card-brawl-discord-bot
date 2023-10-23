@@ -36,7 +36,7 @@ function autofeedInit(client) {
                 if (event.name.includes("Card Brawl")) {
                     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
                     karutaDrop.send({
-                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
+                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> channel to learn more.`,
                         allowedMentions: { parse: [] },
                     });
                     console.log("[AUTOFEED] Sent Card Brawl promotion reminder");
