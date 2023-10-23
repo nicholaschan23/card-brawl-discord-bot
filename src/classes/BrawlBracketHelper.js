@@ -78,7 +78,6 @@ class Match {
             .setCustomId("buttonTotal")
             .setEmoji("🤚")
             .setLabel("0")
-            .setDisabled(true)
             .setStyle(ButtonStyle.Secondary);
         const row = new ActionRowBuilder().addComponents(button1, button2, buttonTotal);
 
@@ -147,6 +146,11 @@ class Match {
             // Update total votes label
             try {
                 buttonTotal.setLabel(`${users1.size + users2.size}`);
+                await message.edit({
+                    content: `### Round ${round}: Match ${match}`,
+                    files: [imageBuffer],
+                    components: [row],
+                });
             } catch (error) {
                 console.error("[BRAWL BRACKET] Error setting total votes label:", error);
             }
