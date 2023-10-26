@@ -23,6 +23,10 @@
     "serverSubscriberRole": "1153438565796155405",
     "brawlChampionRole": "1158801902939672668",
 
+    "serverDropRole": "1160350696923734186",
+    "wishlistDropRole": "1160350192579649626",
+    "eventDropRole": "1160350076695232593",
+
     "serverBoosterBonus": 0,
     "activeBoosterBonus": 1,
     "serverSubscriberBonus": 1,
