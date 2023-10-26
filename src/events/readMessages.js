@@ -60,20 +60,24 @@ module.exports = {
                     );
                 }
 
-                // const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
-                // const match = message.content.match(regex);
-                // if (!match) {
-                //     return;
-                // }
-                // const numCards = parseInt(match[1], 10);
+                const guild = client.guilds.cache.get(config.guildID);
+                const starflight = guild.members.cache.get("816328822051045436");
+                if (starflight.presence.status !== "online") {
+                    const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
+                    const match = message.content.match(regex);
+                    if (!match) {
+                        return;
+                    }
+                    const numCards = parseInt(match[1], 10);
 
-                // // Server drop ping
-                // if (message.content.includes("cards since this server is currently active")) {
-                //     console.log("[READ MESSAGES] Server drop ping");
-                //     await message.reply(
-                //         `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
-                //     );
-                // }
+                    // Server drop ping
+                    if (message.content.includes("cards since this server is currently active")) {
+                        console.log("[READ MESSAGES] Server drop ping");
+                        await message.reply(
+                            `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
+                        );
+                    }
+                }
             }
 
             // Drop message (kd)
