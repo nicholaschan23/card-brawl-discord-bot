@@ -1,5 +1,4 @@
 const { Events } = require("discord.js");
-const { delay } = require("../functions/delay");
 const { client } = require("../index");
 const config = require("../../config.json");
 
@@ -61,20 +60,20 @@ module.exports = {
                     );
                 }
 
-                const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
-                const match = message.content.match(regex);
-                if (!match) {
-                    return;
-                }
-                const numCards = parseInt(match[1], 10);
+                // const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
+                // const match = message.content.match(regex);
+                // if (!match) {
+                //     return;
+                // }
+                // const numCards = parseInt(match[1], 10);
 
-                // Server drop ping
-                if (message.content.includes("cards since this server is currently active")) {
-                    console.log("[READ MESSAGES] Server drop ping");
-                    await message.reply(
-                        `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
-                    );
-                }
+                // // Server drop ping
+                // if (message.content.includes("cards since this server is currently active")) {
+                //     console.log("[READ MESSAGES] Server drop ping");
+                //     await message.reply(
+                //         `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
+                //     );
+                // }
             }
 
             // Drop message (kd)
