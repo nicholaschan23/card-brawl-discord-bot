@@ -1,6 +1,6 @@
 const { Events } = require("discord.js");
 const { loadCommands } = require("../../handlers/commandHandler");
-const loadSchedules = require("../../functions/schedule/loadSchedules");
+const { loadSchedules } = require("../../functions/schedule/loadSchedules");
 const { client } = require("../../index");
 const config = require("../../../config.json")
 
