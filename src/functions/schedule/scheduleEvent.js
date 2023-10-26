@@ -3,7 +3,7 @@ const {
     GuildScheduledEventEntityType,
     GuildScheduledEventPrivacyLevel,
 } = require("discord.js");
-const loadSchedules = require("./loadSchedules");
+const { loadSchedules } = require("./loadSchedules");
 const { client } = require("../../index");
 const config = require("../../../config.json");
 const ScheduleModel = require("../../data/schemas/scheduleSchema");

@@ -18,4 +18,4 @@ async function loadSchedules() {
     }
 }
 
-module.exports = loadSchedules;
+module.exports = { loadSchedules };
