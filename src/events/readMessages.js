@@ -44,14 +44,13 @@ module.exports = {
 
                     // Event drop ping
                     collector.on("collect", (reaction) => {
-                        console.log("[READ MESSAGES] Found a Karuta event drop");
                         message.reply(
                             `<@&${config.eventDropRole}> A ${reaction.emoji.name} has dropped!`
                         );
                     });
 
                     collector.on("end", (collected) => {
-                        console.log(`[READ MESSAGES] Collected ${collected.size} reactions`);
+                        console.log(`[READ MESSAGES] Reactions collected: ${collected.size}`);
                     });
                 } catch (error) {
                     console.log(
