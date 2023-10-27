@@ -7,6 +7,8 @@ module.exports = {
     async execute(message) {
         // Karuta bot message
         if (message.author.bot && message.author.id === config.karutaID) {
+            // console.log(message);
+
             // Wishlist drop ping
             if (
                 message.content.includes("A card from your wishlist is dropping") ||
@@ -16,10 +18,14 @@ module.exports = {
                 message.channel.send(
                     `<@&${config.wishlistDropRole}> A wishlisted card is dropping!`
                 );
+                return;
             }
 
-            // Check for event drops
-            if (message.content.includes("dropping")) {
+            // Check for event drops on server and user drops
+            if (
+                message.content.includes("I'm dropping") ||
+                message.content.includes("is dropping")
+            ) {
                 // Emoji filter
                 const filter = (reaction, reactingUser) => {
                     return (
@@ -65,6 +71,7 @@ module.exports = {
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
+                        console.warn("[READ MESSAGES] Couldn't find number of cards dropped");
                         return;
                     }
                     const numCards = parseInt(match[1], 10);
@@ -77,11 +84,17 @@ module.exports = {
                         );
                     }
                 }
-            }
 
-            // Drop message (kd)
-            if (message.content.includes("is dropping")) {
-                // console.log(message);
+                // User dropped cards
+                if (message.content.includes("is dropping")) {
+                    //
+                    const user = message.mentions.users.first();
+                    if (!user) {
+                        return console.warn("[READ MESSAGES] Couldn't find user");
+                    }
+                    const userID = user.id;
+                    console.log(userID);
+                }
             }
         }
     },
