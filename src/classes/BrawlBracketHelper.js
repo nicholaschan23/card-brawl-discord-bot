@@ -77,7 +77,7 @@ class Match {
         const buttonTotal = new ButtonBuilder()
             .setCustomId("buttonTotal")
             .setEmoji("🤚")
-            .setLabel("0")
+            .setLabel("0 Voters")
             .setStyle(ButtonStyle.Secondary);
         const row = new ActionRowBuilder().addComponents(button1, button2, buttonTotal);
 
@@ -111,6 +111,7 @@ class Match {
                 });
             }
 
+            let newVote = false;
             if (i.customId === "button1") {
                 if (users2.has(i.user.id)) {
                     users2.delete(i.user.id);
@@ -120,6 +121,7 @@ class Match {
                         ephemeral: true,
                     });
                 } else {
+                    newVote = true;
                     users1.add(i.user.id);
                     i.followUp({
                         content: "You voted for Card 1!",
@@ -135,6 +137,7 @@ class Match {
                         ephemeral: true,
                     });
                 } else {
+                    newVote = true;
                     users2.add(i.user.id);
                     i.followUp({
                         content: "You voted for Card 2!",
@@ -145,22 +148,20 @@ class Match {
 
             // Update total votes label
             try {
-                buttonTotal.setLabel(`${users1.size + users2.size}`);
-                await message.edit({
-                    content: `### Round ${round}: Match ${match}`,
-                    files: [imageBuffer],
-                    components: [row],
-                });
+                if (newVote) {
+                    buttonTotal.setLabel(`${users1.size + users2.size} Voters`);
+                    await message.edit({
+                        components: [row],
+                    });
+                }
             } catch (error) {
                 console.error("[BRAWL BRACKET] Error setting total votes label:", error);
             }
         });
 
         // End the collector
-        collector.on("end", async (i) => {
+        collector.on("end", async () => {
             await message.edit({
-                content: `### Round ${round}: Match ${match}`,
-                files: [imageBuffer],
                 components: [],
             });
         });
