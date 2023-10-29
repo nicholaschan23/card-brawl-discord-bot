@@ -10,7 +10,8 @@ module.exports = {
     execute() {
         console.log(`[READY] Client logged in as ${client.user.tag}`);
         client.user.setActivity("in the Far Shore");
-        loadCommands(client);
+
+        loadCommands();
         loadSchedules();
 
         const guild = client.guilds.cache.get(config.guildID);

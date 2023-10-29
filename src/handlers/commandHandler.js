@@ -1,6 +1,7 @@
 const { loadFiles } = require("../functions/fileLoader");
+const { client } = require("../index")
 
-async function loadCommands(client) {
+async function loadCommands() {
     console.time("[COMMAND HANDLER] Commands loaded");
 
     const tableArray = new Array();

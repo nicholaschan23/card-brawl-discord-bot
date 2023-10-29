@@ -87,7 +87,6 @@ module.exports = {
 
                 // User dropped cards
                 if (message.content.includes("is dropping")) {
-                    //
                     const user = message.mentions.users.first();
                     if (!user) {
                         return console.warn("[READ MESSAGES] Couldn't find user");
