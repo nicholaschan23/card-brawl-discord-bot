@@ -67,7 +67,7 @@ module.exports = {
 
                 const guild = client.guilds.cache.get(config.guildID);
                 const starflight = await guild.members.fetch("816328822051045436");
-                if (starflight.presences.status === null) { // Offline
+                if (starflight.presence.status === null) { // Offline
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
