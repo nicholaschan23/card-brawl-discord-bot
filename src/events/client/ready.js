@@ -13,9 +13,5 @@ module.exports = {
 
         loadCommands();
         loadSchedules();
-
-        const guild = client.guilds.cache.get(config.guildID);
-        guild.members.fetch()
-        guild.roles.fetch()
     },
 };

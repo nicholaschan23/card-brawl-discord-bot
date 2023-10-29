@@ -28,7 +28,7 @@ class Match {
         let count = 0;
         users.forEach(async (reactedUser) => {
             const guild = client.guilds.cache.get(config.guildID);
-            const member = guild.members.cache.get(reactedUser);
+            const member = guild.members.fetch(reactedUser);
 
             if (member.roles.cache.some((role) => role.name === "Server Booster")) {
                 count += config.serverBoosterBonus;
@@ -479,7 +479,7 @@ class BrawlBracketHelper {
         // Give winner Brawl Champion role
         try {
             const guild = await client.guilds.cache.get(config.guildID);
-            const member = await guild.members.cache.get(winnerID);
+            const member = await guild.members.fetch(winnerID);
             const role = await guild.roles.cache.find((r) => r.name === "Brawl Champion");
             if (member) {
                 member.roles.add(role);

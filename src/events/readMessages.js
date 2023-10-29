@@ -7,14 +7,12 @@ module.exports = {
     async execute(message) {
         // Karuta bot message
         if (message.author.bot && message.author.id === config.karutaID) {
-            // console.log(message);
-
             // Wishlist drop ping
             if (
                 message.content.includes("A card from your wishlist is dropping") ||
                 message.content.includes("A wishlisted card is dropping")
             ) {
-                // console.log("[READ MESSAGES] Wishlist card dropped");
+                console.log("[READ MESSAGES] Wishlist card dropped");
                 message.channel.send(
                     `<@&${config.wishlistDropRole}> A wishlisted card is dropping!`
                 );
@@ -56,7 +54,9 @@ module.exports = {
                     });
 
                     collector.on("end", (collected) => {
-                        // console.log(`[READ MESSAGES] Reactions collected: ${collected.size}`);
+                        if (collected.size > 0) {
+                            console.log(`[READ MESSAGES] Reaction collected!`);
+                        }
                     });
                 } catch (error) {
                     console.log(
@@ -66,19 +66,19 @@ module.exports = {
                 }
 
                 const guild = client.guilds.cache.get(config.guildID);
-                const starflight = guild.members.cache.get("816328822051045436");
-                if (starflight.presence.status !== "online") {
+                const starflight = await guild.members.fetch("816328822051045436");
+                if (starflight.presences.status === null) { // Offline
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
-                        // console.warn("[READ MESSAGES] Couldn't find number of cards dropped");
+                        console.warn("[READ MESSAGES] Couldn't find number of cards dropped");
                         return;
                     }
                     const numCards = parseInt(match[1], 10);
 
                     // Server drop ping
                     if (message.content.includes("cards since this server is currently active")) {
-                        // console.log("[READ MESSAGES] Server drop ping");
+                        console.log("[READ MESSAGES] Server drop ping");
                         await message.reply(
                             `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
                         );
