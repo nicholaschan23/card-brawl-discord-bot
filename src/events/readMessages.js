@@ -14,7 +14,7 @@ module.exports = {
                 message.content.includes("A card from your wishlist is dropping") ||
                 message.content.includes("A wishlisted card is dropping")
             ) {
-                console.log("[READ MESSAGES] Wishlist card dropped");
+                // console.log("[READ MESSAGES] Wishlist card dropped");
                 message.channel.send(
                     `<@&${config.wishlistDropRole}> A wishlisted card is dropping!`
                 );
@@ -56,7 +56,7 @@ module.exports = {
                     });
 
                     collector.on("end", (collected) => {
-                        console.log(`[READ MESSAGES] Reactions collected: ${collected.size}`);
+                        // console.log(`[READ MESSAGES] Reactions collected: ${collected.size}`);
                     });
                 } catch (error) {
                     console.log(
@@ -71,14 +71,14 @@ module.exports = {
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
-                        console.warn("[READ MESSAGES] Couldn't find number of cards dropped");
+                        // console.warn("[READ MESSAGES] Couldn't find number of cards dropped");
                         return;
                     }
                     const numCards = parseInt(match[1], 10);
 
                     // Server drop ping
                     if (message.content.includes("cards since this server is currently active")) {
-                        console.log("[READ MESSAGES] Server drop ping");
+                        // console.log("[READ MESSAGES] Server drop ping");
                         await message.reply(
                             `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
                         );
