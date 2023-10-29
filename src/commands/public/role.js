@@ -21,7 +21,12 @@ module.exports = {
                 break;
             }
             default: {
-                await interaction.reply("There was no case for the subcommand. Go fix the code.");
+                console.error(
+                    `[ROLE] There was no execute case for the "${subcommand}" subcommand`
+                );
+                await interaction.reply(
+                    `There was no execute case for the \`${subcommand}\` subcommand.`
+                );
             }
         }
     },
