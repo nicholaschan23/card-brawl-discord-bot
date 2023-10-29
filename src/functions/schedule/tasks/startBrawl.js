@@ -16,7 +16,7 @@ async function startBrawl(data) {
     // Close card competition
     const task = async () => {
         setupModel = await BrawlSetupModel.findOne({ name }).exec();
-        setupModel.open === false;
+        setupModel.open = false;
         await setupModel.save();
 
         const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
