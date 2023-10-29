@@ -55,7 +55,7 @@ module.exports = {
 
                     collector.on("end", (collected) => {
                         if (collected.size > 0) {
-                            console.log(`[READ MESSAGES] Reaction collected!`);
+                            console.log(`[READ MESSAGES] Karuta drop reaction collected`);
                         }
                     });
                 } catch (error) {
@@ -67,7 +67,7 @@ module.exports = {
 
                 const guild = client.guilds.cache.get(config.guildID);
                 const starflight = await guild.members.fetch("816328822051045436");
-                if (starflight.presence.status === null) { // Offline
+                if (starflight.presence.status === null || starflight.presence.status !== "online") { // Offline
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
@@ -92,7 +92,6 @@ module.exports = {
                         return console.warn("[READ MESSAGES] Couldn't find user");
                     }
                     const userID = user.id;
-                    console.log(userID);
                 }
             }
         }
