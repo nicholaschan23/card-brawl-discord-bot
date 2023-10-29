@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const BrawlBracketModel = require("../../data/schemas/brawlBracketSchema");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");
 const start = require("./brawl/start");
@@ -19,6 +20,29 @@ module.exports = {
         .addSubcommand(stats.data)
         .addSubcommand(winner.data)
         .addSubcommand(view.data),
+    async autocomplete(interaction) {
+        const subcommand = interaction.options.getSubcommand();
+
+        // Populate choices
+        let choices;
+        switch (subcommand) {
+            case "winner": {
+                const brackets = await BrawlBracketModel.find();
+                choices = [...brackets.map((schedule) => schedule.name)];
+                break;
+            }
+            default: {
+                console.error(
+                    `[BRAWL] There was no autocomplete case for the "${subcommand}" subcommand`
+                );
+            }
+        }
+
+        // Manage autocomplete
+        const focusedValue = interaction.options.getFocused();
+        const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
+        await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+    },
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
@@ -51,7 +75,12 @@ module.exports = {
                 break;
             }
             default: {
-                await interaction.reply("There was no case for the subcommand. Go fix the code.");
+                console.error(
+                    `[BRAWL] There was no execute case for the "${subcommand}" subcommand`
+                );
+                await interaction.reply(
+                    `There was no execute case for the \`${subcommand}\` subcommand.`
+                );
             }
         }
     },

@@ -14,6 +14,7 @@ module.exports = {
                 .setName("name")
                 .setDescription("Name of the Card Brawl to look up.")
                 .setRequired(true)
+                .setAutocomplete(true)
         ),
     async execute(interaction) {
         const name = formatTitle(interaction.options.getString("name"));
