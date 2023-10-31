@@ -9,6 +9,7 @@ const config = require("../../../config.json");
 const ScheduleModel = require("../../data/schemas/scheduleSchema");
 const fs = require("fs");
 
+// Unix timestamp must be in milliseconds
 function unixTimestampToCron(unixTimestamp) {
     const date = new Date(unixTimestamp);
     const month = date.getUTCMonth() + 1; // Months are 0-indexed, so add 1
@@ -20,6 +21,7 @@ function unixTimestampToCron(unixTimestamp) {
     return `${minute} ${hour} ${day} ${month} *`;
 }
 
+// Outputs Unix timestamps in milliseconds
 function getNextSaturday() {
     const currentDate = new Date();
     const currentDayOfWeek = currentDate.getUTCDay();
@@ -38,8 +40,8 @@ function getNextSaturday() {
 
 async function createGuildEvent(setupModel) {
     const times = getNextSaturday();
-    const unixStartTime = times.start;
-    const unixEndTime = times.end;
+    const unixStartTime = times.start; // Milliseconds
+    const unixEndTime = times.end; // Milliseconds
 
     // Load image banner
     const imageBuffer = fs.readFileSync("./images/banner.png");
@@ -89,7 +91,7 @@ async function createGuildEvent(setupModel) {
     const remind24 = new ScheduleModel({
         name: "24H",
         task: "sendReminder",
-        cron: `${unixTimestampToCron(unixStartTime - 3600000 * 24)}`,
+        cron: `${unixTimestampToCron(unixStartTime - 24 * 60 * 60 * 1000)}`,
         data: {
             message: `This is the last chance to enter the Card Brawl! Submissions close in \`1 day\`. <@&${config.competitorRole}>`,
             scheduleName: "24H",
@@ -101,7 +103,7 @@ async function createGuildEvent(setupModel) {
     const remind1 = new ScheduleModel({
         name: "1H",
         task: "sendReminder",
-        cron: `${unixTimestampToCron(unixStartTime - 3600000)}`,
+        cron: `${unixTimestampToCron(unixStartTime - 60 * 60 * 1000)}`,
         data: {
             message: `The Card Brawl will be starting soon! Be back in \`1 hour\`. <@&${config.judgeRole}>`,
             scheduleName: "1H",
