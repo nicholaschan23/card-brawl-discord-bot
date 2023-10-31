@@ -20,7 +20,7 @@ module.exports = {
         ),
     async execute(interaction) {
         const guild = client.guilds.cache.get(config.guildID);
-        const member = guild.members.fetch(interaction.user.id);
+        const member = await guild.members.fetch(interaction.user.id);
         const role = interaction.options.getString("role");
         const eligibleRoles = [
             "Copper V",
