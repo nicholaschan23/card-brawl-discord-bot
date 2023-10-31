@@ -81,7 +81,7 @@ module.exports = {
 
         // Get start time
         const times = getNextSaturday();
-        const unixStartTime = Math.floor(times.start / 1000);
+        const unixStartTime = Math.floor(times.start / 1000); // Seconds
 
         // Temporary setup model for announcement embed
         const temp = new BrawlSetupModel({
