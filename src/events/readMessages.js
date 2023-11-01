@@ -43,6 +43,7 @@ module.exports = {
                 try {
                     const collector = message.createReactionCollector({
                         filter,
+                        max: 1,
                         time: 6 * 1000,
                     });
 
