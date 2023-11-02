@@ -51,11 +51,6 @@ const statsSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-
-    chatPoints: {
-        type: Number,
-        default: 0,
-    },
 });
 
 const UserStatModel = mongoose.model("user stats", statsSchema);
