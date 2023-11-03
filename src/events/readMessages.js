@@ -127,6 +127,7 @@ module.exports = {
                             `<@${userID}>, you received a ${config.emojiToken} **Token**!`
                         );
                         uim.tokenCounter++;
+                        uim.lastUnixTime = currentUnixTime;
                         console.log(`[INVENTORY] Token counter ${uim.tokenCounter}: ${userID}`);
 
                         if (uim.tokenCounter === 5) {
