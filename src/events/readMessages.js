@@ -87,49 +87,61 @@ module.exports = {
                         );
                     }
                 }
+            }
+        }
 
-                // User dropped cards
-                if (message.content.includes("is dropping")) {
-                    const user = message.mentions.users.first();
-                    if (!user) {
-                        return console.warn("[READ MESSAGES] Couldn't find user");
+        if (
+            (message.author.bot && message.author.id === config.karutaID) ||
+            message.author.id === config.sofiID ||
+            message.author.id === config.tofuID ||
+            message.author.id === config.gachaponID
+        ) {
+            // User dropped cards
+            if (
+                message.content.includes("is dropping") ||
+                message.content.includes("is summoning")
+            ) {
+                const user = message.mentions.users.first();
+                if (!user) {
+                    return console.warn("[READ MESSAGES] Couldn't find user");
+                }
+                const userID = user.id;
+
+                const currentUnixTime = Math.floor(Date.now() / 1000);
+                try {
+                    const uim = await UserInventoryModel.findOne({ userID }).exec();
+                    // Inventory doesn't exist, create one
+                    if (!uim) {
+                        console.log(`[INVENTORY] Inventory created: ${userID}`);
+                        const model = new UserInventoryModel({
+                            userID: userID,
+                            lastUnixTime: currentUnixTime,
+                            tokenCounter: 1,
+                        });
+                        return model.save();
                     }
-                    const userID = user.id;
 
-                    const currentUnixTime = Math.floor(Date.now() / 1000);
-                    try {
-                        const uim = await UserInventoryModel.findOne({ userID }).exec();
-                        // Inventory doesn't exist, create one
-                        if (!uim) {
-                            console.log(`[INVENTORY] Inventory created: ${userID}`)
-                            const model = new UserInventoryModel({
-                                userID: userID,
-                                lastUnixTime: currentUnixTime,
-                                tokenCounter: 1,
-                            });
-                            return model.save();
+                    // Inventory exists, check cooldown
+                    if (uim.lastUnixTime + 30 * 60 <= currentUnixTime) {
+                        message.reply(
+                            `<@${userID}>, you received a ${config.emojiToken} **Token**!`
+                        );
+                        uim.tokenCounter++;
+                        console.log(`[INVENTORY] Token counter ${uim.tokenCounter}: ${userID}`);
+
+                        if (uim.tokenCounter === 5) {
+                            console.log(`[INVENTORY] Token received: ${userID}`);
+                            uim.tokenCounter = 0;
+                            uim.numTokens++;
                         }
 
-                        // Inventory exists, check cooldown
-                        if (uim.lastUnixTime + 30 * 60 <= currentUnixTime) {
-                            message.reply(`<@${userID}>, you received a ${config.emojiToken} **Token**!`);
-                            uim.counter++;
-                            console.log(`[INVENTORY] Token counter ${uim.counter}: ${userID}`)
-                            
-                            if (uim.counter === 5) {
-                                console.log(`[INVENTORY] Token received: ${userID}`)
-                                uim.counter = 0;
-                                uim.numTokens++;
-                            }
-
-                            const task = () => {
-                                uim.save();
-                            };
-                            client.inventoryQueue.enqueue(task);
-                        }
-                    } catch (error) {
-                        console.error("[INVENTORY]", error);
+                        const task = () => {
+                            uim.save();
+                        };
+                        client.inventoryQueue.enqueue(task);
                     }
+                } catch (error) {
+                    console.error("[INVENTORY]", error);
                 }
             }
         }
