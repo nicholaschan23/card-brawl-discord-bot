@@ -122,7 +122,7 @@ module.exports = {
                     }
 
                     // Inventory exists, check cooldown
-                    if (uim.lastUnixTime + 30 * 60 <= currentUnixTime) {
+                    if (currentUnixTime <= uim.lastUnixTime + 30 * 60) {
                         message.reply(
                             `<@${userID}>, you received a ${config.emojiToken} **Token**!`
                         );
