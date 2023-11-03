@@ -123,9 +123,6 @@ module.exports = {
 
                     // Inventory exists, check cooldown
                     if (currentUnixTime >= uim.lastUnixTime + 30 * 60) {
-                        message.reply(
-                            `<@${userID}>, you received a ${config.emojiToken} **Token**!`
-                        );
                         uim.tokenCounter++;
                         uim.lastUnixTime = currentUnixTime;
                         console.log(`[INVENTORY] Token counter ${uim.tokenCounter}: ${userID}`);
@@ -134,6 +131,9 @@ module.exports = {
                             console.log(`[INVENTORY] Token received: ${userID}`);
                             uim.tokenCounter = 0;
                             uim.numTokens++;
+                            await message.channel.send(
+                                `<@${userID}>, you received a ${config.emojiToken} **Token**!`
+                            );
                         }
 
                         const task = () => {
