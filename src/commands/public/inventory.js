@@ -31,7 +31,7 @@ module.exports = {
                     });
                 }
                 // Private inventory
-                if (!inventoryModel.private) {
+                if (inventoryModel.private) {
                     return await interaction.reply({
                         embeds: getInventoryEmbed(inventoryModel),
                         allowedMentions: { parse: [] },
@@ -46,7 +46,7 @@ module.exports = {
                     });
                 }
                 // Private inventory
-                if (!inventoryModel.private) {
+                if (inventoryModel.private) {
                     return await interaction.reply({
                         content: `<@${userID}>'s inventory is private.`,
                         allowedMentions: { parse: [] },
@@ -54,7 +54,7 @@ module.exports = {
                 }
             }
             await interaction.reply({
-                embeds: getInventoryEmbed(inventoryModel),
+                embeds: [getInventoryEmbed(inventoryModel)],
             });
         } catch (error) {
             console.error("[INVENTORY] Error retrieving UserInventoryModel:", error);

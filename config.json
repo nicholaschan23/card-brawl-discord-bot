@@ -7,21 +7,25 @@
     "globalCooldown": 5,
     "voteTime": 30,
 
+    "karutaUpdateChannelID": "1157474189024972860",
     "karutaDropChannelID": "768727462221578260",
+
+    "giveawayChannelID": "1117827373325369384",
+    "giveawayClaimChannelID": "1153087079736168478",
+
+    "brawlInfoChannelID": "1153360255158321162",
+    "brawlAnnouncementChannelID": "1157476974671958016",
 
     "competitorsChannelID": "1152363749966102559",
     "judgesChannelID": "1152352856247119953",
 
-    "brawlInfoChannelID": "1153360255158321162",
-    "karutaUpdateChannelID": "1157474189024972860",
-    "brawlAnnouncementChannelID": "1157476974671958016",
-
     "judgeRole": "1143997170731729046",
     "competitorRole": "1157371773009006703",
+    "brawlChampionRole": "1158801902939672668",
+
     "serverBoosterRole": "814708993393426482",
     "activeBoosterRole": "776543515735883828",
     "serverSubscriberRole": "1153438565796155405",
-    "brawlChampionRole": "1158801902939672668",
 
     "serverDropRole": "1160350696923734186",
     "wishlistDropRole": "1160350192579649626",
@@ -30,6 +34,13 @@
     "serverBoosterBonus": 0,
     "activeBoosterBonus": 1,
     "serverSubscriberBonus": 1,
+
+    "everyoneGiveawayCap": 10,
+    "serverBoosterGiveawayBonus": 2,
+    "activeBoosterGiveawayBonus": 5,
+    "serverSubscriberGiveawayBonus": 10,
+
+    "emojiToken": "<:Token:1169794021435117640>",
 
     "blue": "#7289da",
     "green": "#43b581",

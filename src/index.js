@@ -33,6 +33,8 @@ const TaskQueue = require("./classes/TaskQueue");
 const bracketModelQueue = new TaskQueue();
 const setupModelQueue = new TaskQueue();
 const userStatQueue = new TaskQueue();
+client.giveawayQueue = new TaskQueue();
+client.inventoryQueue = new TaskQueue();
 
 client.events = new Collection();
 client.cooldowns = new Collection();

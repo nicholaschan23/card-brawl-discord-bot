@@ -1,6 +1,7 @@
 const { Events } = require("discord.js");
 const { client } = require("../index");
 const config = require("../../config.json");
+const UserInventoryModel = require("../data/schemas/userInventorySchema");
 
 module.exports = {
     name: Events.MessageCreate,
@@ -94,6 +95,41 @@ module.exports = {
                         return console.warn("[READ MESSAGES] Couldn't find user");
                     }
                     const userID = user.id;
+
+                    const currentUnixTime = Math.floor(Date.now() / 1000);
+                    try {
+                        const uim = await UserInventoryModel.findOne({ userID }).exec();
+                        // Inventory doesn't exist, create one
+                        if (!uim) {
+                            console.log(`[INVENTORY] Inventory created: ${userID}`)
+                            const model = new UserInventoryModel({
+                                userID: userID,
+                                lastUnixTime: currentUnixTime,
+                                tokenCounter: 1,
+                            });
+                            return model.save();
+                        }
+
+                        // Inventory exists, check cooldown
+                        if (uim.lastUnixTime + 30 * 60 <= currentUnixTime) {
+                            message.reply(`<@${userID}>, you received a ${config.emojiToken} **Token**!`);
+                            uim.counter++;
+                            console.log(`[INVENTORY] Token counter ${uim.counter}: ${userID}`)
+                            
+                            if (uim.counter === 5) {
+                                console.log(`[INVENTORY] Token received: ${userID}`)
+                                uim.counter = 0;
+                                uim.numTokens++;
+                            }
+
+                            const task = () => {
+                                uim.save();
+                            };
+                            client.inventoryQueue.enqueue(task);
+                        }
+                    } catch (error) {
+                        console.error("[INVENTORY]", error);
+                    }
                 }
             }
         }
