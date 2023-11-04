@@ -1,19 +1,11 @@
-const { SlashCommandSubcommandBuilder, PermissionsBitField } = require("discord.js");
-const { client } = require("../../../index");
+const { SlashCommandSubcommandBuilder } = require("discord.js");
 const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/channel",
     data: new SlashCommandSubcommandBuilder()
         .setName("lock")
-        .setDescription("Lock a channel.")
-        .addStringOption((option) =>
-            option
-                .setName("channel")
-                .setDescription("Channel you want to lock.")
-                .addChoices({ name: "Drop Party", value: "1153101919179513980" })
-                .setRequired(true)
-        )
+        .setDescription("Lock this channel.")
         .addUserOption((option) =>
             option
                 .setName("user")
@@ -21,10 +13,8 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        // Get input
-        const channelID = interaction.options.getString("channel");
-        const channel = client.channels.cache.get(channelID);
         const user = interaction.options.getUser("user");
+        const channel = interaction.channel;
 
         // Edits overwrites to disallow everyone to send messages
         channel.permissionOverwrites.edit(config.guildID, { SendMessages: false });

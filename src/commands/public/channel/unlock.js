@@ -1,31 +1,21 @@
-const { SlashCommandSubcommandBuilder, PermissionsBitField } = require("discord.js");
-const { client } = require("../../../index");
+const { SlashCommandSubcommandBuilder } = require("discord.js");
 const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/channel",
     data: new SlashCommandSubcommandBuilder()
         .setName("unlock")
-        .setDescription("Unlock a channel.")
-        .addStringOption((option) =>
-            option
-                .setName("channel")
-                .setDescription("Channel you want to unlock.")
-                .addChoices({ name: "Drop Party", value: "1153101919179513980" })
-                .setRequired(true)
-        )
+        .setDescription("Unlock this channel.")
         .addUserOption((option) =>
             option
                 .setName("user")
                 .setDescription(
-                    "User that previously hosted the drop party."
+                    "User that just hosted the drop party."
                 )
                 .setRequired(true)
         ),
     async execute(interaction) {
-        // Get input
-        const channelID = interaction.options.getString("channel");
-        const channel = client.channels.cache.get(channelID);
+        const channel = interaction.channel;
         const user = interaction.options.getUser("user");
 
         // Edits overwrites to disallow everyone to send messages
@@ -33,7 +23,7 @@ module.exports = {
         channel.permissionOverwrites.delete(user.id);
 
         return await interaction.reply({
-            content: `Unlocked ${channel}. Channel permissions updated for <@${user.id}>.`,
+            content: `Unlocked ${channel}. Channel permissions reset for <@${user.id}>.`,
             allowedMentions: { parse: [] },
         });
     },
