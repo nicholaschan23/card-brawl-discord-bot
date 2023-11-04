@@ -105,6 +105,9 @@ module.exports = {
                 if (!user) {
                     return console.warn("[READ MESSAGES] Couldn't find user");
                 }
+                if (user.bot) {
+                    return;
+                }
                 const userID = user.id;
 
                 const currentUnixTime = Math.floor(Date.now() / 1000);
