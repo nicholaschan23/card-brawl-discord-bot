@@ -17,10 +17,10 @@ module.exports = {
         const channel = interaction.channel;
 
         // Edits overwrites to disallow everyone to send messages
-        channel.permissionOverwrites.edit(config.guildID, { SendMessages: false });
+        await channel.permissionOverwrites.edit(config.guildID, { SendMessages: false });
 
         // Edits overwrites to allow a user to send messages
-        channel.permissionOverwrites.edit(user.id, { SendMessages: true });
+        await channel.permissionOverwrites.edit(user.id, { SendMessages: true });
 
         return await interaction.reply({
             content: `Locked ${channel}. <@${user.id}> is allowed to send messages.`,

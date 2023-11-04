@@ -9,9 +9,7 @@ module.exports = {
         .addUserOption((option) =>
             option
                 .setName("user")
-                .setDescription(
-                    "User that just hosted the drop party."
-                )
+                .setDescription("User that just hosted the drop party.")
                 .setRequired(true)
         ),
     async execute(interaction) {
@@ -19,8 +17,10 @@ module.exports = {
         const user = interaction.options.getUser("user");
 
         // Edits overwrites to disallow everyone to send messages
-        channel.permissionOverwrites.edit(config.guildID, { SendMessages: true });
-        channel.permissionOverwrites.delete(user.id);
+        await channel.permissionOverwrites.edit(config.guildID, { SendMessages: true });
+
+        // Edits overwrites to reset user channel permissions
+        await channel.permissionOverwrites.delete(user.id);
 
         return await interaction.reply({
             content: `Unlocked ${channel}. Channel permissions reset for <@${user.id}>.`,
