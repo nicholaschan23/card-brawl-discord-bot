@@ -76,7 +76,6 @@ class Match {
             .setStyle(ButtonStyle.Primary);
         const buttonTotal = new ButtonBuilder()
             .setCustomId("buttonTotal")
-            .setEmoji("🤚")
             .setLabel("0 Voters")
             .setStyle(ButtonStyle.Secondary);
         const row = new ActionRowBuilder().addComponents(button1, button2, buttonTotal);
