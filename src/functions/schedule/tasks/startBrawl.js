@@ -66,7 +66,7 @@ async function startBrawl(data) {
         return;
     }
     if (myBrawlBracket.getStatus() === 1) {
-        await judgesChannel.send(`Resuming the **${setupModel.name}** Card Brawl...`);
+        await judgesChannel.send(`An unexpected crash occured. Resuming the **${setupModel.name}** Card Brawl...`);
     } else if (myBrawlBracket.getStatus() === 0) {
         // Get competitors and generate brawl bracket
         await myBrawlBracket.generateInitialBracket();
