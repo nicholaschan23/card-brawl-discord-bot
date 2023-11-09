@@ -14,8 +14,45 @@ const config = require("../../../../config.json");
 const color = require("../../../color/color-config.json");
 const UserInventoryModel = require("../../../inventory/schemas/userInventorySchema");
 
-const colors = ["Pink", "Purple", "Deep Purple", "Blue", "Light Blue", "Cyan", "Teal", "Green"];
+const colors = [
+    "Orange",
+    "Deep Orange",
+    "Red",
+    "Pink",
+    "Purple",
+    "Deep Purple",
+    "Blue",
+    "Light Blue",
+    "Cyan",
+    "Teal",
+    "Green",
+];
+const neonColors = [
+    "Neon Orange",
+    "Neon Deep Orange",
+    "Neon Red",
+    "Neon Pink",
+    "Neon Purple",
+    "Neon Deep Purple",
+    "Neon Blue",
+    "Neon Light Blue",
+    "Neon Cyan",
+    "Neon Teal",
+    "Neon Green",
+];
 const colorSelect = [
+    {
+        label: "Orange",
+        value: color.orange,
+    },
+    {
+        label: "Deep Orange",
+        value: color.deepOrange,
+    },
+    {
+        label: "Red",
+        value: color.red,
+    },
     {
         label: "Pink",
         value: color.pink,
@@ -53,9 +90,60 @@ const colorSelect = [
         value: color.green,
     },
 ];
+const neonColorSelect = [
+    {
+        label: "Neon Orange",
+        value: color.neonOrange,
+    },
+    {
+        label: "Neon Deep Orange",
+        value: color.neonDeepOrange,
+    },
+    {
+        label: "Neon Red",
+        value: color.neonRed,
+    },
+    {
+        label: "Neon Pink",
+        value: color.neonPink,
+    },
+    {
+        label: "Neon Purple",
+        value: color.neonPurple,
+    },
+    {
+        label: "Neon Deep Purple",
+        value: color.neonDeepPurple,
+    },
+    {
+        label: "Neon Indigo",
+        value: color.neonIndigo,
+    },
+    {
+        label: "Neon Blue",
+        value: color.neonBlue,
+    },
+    {
+        label: "Neon Light Blue",
+        value: color.neonLightBlue,
+    },
+    {
+        label: "Neon Cyan",
+        value: color.neonCyan,
+    },
+    {
+        label: "Neon Teal",
+        value: color.neonTeal,
+    },
+    {
+        label: "Neon Green",
+        value: color.neonGreen,
+    },
+];
 
 const findCurrentColorRole = (member) => {
-    for (const color of colors) {
+    const allColors = [...colors, ...neonColors];
+    for (const color of allColors) {
         const roleName = color; // Role name matches color name
         const role = member.roles.cache.find((r) => r.name === roleName);
 
@@ -76,13 +164,14 @@ module.exports = {
         const guild = await client.guilds.cache.get(config.guildID);
         const member = await guild.members.fetch(userID);
 
+        const allColorSelect = [...colorSelect, ...neonColorSelect];
         const select = new StringSelectMenuBuilder()
             .setCustomId("colorSelect")
             .setPlaceholder("Select a color")
             .setMinValues(1)
             .setMaxValues(1)
             .addOptions(
-                colorSelect.map((color) =>
+                allColorSelect.map((color) =>
                     new StringSelectMenuOptionBuilder().setLabel(color.label).setValue(color.value)
                 )
             );
@@ -138,10 +227,13 @@ module.exports = {
                     allowedMentions: { parse: [] },
                 });
 
+                // Determine price
+                const cost = colors.includes(addRole.name) ? color.cost : color.neonCost;
+
                 // Purchase confirmation embed
                 let description =
                     currentRole !== null ? `You already have the color ${currentRole}.\n` : "";
-                description += `Would you like to exchange **${color.cost} ${config.emojiToken} Tokens** for the color ${addRole}?`;
+                description += `Would you like to exchange **${cost} ${config.emojiToken} Tokens** for the color ${addRole}?`;
                 const purchaseEmbed = new EmbedBuilder().setDescription(description);
 
                 // Buttons
@@ -152,7 +244,7 @@ module.exports = {
                 const confirm = new ButtonBuilder()
                     .setCustomId("confirmColor")
                     .setEmoji(config.emojiToken)
-                    .setLabel(`${color.cost}`)
+                    .setLabel(`${cost}`)
                     .setStyle(ButtonStyle.Success);
                 const row2 = new ActionRowBuilder().addComponents(cancel, confirm);
 
@@ -192,9 +284,9 @@ module.exports = {
 
                                 // Check balance
                                 const balance = inventoryModel.numTokens;
-                                if (balance < color.cost) {
+                                if (balance < cost) {
                                     throw new Error(
-                                        `You don't have enough ${config.emojiToken} Tokens**.`
+                                        `You don't have enough **${config.emojiToken} Tokens**.`
                                     );
                                 }
 
@@ -204,13 +296,13 @@ module.exports = {
                                 await member.roles.add(addRole);
 
                                 // Update balance
-                                inventoryModel.numTokens -= color.cost;
+                                inventoryModel.numTokens -= cost;
                                 await inventoryModel.save();
                             };
 
                             // Place task in concurrency queue
                             try {
-                                client.inventoryQueue.enqueue(task);
+                                await client.inventoryQueue.enqueue(task);
                             } catch (error) {
                                 purchaseEmbed.setColor(config.red);
                                 await confirmation.update({
