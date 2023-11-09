@@ -15,8 +15,6 @@ const color = require("../../../color/color-config.json");
 const UserInventoryModel = require("../../../inventory/schemas/userInventorySchema");
 
 const colors = [
-    "Orange",
-    "Deep Orange",
     "Red",
     "Pink",
     "Purple",
@@ -28,8 +26,6 @@ const colors = [
     "Green",
 ];
 const neonColors = [
-    "Neon Orange",
-    "Neon Deep Orange",
     "Neon Red",
     "Neon Pink",
     "Neon Purple",
@@ -41,14 +37,6 @@ const neonColors = [
     "Neon Green",
 ];
 const colorSelect = [
-    {
-        label: "Orange",
-        value: color.orange,
-    },
-    {
-        label: "Deep Orange",
-        value: color.deepOrange,
-    },
     {
         label: "Red",
         value: color.red,
@@ -91,14 +79,6 @@ const colorSelect = [
     },
 ];
 const neonColorSelect = [
-    {
-        label: "Neon Orange",
-        value: color.neonOrange,
-    },
-    {
-        label: "Neon Deep Orange",
-        value: color.neonDeepOrange,
-    },
     {
         label: "Neon Red",
         value: color.neonRed,
