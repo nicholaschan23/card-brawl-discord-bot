@@ -216,15 +216,9 @@ module.exports = {
 
                 // Mark previous embed as done and successful
                 previewEmbed.setColor(config.green);
-                await response1.edit({
+                await i.update({
                     embeds: [previewEmbed],
                     components: [],
-                });
-
-                i.reply({
-                    content: `You've selected ${addRole}!`,
-                    ephemeral: true,
-                    allowedMentions: { parse: [] },
                 });
 
                 // Determine price
