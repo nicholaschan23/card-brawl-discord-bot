@@ -24,15 +24,11 @@ const client = new Client({
     partials: [User, Message, GuildMember],
 });
 
-// Connect to MongoDB
-const { mongooseConnect } = require("./functions/startup/mongooseConnect");
-mongooseConnect();
-
 // Handle concurrent saves to MongoDB
-const TaskQueue = require("./classes/TaskQueue");
-const bracketModelQueue = new TaskQueue();
-const setupModelQueue = new TaskQueue();
-const userStatQueue = new TaskQueue();
+const TaskQueue = require("./client/classes/TaskQueue");
+client.bracketModelQueue = new TaskQueue();
+client.setupModelQueue = new TaskQueue();
+client.userStatQueue = new TaskQueue();
 client.giveawayQueue = new TaskQueue();
 client.inventoryQueue = new TaskQueue();
 
@@ -40,12 +36,13 @@ client.events = new Collection();
 client.cooldowns = new Collection();
 client.commands = new Collection();
 
-const { autofeedInit } = require("./functions/startup/autofeeds");
-autofeedInit(client);
-
-const { loadEvents } = require("./handlers/eventHandler");
+const loadEvents = require("./client/handlers/eventHandler");
 loadEvents(client);
+
+// Connect to MongoDB
+const mongooseConnect = require("./client/src/mongooseConnect");
+mongooseConnect();
 
 client.login(process.env.TOKEN);
 
-module.exports = { client, bracketModelQueue, setupModelQueue, userStatQueue };
+module.exports = client;

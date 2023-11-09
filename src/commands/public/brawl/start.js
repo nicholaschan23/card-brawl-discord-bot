@@ -1,14 +1,14 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
-const { delay } = require("../../../functions/delay");
-const { formatTitle } = require("../../../functions/formatTitle");
-const { getIntroductionEmbed } = require("../../../functions/embeds/brawlIntroduction");
-const { getConclusionEmbed } = require("../../../functions/embeds/brawlConclusion");
-const { client, setupModelQueue } = require("../../../index");
+const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
+const getIntroductionEmbed = require("../../../brawl/embeds/brawlIntroduction");
+const getConclusionEmbed = require("../../../brawl/embeds/brawlConclusion");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const delay = require("../../../brawl/src/delay");
+const client = require("../../../index");
 const config = require("../../../../config.json");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
-const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
-const BrawlBracketHelper = require("../../../classes/BrawlBracketHelper");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const BrawlBracketModel = require("../../../brawl/schemas/brawlBracketSchema");
+const BrawlBracketHelper = require("../../../brawl/classes/BrawlBracketHelper");
 
 module.exports = {
     category: "public/brawl",
@@ -65,7 +65,7 @@ module.exports = {
                     });
                 });
             };
-            await setupModelQueue.enqueue(task);
+            client.setupModelQueue.enqueue(task);
             console.log("[BRAWL START] Closed Card Brawl");
         }
 

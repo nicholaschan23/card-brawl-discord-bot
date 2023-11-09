@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
-const getInventoryEmbed = require("../../functions/embeds/userInventory");
+const getInventoryEmbed = require("../../inventory/embeds/userInventory");
 const config = require("../../../config.json");
-const UserInventoryModel = require("../../data/schemas/userInventorySchema");
+const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
 
 module.exports = {
     data: new SlashCommandBuilder()

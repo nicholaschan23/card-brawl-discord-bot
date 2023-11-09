@@ -5,12 +5,12 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
-const { formatTitle } = require("../../../functions/formatTitle");
-const { getEnterEmbed } = require("../../../functions/embeds/brawlEnter");
-const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
-const { client, setupModelQueue } = require("../../../index");
+const getEnterEmbed = require("../../../brawl/embeds/brawlEnter");
+const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const client = require("../../../index");
 const config = require("../../../../config.json");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 
 module.exports = {
     category: "public/brawl",
@@ -341,7 +341,7 @@ module.exports = {
 
                 // Add card to the brawl in database
                 try {
-                    await setupModelQueue.enqueue(task);
+                    client.setupModelQueue.enqueue(task);
                     await channel.send(
                         `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                     );

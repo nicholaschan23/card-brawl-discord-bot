@@ -1,8 +1,8 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const { formatTitle } = require("../../../functions/formatTitle");
-const { getWinnerEmbed } = require("../../../functions/embeds/brawlWinner");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
-const BrawlBracketModel = require("../../../data/schemas/brawlBracketSchema");
+const getWinnerEmbed = require("../../../brawl/embeds/brawlWinner");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const BrawlBracketModel = require("../../../brawl/schemas/brawlBracketSchema");
 
 module.exports = {
     category: "public/brawl",

@@ -1,12 +1,12 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const { client } = require("../../../index");
+const client = require("../../../index");
 const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/role",
     data: new SlashCommandSubcommandBuilder()
         .setName("remove")
-        .setDescription("Remove a role from yourself.")
+        .setDescription("Remove a drop role from yourself.")
         .addStringOption((option) =>
             option
                 .setName("role")

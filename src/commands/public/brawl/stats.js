@@ -1,6 +1,6 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const { getUserStatEmbed } = require("../../../functions/embeds/brawlUserStats");
-const UserStatModel = require("../../../data/schemas/userStatSchema");
+const getUserStatEmbed = require("../../../brawl/embeds/brawlUserStats");
+const UserStatModel = require("../../../brawl/schemas/userStatSchema");
 
 module.exports = {
     category: "public/brawl",

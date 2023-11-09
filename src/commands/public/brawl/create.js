@@ -4,12 +4,12 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
-const { getNextSaturday, createGuildEvent } = require("../../../functions/schedule/scheduleEvent");
-const { formatTitle } = require("../../../functions/formatTitle");
-const { getAnnouncementEmbed } = require("../../../functions/embeds/brawlAnnouncement");
-const { client } = require("../../../index");
+const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const { getNextSaturday, createGuildEvent } = require("../../../schedule/src/schedule");
+const client = require("../../../index");
 const config = require("../../../../config.json");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 
 module.exports = {
     category: "public/brawl",

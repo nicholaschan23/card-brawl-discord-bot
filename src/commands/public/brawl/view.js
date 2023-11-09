@@ -1,8 +1,8 @@
 const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
-const { buttonPages } = require("../../../functions/pagination");
-const { formatTitle } = require("../../../functions/formatTitle");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const buttonPages = require("../../../brawl/src/pagination");
 const config = require("../../../../config.json");
-const BrawlSetupModel = require("../../../data/schemas/brawlSetupSchema");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 
 module.exports = {
     category: "public/brawl",
