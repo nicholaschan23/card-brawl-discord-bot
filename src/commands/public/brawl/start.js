@@ -5,6 +5,7 @@ const getConclusionEmbed = require("../../../brawl/embeds/brawlConclusion");
 const formatTitle = require("../../../brawl/src/formatTitle");
 const delay = require("../../../brawl/src/delay");
 const client = require("../../../index");
+const bconfig = require("../../../brawl/brawl-config.json");
 const config = require("../../../../config.json");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const BrawlBracketModel = require("../../../brawl/schemas/brawlBracketSchema");
@@ -105,11 +106,13 @@ module.exports = {
 
             // Introduction
             const message = await judgesChannel.send({
-                content: `We'll be starting in \`5 minutes\`. <@&${config.judgeRole}>`,
+                content: `We'll be starting in \`${bconfig.startTime / 60} minutes\`. <@&${
+                    config.judgeRole
+                }>`,
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            await delay(297);
+            await delay(bconfig.startTime - 3);
             await judgesChannel.send("# 3");
             await delay(1);
             await judgesChannel.send("# 2");

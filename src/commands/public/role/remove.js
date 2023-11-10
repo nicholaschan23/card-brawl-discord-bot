@@ -31,11 +31,13 @@ module.exports = {
             await interaction.reply({
                 content: `You have successfully removed the <@&${temp.id}> role!`,
                 allowedMentions: { parse: [] },
+                ephemeral: true,
             });
         } else {
             await interaction.reply({
                 content: `You do not have the <@&${temp.id}> role.`,
                 allowedMentions: { parse: [] },
+                ephemeral: true,
             });
         }
     },

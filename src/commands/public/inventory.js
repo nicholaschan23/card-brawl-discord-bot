@@ -28,7 +28,7 @@ module.exports = {
                     return await interaction.reply({
                         content: `<@${userID}>, you have no inventory yet.`,
                         allowedMentions: { parse: [] },
-                        ephermeral: true,
+                        ephemeral: true,
                     });
                 }
                 // Private inventory
@@ -36,7 +36,7 @@ module.exports = {
                     return await interaction.reply({
                         embeds: getInventoryEmbed(inventoryModel),
                         allowedMentions: { parse: [] },
-                        ephermeral: true,
+                        ephemeral: true,
                     });
                 }
             } else {
@@ -44,7 +44,7 @@ module.exports = {
                     return await interaction.reply({
                         content: `<@${userID}> has no inventory yet.`,
                         allowedMentions: { parse: [] },
-                        ephermeral: true,
+                        ephemeral: true,
                     });
                 }
                 // Private inventory
@@ -52,7 +52,7 @@ module.exports = {
                     return await interaction.reply({
                         content: `<@${userID}>'s inventory is private.`,
                         allowedMentions: { parse: [] },
-                        ephermeral: true,
+                        ephemeral: true,
                     });
                 }
             }

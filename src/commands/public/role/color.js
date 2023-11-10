@@ -313,8 +313,7 @@ module.exports = {
                             });
 
                             return await interaction.followUp({
-                                content: `You are now the color ${addRole}!`,
-                                ephemeral: true,
+                                content: `You exchanged **${cost} ${config.emojiToken} Tokens** for the color ${addRole}!`,
                                 allowedMentions: { parse: [] },
                             });
                             break;
