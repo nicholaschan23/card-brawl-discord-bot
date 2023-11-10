@@ -25,6 +25,24 @@ function autofeedInit() {
         karutaRoles(client, config);
     });
 
+    // Karuta ping roles
+    const colorRoles = (client, config) => {
+        try {
+            const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
+
+            karutaDrop.send({
+                content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
+                allowedMentions: { parse: [] },
+            });
+            console.log("[AUTOFEED] Sent color roles reminder");
+        } catch (error) {
+            console.error("[AUTOFEED] Error sending color roles reminder:", error);
+        }
+    };
+    cron.schedule("10 * * * *", () => {
+        colorRoles(client, config);
+    });
+
     // Card Brawl promotion
     const brawlPromotion = async (client, config) => {
         try {
