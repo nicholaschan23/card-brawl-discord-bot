@@ -58,6 +58,7 @@ module.exports = {
             }
             await interaction.reply({
                 embeds: [getInventoryEmbed(inventoryModel)],
+                ephemeral: true,
             });
         } catch (error) {
             console.error("[INVENTORY] Error retrieving UserInventoryModel:", error);
