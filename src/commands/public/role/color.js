@@ -121,10 +121,10 @@ const neonColorSelect = [
     },
 ];
 
-const findCurrentColorRole = (member) => {
-    const allColors = [...colors, ...neonColors];
-    for (const color of allColors) {
-        const roleName = color; // Role name matches color name
+const blacklistRoles = ["Community Manager", "Moderator", "Server Subscriber", "Twitch Subscriber"];
+
+const findCurrentColorRole = (member, roles) => {
+    for (const roleName of roles) {
         const role = member.roles.cache.find((r) => r.name === roleName);
 
         if (role) {
@@ -176,7 +176,23 @@ module.exports = {
             });
 
             collector.on("collect", async (i) => {
-                const currentRole = findCurrentColorRole(member);
+                const blacklist = findCurrentColorRole(member, blacklistRoles);
+                if (blacklist) {
+                    previewEmbed.setColor(config.red);
+                    await response1.edit({
+                        embeds: [previewEmbed],
+                        components: [],
+                    });
+
+                    return i.reply({
+                        content: `You already have an exclusive color from the ${blacklist} role!`,
+                        ephemeral: true,
+                        allowedMentions: { parse: [] },
+                    });
+                }
+
+                const roles = [...colors, ...neonColors];
+                const currentRole = findCurrentColorRole(member, roles);
                 addRole = guild.roles.cache.get(i.values[0]);
 
                 // Already have selected color
