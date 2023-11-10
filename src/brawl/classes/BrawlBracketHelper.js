@@ -10,6 +10,7 @@ const mergeImages = require("../src/meregeImages");
 const shuffleArray = require("../src/shuffleArray");
 const delay = require("../src/delay");
 const client = require("../../index");
+const bconfig = require("../brawl-config.json")
 const config = require("../../../config.json");
 const UserStatHelper = require("./UserStatHelper");
 
@@ -29,20 +30,18 @@ class Match {
 
         let totalCount = 0;
         userIDs.forEach(async (reactedUser) => {
-            let userCount = 0;
+            let bonus = 0;
             const member = await guild.members.fetch(reactedUser);
 
-            if (member.roles.cache.some((role) => role.name === "Server Booster")) {
-                userCount += config.serverBoosterBonus;
-            } else if (member.roles.cache.some((role) => role.name === "Active Booster")) {
-                userCount += config.activeBoosterBonus;
-            } else if (member.roles.cache.some((role) => role.name === "Server Subscriber")) {
-                userCount += config.serverSubscriberBonus;
+            if (member.roles.cache.some((role) => role.name === "Owner")) {
+                bonus = 1;
+            } else if (member.roles.cache.some((role) => role.name === "Active Booster" || role.name === "Server Subscriber" )) {
+                bonus = Math.max(bconfig.activeBoosterBonus, bconfig.serverSubscriberBonus);
             }
-            await myUserStat.updateVotesGiven(reactedUser.id, userCount);
-            totalCount += userCount;
+            await myUserStat.updateVotesGiven(reactedUser.id, bonus);
+            totalCount += bonus;
         });
-        return count;
+        return totalCount;
     }
 
     async conductMatch(channel, bracketModel, setupModel, myUserStat) {
@@ -94,92 +93,115 @@ class Match {
         const user2 = setupModel.cards.get(this.card2).userID;
         const users1 = new Set();
         const users2 = new Set();
+        const interacted = new Set();
 
         // Button listeners
         const collector = await message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: config.voteTime * 1000,
+            time: bconfig.voteTime * 1000,
         });
 
         // Collect responses
         collector.on("collect", async (interaction) => {
-            await interaction.deferUpdate();
+            try {
+                const userID = userID;
+                await interaction.deferUpdate();
 
-            if (interaction.customId === "totalVotes") {
-                return;
-            }
+                // Dead button
+                if (interaction.customId === "totalVotes") {
+                    return;
+                }
 
-            // Contestants cannot vote on rounds with their card
-            if (interaction.user.id === user1 || interaction.user.id === user2) {
-                return interaction.followUp({
-                    content: "Your card is in this round. You cannot vote.",
-                    ephemeral: true,
+                // Replies only once
+                if (interacted.has(userID)) {
+                    return;
+                }
+                interacted.add(userID);
+
+                // Contestants cannot vote on rounds with their card
+                if (userID === user1 || userID === user2) {
+                    return interaction.followUp({
+                        content: "Your card is in this round. You cannot vote.",
+                        ephemeral: true,
+                    });
+                }
+
+                if (interaction.customId === "button1") {
+                    users1.add(userID);
+                    interaction.followUp({
+                        content: "You voted for Card 1!",
+                        ephemeral: true,
+                    });
+                } else if (interaction.customId === "button2") {
+                    users2.add(userID);
+                    interaction.followUp({
+                        content: "You voted for Card 2!",
+                        ephemeral: true,
+                    });
+                }
+
+                // Update total votes label
+                buttonTotal.setLabel(`${interacted.size} Voters`);
+                await message.edit({
+                    components: [row],
                 });
+            } catch (error) {
+                console.error("Button interaction failed voting for a card:", error);
             }
-
-            if (users1.has(interaction.user.id) || users2.has(interaction.user.id)) {
-                return;
-            }
-
-            if (interaction.customId === "button1") {
-                users1.add(interaction.user.id);
-                interaction.followUp({
-                    content: "You voted for Card 1!",
-                    ephemeral: true,
-                });
-            } else if (interaction.customId === "button2") {
-                users2.add(interaction.user.id);
-                interaction.followUp({
-                    content: "You voted for Card 2!",
-                    ephemeral: true,
-                });
-            }
-
-            // Update total votes label
-            buttonTotal.setLabel(`${users1.size + users2.size} Voters`);
-            await message.edit({
-                components: [row],
-            });
         });
 
         // End the collector
         collector.on("end", async () => {
+            button1.setDisabled(true);
+            button2.setDisabled(true);
+            buttonTotal.setDisabled(true);
             await message.edit({
-                components: [],
+                components: [row],
             });
         });
-        await delay(config.voteTime);
-
-        let count1 = users1.size;
-        let count2 = users2.size;
+        await delay(bconfig.voteTime);
 
         // Bonus votes
-        const bonus1 = await this.addBonusVotes(users1, myUserStat);
-        const bonus2 = await this.addBonusVotes(users2, myUserStat);
-        count1 += bonus1;
-        count2 += bonus2;
+        let count1 = users1.size;
+        let count2 = users2.size;
+        try {
+            const bonus1 = await this.addBonusVotes(users1, myUserStat);
+            const bonus2 = await this.addBonusVotes(users2, myUserStat);
+            count1 += bonus1;
+            count2 += bonus2;
+        } catch (error) {
+            console.error("Failed to calculate bonus votes:", error);
+        }
 
         // Update honorable mentions
-        if (count1 < bracketModel.leastVotes.count) {
-            bracketModel.leastVotes.count = count1;
-            bracketModel.leastVotes.card = this.card1;
-        }
-        if (count1 > bracketModel.mostVotes.count) {
-            bracketModel.mostVotes.count = count1;
-            bracketModel.mostVotes.card = this.card1;
-        }
-        if (count2 < bracketModel.leastVotes.count) {
-            bracketModel.leastVotes.count = count2;
-            bracketModel.leastVotes.card = this.card2;
-        }
-        if (count2 > bracketModel.mostVotes.count) {
-            bracketModel.mostVotes.count = count2;
-            bracketModel.mostVotes.card = this.card2;
+        try {
+            if (count1 < bracketModel.leastVotes.count) {
+                bracketModel.leastVotes.count = count1;
+                bracketModel.leastVotes.card = this.card1;
+            }
+            if (count1 > bracketModel.mostVotes.count) {
+                bracketModel.mostVotes.count = count1;
+                bracketModel.mostVotes.card = this.card1;
+            }
+            if (count2 < bracketModel.leastVotes.count) {
+                bracketModel.leastVotes.count = count2;
+                bracketModel.leastVotes.card = this.card2;
+            }
+            if (count2 > bracketModel.mostVotes.count) {
+                bracketModel.mostVotes.count = count2;
+                bracketModel.mostVotes.card = this.card2;
+            }
+        } catch (error) {
+            console.error("Failed to update honorable mentions", error);
         }
 
         // Update user stats
-        await myUserStat.updateVotesReceived(user1, count1);
-        await myUserStat.updateVotesReceived(user2, count2);
+        try {
+            await myUserStat.updateVotesReceived(user1, count1);
+            await myUserStat.updateVotesReceived(user2, count2);
+        } catch (error) {
+            console.error("Failed to update user stats", error);
+        }
 
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
