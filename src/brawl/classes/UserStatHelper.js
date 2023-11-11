@@ -30,64 +30,107 @@ class UserStatHelper {
 
     // cardsEntered
     updateCardsEntered(userIDs) {
-        userIDs.forEach(async (userID) => {
-            const statModel = await this.getUserStatModel(userID);
-            statModel.cardsEntered += 1;
-        });
+        const task = async () => {
+            userIDs.forEach(async (userID) => {
+                const statModel = await this.getUserStatModel(userID);
+                if (statModel) {
+                    statModel.cardsEntered++;
+                } else {
+                    console.error("Failed to update cards entered");
+                }
+            });
+        };
+        client.userStatQueue.enqueue(task);
+
     }
 
     // matchesCompeted
     // matchesWon
     // tiesLost
     // tiesWon
-    async updateMatchesCompeted(userID, win, tie) {
-        const statModel = await this.getUserStatModel(userID);
-        if (win) {
-            statModel.matchesWon += 1;
-            if (tie) {
-                statModel.tiesWon += 1;
+    updateMatchesCompeted(userID, win, tie) {
+        const task = async () => {
+            const statModel = await this.getUserStatModel(userID);
+            if (statModel) {
+                if (win) {
+                    statModel.matchesWon++;
+                    if (tie) {
+                        statModel.tiesWon++;
+                    }
+                } else if (tie) {
+                    statModel.tiesLost++;
+                }
+                statModel.matchesCompeted++;
+            } else {
+                console.error("Failed to update matches completed");
             }
-        } else if (tie) {
-            statModel.tiesLost += 1;
-        }
-        statModel.matchesCompeted += 1;
+        };
+        client.userStatQueue.enqueue(task);
     }
 
     // honorableMentions
-    async updateMentions(userID) {
-        const statModel = await this.getUserStatModel(userID);
-        statModel.honorableMentions += 1;
+    updateMentions(userID) {
+        const task = async () => {
+            const statModel = await this.getUserStatModel(userID);
+            if (statModel) {
+                statModel.honorableMentions++;
+            } else {
+                console.error("Failed to update honorable mentions");
+            }
+        };
+        client.userStatQueue.enqueue(task);
     }
 
     // wins
-    async updateWin(userID) {
-        const statModel = await this.getUserStatModel(userID);
-        statModel.wins += 1;
+    updateWin(userID) {
+        const task = async () => {
+            const statModel = await this.getUserStatModel(userID);
+            if (statModel) {
+                statModel.wins++;
+            } else {
+                console.error("Failed to update wins");
+            }
+        };
+        client.userStatQueue.enqueue(task);
     }
 
     // matchesJudged
     // votesGiven
-    async updateVotesGiven(userID, votes) {
-        const statModel = await this.getUserStatModel(userID);
-        statModel.matchesJudged += 1;
-        statModel.votesGiven += votes;
+    updateVotesGiven(userID, votes) {
+        const task = async () => {
+            const statModel = await this.getUserStatModel(userID);
+            if (statModel) {
+                statModel.matchesJudged++;
+                statModel.votesGiven += votes;
+            } else {
+                console.error("Failed to update votes given");
+            }
+        };
+        client.userStatQueue.enqueue(task);
     }
 
     // votesReceived
     // votesHighest
-    async updateVotesReceived(userID, votes) {
-        const statModel = await this.getUserStatModel(userID);
-        statModel.votesReceived += votes;
-        if (votes > statModel.votesHighest) {
-            statModel.votesHighest += votes;
-        }
+    updateVotesReceived(userID, votes) {
+        const task = async () => {
+            const statModel = await this.getUserStatModel(userID);
+            if (statModel) {
+                statModel.votesReceived += votes;
+                if (votes > statModel.votesHighest) {
+                    statModel.votesHighest += votes;
+                }
+            } else {
+                console.error("Failed to update votes received");
+            }
+        };
+        client.userStatQueue.enqueue(task);
     }
 
     // Save the user stats progress to persistent storage
-    async saveProgress() {
-        const task = () => {
+    saveProgress() {
+        const task = async () => {
             for (const model of Object.values(this.userStatModels)) {
-                model.save();
+                await model.save();
             }
         };
         client.userStatQueue.enqueue(task);
