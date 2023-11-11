@@ -1,6 +1,6 @@
 {
-    "voteTime": 5,
-    "startTime": 5,
+    "voteTime": 30,
+    "startTime": 300,
 
     "activeBoosterBonus": 1,
     "serverSubscriberBonus": 1
