@@ -19,6 +19,7 @@ const colors = [
     "Pink",
     "Purple",
     "Deep Purple",
+    "Indigo",
     "Blue",
     "Light Blue",
     "Cyan",
@@ -30,6 +31,7 @@ const neonColors = [
     "Neon Pink",
     "Neon Purple",
     "Neon Deep Purple",
+    "Neon Indigo",
     "Neon Blue",
     "Neon Light Blue",
     "Neon Cyan",
@@ -312,8 +314,8 @@ module.exports = {
                                 components: [],
                             });
 
-                            return await interaction.followUp({
-                                content: `You exchanged **${cost} ${config.emojiToken} Tokens** for the color ${addRole}!`,
+                            return await interaction.channel.send({
+                                content: `<@${userID}> exchanged **${cost} ${config.emojiToken} Tokens** for the color ${addRole}!`,
                                 allowedMentions: { parse: [] },
                             });
                             break;
