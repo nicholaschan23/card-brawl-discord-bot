@@ -10,7 +10,7 @@ const mergeImages = require("../src/meregeImages");
 const shuffleArray = require("../src/shuffleArray");
 const delay = require("../src/delay");
 const client = require("../../index");
-const bconfig = require("../brawl-config.json")
+const bconfig = require("../brawl-config.json");
 const config = require("../../../config.json");
 const UserStatHelper = require("./UserStatHelper");
 
@@ -25,22 +25,27 @@ class Match {
         this.winner = matchSchema.winner;
     }
 
-    addBonusVotes(userIDs, myUserStat) {
+    async addBonusVotes(userIDs) {
         const guild = client.guilds.cache.get(config.guildID);
 
         let totalCount = 0;
-        userIDs.forEach(async (reactedUser) => {
+
+        for (const reactedUser of userIDs) {
             let bonus = 0;
             const member = await guild.members.fetch(reactedUser);
 
             if (member.roles.cache.some((role) => role.name === "Owner")) {
                 bonus = 1;
-            } else if (member.roles.cache.some((role) => role.name === "Active Booster" || role.name === "Server Subscriber" )) {
+            } else if (
+                member.roles.cache.some(
+                    (role) => role.name === "Active Booster" || role.name === "Server Subscriber"
+                )
+            ) {
                 bonus = Math.max(bconfig.activeBoosterBonus, bconfig.serverSubscriberBonus);
             }
-            await myUserStat.updateVotesGiven(reactedUser.id, bonus);
             totalCount += bonus;
-        });
+        }
+
         return totalCount;
     }
 
@@ -59,8 +64,6 @@ class Match {
             return completedMatchSchema;
         }
         console.log(`[BRAWL BRACKET] Round ${round}: Match ${match} conducting match...`);
-
-        await delay(2);
 
         // Combine card images
         const image1 = setupModel.cards.get(this.card1).imageLink;
@@ -89,8 +92,8 @@ class Match {
             components: [row],
         });
 
-        const user1 = setupModel.cards.get(this.card1).userID;
-        const user2 = setupModel.cards.get(this.card2).userID;
+        const owner1 = setupModel.cards.get(this.card1).userID;
+        const owner2 = setupModel.cards.get(this.card2).userID;
         const users1 = new Set();
         const users2 = new Set();
         const interacted = new Set();
@@ -104,7 +107,6 @@ class Match {
         // Collect responses
         collector.on("collect", async (interaction) => {
             try {
-                const userID = userID;
                 await interaction.deferUpdate();
 
                 // Dead button
@@ -113,14 +115,15 @@ class Match {
                 }
 
                 // Replies only once
+                const userID = interaction.user.id;
                 if (interacted.has(userID)) {
                     return;
                 }
                 interacted.add(userID);
 
                 // Contestants cannot vote on rounds with their card
-                if (userID === user1 || userID === user2) {
-                    return interaction.followUp({
+                if (userID === owner1 || userID === owner2) {
+                    return await interaction.followUp({
                         content: "Your card is in this round. You cannot vote.",
                         ephemeral: true,
                     });
@@ -128,13 +131,13 @@ class Match {
 
                 if (interaction.customId === "button1") {
                     users1.add(userID);
-                    interaction.followUp({
+                    await interaction.followUp({
                         content: "You voted for Card 1!",
                         ephemeral: true,
                     });
                 } else if (interaction.customId === "button2") {
                     users2.add(userID);
-                    interaction.followUp({
+                    await interaction.followUp({
                         content: "You voted for Card 2!",
                         ephemeral: true,
                     });
@@ -162,46 +165,42 @@ class Match {
         await delay(bconfig.voteTime);
 
         // Bonus votes
-        let count1 = users1.size;
-        let count2 = users2.size;
+        let bonus1 = 0;
+        let bonus2 = 0;
         try {
-            const bonus1 = await this.addBonusVotes(users1, myUserStat);
-            const bonus2 = await this.addBonusVotes(users2, myUserStat);
-            count1 += bonus1;
-            count2 += bonus2;
+            bonus1 = await this.addBonusVotes(users1);
+            bonus2 = await this.addBonusVotes(users2);
         } catch (error) {
             console.error("Failed to calculate bonus votes:", error);
         }
 
+        // Count votes
+        let count1 = users1.size;
+        let count2 = users2.size;
+        count1 += bonus1;
+        count2 += bonus2;
+
         // Update honorable mentions
-        try {
-            if (count1 < bracketModel.leastVotes.count) {
-                bracketModel.leastVotes.count = count1;
-                bracketModel.leastVotes.card = this.card1;
-            }
-            if (count1 > bracketModel.mostVotes.count) {
-                bracketModel.mostVotes.count = count1;
-                bracketModel.mostVotes.card = this.card1;
-            }
-            if (count2 < bracketModel.leastVotes.count) {
-                bracketModel.leastVotes.count = count2;
-                bracketModel.leastVotes.card = this.card2;
-            }
-            if (count2 > bracketModel.mostVotes.count) {
-                bracketModel.mostVotes.count = count2;
-                bracketModel.mostVotes.card = this.card2;
-            }
-        } catch (error) {
-            console.error("Failed to update honorable mentions", error);
+        if (count1 < bracketModel.leastVotes.count) {
+            bracketModel.leastVotes.count = count1;
+            bracketModel.leastVotes.card = this.card1;
+        }
+        if (count1 > bracketModel.mostVotes.count) {
+            bracketModel.mostVotes.count = count1;
+            bracketModel.mostVotes.card = this.card1;
+        }
+        if (count2 < bracketModel.leastVotes.count) {
+            bracketModel.leastVotes.count = count2;
+            bracketModel.leastVotes.card = this.card2;
+        }
+        if (count2 > bracketModel.mostVotes.count) {
+            bracketModel.mostVotes.count = count2;
+            bracketModel.mostVotes.card = this.card2;
         }
 
         // Update user stats
-        try {
-            await myUserStat.updateVotesReceived(user1, count1);
-            await myUserStat.updateVotesReceived(user2, count2);
-        } catch (error) {
-            console.error("Failed to update user stats", error);
-        }
+        myUserStat.updateVotesReceived(owner1, count1);
+        myUserStat.updateVotesReceived(owner2, count2);
 
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
@@ -215,8 +214,8 @@ class Match {
                     `**Card 1** won by **${difference}** votes, with ${bonus1} bonus! [**${count1}**:**${count2}**]`
                 );
             }
-            await myUserStat.updateMatchesCompeted(user1, true, false);
-            await myUserStat.updateMatchesCompeted(user2, false, false);
+            myUserStat.updateMatchesCompeted(owner1, true, false);
+            myUserStat.updateMatchesCompeted(owner2, false, false);
         } else if (count1 < count2) {
             this.winner = this.card2;
             if (difference === 1) {
@@ -228,8 +227,8 @@ class Match {
                     `**Card 2** won by **${difference}** votes, with ${bonus2} bonus! [**${count1}**:**${count2}**]`
                 );
             }
-            await myUserStat.updateMatchesCompeted(user1, false, false);
-            await myUserStat.updateMatchesCompeted(user2, true, false);
+            myUserStat.updateMatchesCompeted(owner1, false, false);
+            myUserStat.updateMatchesCompeted(owner2, true, false);
         } else {
             this.winner = Math.random() < 0.5 ? this.card1 : this.card2;
             await channel
@@ -250,17 +249,18 @@ class Match {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 1**! 🎉`
                         );
-                        await myUserStat.updateMatchesCompeted(user1, true, true);
-                        await myUserStat.updateMatchesCompeted(user2, false, true);
+                        myUserStat.updateMatchesCompeted(owner1, true, true);
+                        myUserStat.updateMatchesCompeted(owner2, false, true);
                     } else {
                         msg.edit(
                             `Voting ended in a **tie** with **${count1}** votes each. The lucky winner is... **Card 2**! 🎉`
                         );
-                        await myUserStat.updateMatchesCompeted(user1, false, true);
-                        await myUserStat.updateMatchesCompeted(user2, true, true);
+                        myUserStat.updateMatchesCompeted(owner1, false, true);
+                        myUserStat.updateMatchesCompeted(owner2, true, true);
                     }
                 });
         }
+
         // Return completed match
         const completedMatchSchema = {
             card1: this.card1,
@@ -323,7 +323,6 @@ class BrawlBracketHelper {
             };
             this.bracketModel.matches.push(matchSchema);
         }
-        this.saveProgress();
         console.log("[BRAWL BRACKET] Generated initial bracket");
     }
 
@@ -332,6 +331,13 @@ class BrawlBracketHelper {
         const totalRounds = Math.log2(this.idealSize);
 
         while (this.bracketModel.completedMatches.length !== this.idealSize - 1) {
+            // Check if there are more matches in the current round
+            if (this.bracketModel.matches.length === 0) {
+                this.bracketModel.currentRound++;
+                this.bracketModel.currentMatch = 1;
+                await this.generateNextRound();
+            }
+
             // Finals announcements
             if (this.bracketModel.currentMatch === 1) {
                 switch (this.bracketModel.currentRound) {
@@ -359,21 +365,15 @@ class BrawlBracketHelper {
                 this.myUserStat
             );
             // Save the match result and update the bracket
-            await this.bracketModel.completedMatches.push(completedMatchSchema);
-
-            // Check if there are more matches in the current round
-            // If not, move to the next round
-            if (this.bracketModel.matches.length === 0) {
-                this.bracketModel.currentRound++;
-                this.bracketModel.currentMatch = 1;
-                await this.generateNextRound();
-            } else {
-                this.bracketModel.currentMatch++;
-            }
+            this.bracketModel.completedMatches.push(completedMatchSchema);
+            this.bracketModel.currentMatch++;
 
             // Save progress and stats after every completed match
-            this.saveProgress();
-            this.myUserStat.saveProgress();
+            if (completedMatchSchema.card1 !== null) {
+                console.log("[BRAWL BRACKET] Saving progress and user stats");
+                await this.saveProgress();
+                await this.myUserStat.saveProgress();
+            }
         }
 
         // Card Brawl finished
@@ -386,7 +386,7 @@ class BrawlBracketHelper {
             userIDs.push(card.userID);
         });
         await this.myUserStat.updateCardsEntered(userIDs);
-        this.myUserStat.saveProgress();
+        await this.myUserStat.saveProgress();
     }
 
     // Generate matches for the next round based on the winners of the current round
@@ -498,11 +498,11 @@ class BrawlBracketHelper {
     }
 
     // Save the tournament progress to database
-    saveProgress() {
-        const task = () => {
-            this.bracketModel.save();
+    async saveProgress() {
+        const task = async () => {
+            await this.bracketModel.save();
         };
-        client.bracketModelQueue.enqueue(task);
+        await client.bracketModelQueue.enqueue(task);
     }
 }
 
