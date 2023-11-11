@@ -3,7 +3,6 @@ const BrawlBracketModel = require("../../brawl/schemas/brawlBracketSchema");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");
 const start = require("./brawl/start");
-const instructions = require("./brawl/instructions");
 const stats = require("./brawl/stats");
 const winner = require("./brawl/winner");
 const view = require("./brawl/view");
@@ -16,7 +15,6 @@ module.exports = {
         .addSubcommand(create.data)
         .addSubcommand(enter.data)
         .addSubcommand(start.data)
-        .addSubcommand(instructions.data)
         .addSubcommand(stats.data)
         .addSubcommand(winner.data)
         .addSubcommand(view.data),
@@ -56,10 +54,6 @@ module.exports = {
             }
             case "start": {
                 await start.execute(interaction);
-                break;
-            }
-            case "instructions": {
-                await instructions.execute(interaction);
                 break;
             }
             case "stats": {

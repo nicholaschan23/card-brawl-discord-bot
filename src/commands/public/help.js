@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const brawl = require("./help/brawl");
 const token = require("./help/token");
 
 module.exports = {
@@ -6,10 +7,15 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("help")
         .setDescription("Help main command.")
+        .addSubcommand(brawl.data)
         .addSubcommand(token.data),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
+            case "brawl": {
+                await brawl.execute(interaction);
+                break;
+            }
             case "token": {
                 await token.execute(interaction);
                 break;

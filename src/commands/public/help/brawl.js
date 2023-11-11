@@ -1,14 +1,14 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const getInstructionsEmbed = require("../../../brawl/embeds/brawlInstructions");
+const getBrawlHelpEmbed = require("../../../brawl/embeds/brawlHelp");
 
 module.exports = {
-    category: "public/brawl",
+    category: "public/help",
     data: new SlashCommandSubcommandBuilder()
-        .setName("instructions")
-        .setDescription("Instructions on how to play."),
+        .setName("brawl")
+        .setDescription("How to participate in Card Brawl."),
     async execute(interaction) {
         await interaction.reply({
-            embeds: [getInstructionsEmbed()],
+            embeds: [getBrawlHelpEmbed()],
             ephemeral: true,
         });
     },
