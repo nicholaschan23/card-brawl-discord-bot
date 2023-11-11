@@ -121,7 +121,8 @@ module.exports = {
                             lastUnixTime: currentUnixTime,
                             tokenCounter: 1,
                         });
-                        return model.save();
+                        await model.save();
+                        return;
                     }
 
                     // Inventory exists, check cooldown
@@ -139,10 +140,10 @@ module.exports = {
                             );
                         }
 
-                        const task = () => {
-                            uim.save();
+                        const task = async () => {
+                            await uim.save();
                         };
-                        client.inventoryQueue.enqueue(task);
+                        await client.inventoryQueue.enqueue(task);
                     }
                 } catch (error) {
                     console.error("[INVENTORY]", error);
