@@ -4,9 +4,10 @@ async function loadEvents(client) {
     console.time("[EVENT HANDLER] Events loaded");
 
     const tableArray = new Array();
-    const clientEvents = await loadFiles("src/client/events");
-    const inventoryEvents = await loadFiles("src/inventory/events");
-    const eventFiles = [...clientEvents, ...inventoryEvents];
+    const eventFiles = [
+        ...(await loadFiles("src/client/events")),
+        ...(await loadFiles("src/inventory/events")),
+    ];
     for (const file of eventFiles) {
         try {
             const event = require(file);

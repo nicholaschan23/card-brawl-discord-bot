@@ -2,7 +2,6 @@ const { ActionRowBuilder } = require("discord.js");
 const rollWinner = require("../src/rollWinner");
 const client = require("../../index");
 const config = require("../../../config.json");
-const UserInventoryModel = require("../../inventory/schema/userInventorySchema");
 const GiveawayModel = require("../schemas/giveawaySchema");
 
 async function endGiveaway(data) {
@@ -17,10 +16,10 @@ async function endGiveaway(data) {
     message.edit({ components: [row] });
 
     giveawayModel.open = false;
-    const task = () => {
-        giveawayModel.save();
+    const task = async () => {
+        await giveawayModel.save();
     };
-    client.giveawayQueue.enqueue(task);
+    await client.giveawayQueue.enqueue(task);
 
     // Get array of winners and convert to mentions
     const winnerArray = await rollWinner(giveawayModel, giveawayModel.winners);

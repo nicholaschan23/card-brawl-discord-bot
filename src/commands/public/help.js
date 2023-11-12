@@ -1,33 +1,90 @@
-const { SlashCommandBuilder } = require("discord.js");
-const brawl = require("./help/brawlHelp");
-const token = require("./help/tokenHelp");
+const {
+    SlashCommandBuilder,
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+    ActionRowBuilder,
+    ComponentType,
+    EmbedBuilder,
+} = require("discord.js");
+const getBrawlHelpEmbed = require("../../brawl/embeds/brawlHelp");
+const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
+const config = require("../../../config.json");
+
+const helpSelect = [
+    {
+        label: "Brawl",
+        value: "brawl",
+        emoji: "🥊",
+    },
+    {
+        label: "Token",
+        value: "token",
+        emoji: config.emojiToken,
+    },
+];
 
 module.exports = {
     category: "public",
-    data: new SlashCommandBuilder()
-        .setName("help")
-        .setDescription("Help main command.")
-        .addSubcommand(brawl.data)
-        .addSubcommand(token.data),
+    data: new SlashCommandBuilder().setName("help").setDescription("Help main command."),
     async execute(interaction) {
-        const subcommand = interaction.options.getSubcommand();
-        switch (subcommand) {
-            case "brawl": {
-                await brawl.execute(interaction);
-                break;
-            }
-            case "token": {
-                await token.execute(interaction);
-                break;
-            }
-            default: {
-                console.error(
-                    `[HELP] There was no execute case for the "${subcommand}" subcommand`
-                );
-                await interaction.reply(
-                    `There was no execute case for the \`${subcommand}\` subcommand.`
-                );
-            }
+        const embed = new EmbedBuilder()
+            .setTitle("Help")
+            .setDescription("Select the topic you'd like help with using the dropdown menu below.");
+
+        const select = new StringSelectMenuBuilder()
+            .setCustomId("helpSelect")
+            .setPlaceholder("Select a topic")
+            .setMinValues(1)
+            .setMaxValues(1)
+            .addOptions(
+                helpSelect.map((help) =>
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(help.label)
+                        .setValue(help.value)
+                        .setEmoji(help.emoji)
+                )
+            );
+        const row1 = new ActionRowBuilder().addComponents(select);
+
+        const response1 = await interaction.reply({
+            embeds: [embed],
+            components: [row1],
+            ephemeral: true,
+        });
+
+        // Wait for topic selection
+        try {
+            const collector = await response1.createMessageComponentCollector({
+                componentType: ComponentType.StringSelect,
+                filter: (i) => i.user.id === interaction.user.id,
+                time: 60_000,
+            });
+
+            collector.on("collect", async (i) => {
+                let embed;
+                switch (i.values[0]) {
+                    case "brawl": {
+                        embed = getBrawlHelpEmbed();
+                        break;
+                    }
+                    case "token": {
+                        embed = getTokenHelpEmbed();
+                        break;
+                    }
+                }
+                await i.update({
+                    embeds: [embed],
+                });
+                collector.resetTimer();
+            });
+
+            // collector.on("end", async (i) => {
+            //     await i.edit({
+            //         components: [],
+            //     });
+            // });
+        } catch (error) {
+            console.log("Timed out", error.message);
         }
     },
 };

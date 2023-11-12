@@ -4,6 +4,11 @@ const GiveawayModel = require("../schemas/giveawaySchema");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
 
 async function enterGiveaway(interaction) {
+    await interaction.deferUpdate();
+
+    // Inventory undefined
+    await interaction.followUp({ content: "", ephemeral: true });
+
     const messageID = interaction.message.id;
     const userID = interaction.user.id;
 

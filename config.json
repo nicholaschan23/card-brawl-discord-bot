@@ -8,7 +8,6 @@
     "gachaponID": "815289915557675118",
 
     "globalCooldown": 5,
-    "voteTime": 30,
 
     "karutaUpdateChannelID": "1157474189024972860",
     "karutaDropChannelID": "768727462221578260",
@@ -32,11 +31,7 @@
 
     "serverDropRole": "1160350696923734186",
     "wishlistDropRole": "1160350192579649626",
-    "eventDropRole": "1160350076695232593",
-
-    "serverBoosterBonus": 0,
-    "activeBoosterBonus": 1,
-    "serverSubscriberBonus": 1,
+    "eventDropRole": "1160350076695232593",    
 
     "everyoneGiveawayCap": 1,
     "serverBoosterGiveawayBonus": 2,
