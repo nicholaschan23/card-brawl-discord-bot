@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const brawl = require("./help/brawl");
-const token = require("./help/token");
+const brawl = require("./help/brawlHelp");
+const token = require("./help/tokenHelp");
 
 module.exports = {
     category: "public",
