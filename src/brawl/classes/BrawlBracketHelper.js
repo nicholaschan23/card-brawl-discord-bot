@@ -164,6 +164,14 @@ class Match {
         });
         await delay(bconfig.voteTime);
 
+        // Count votes
+        let count1 = users1.size;
+        let count2 = users2.size;
+
+        // Update user stats
+        myUserStat.updateVotesReceived(owner1, count1);
+        myUserStat.updateVotesReceived(owner2, count2);
+
         // Bonus votes
         let bonus1 = 0;
         let bonus2 = 0;
@@ -173,10 +181,6 @@ class Match {
         } catch (error) {
             console.error("Failed to calculate bonus votes:", error);
         }
-
-        // Count votes
-        let count1 = users1.size;
-        let count2 = users2.size;
         count1 += bonus1;
         count2 += bonus2;
 
@@ -198,10 +202,7 @@ class Match {
             bracketModel.mostVotes.card = this.card2;
         }
 
-        // Update user stats
-        myUserStat.updateVotesReceived(owner1, count1);
-        myUserStat.updateVotesReceived(owner2, count2);
-
+        // Announce match winner
         const difference = Math.abs(count1 - count2);
         if (count1 > count2) {
             this.winner = this.card1;
