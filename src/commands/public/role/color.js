@@ -186,11 +186,12 @@ module.exports = {
                         components: [],
                     });
 
-                    return i.reply({
+                    i.reply({
                         content: `You already have an exclusive color from the ${blacklist} role!`,
                         ephemeral: true,
                         allowedMentions: { parse: [] },
                     });
+                    return;
                 }
 
                 const roles = [...colors, ...neonColors];
@@ -205,11 +206,12 @@ module.exports = {
                         components: [],
                     });
 
-                    return i.reply({
+                    i.reply({
                         content: `You already have the color ${currentRole}!`,
                         ephemeral: true,
                         allowedMentions: { parse: [] },
                     });
+                    return;
                 }
 
                 // Mark previous embed as done and successful
@@ -257,10 +259,11 @@ module.exports = {
                     switch (confirmation.customId) {
                         case "cancelColor": {
                             purchaseEmbed.setColor(config.red);
-                            return await confirmation.update({
+                            await confirmation.update({
                                 embeds: [purchaseEmbed],
                                 components: [],
                             });
+                            return;
                         }
                         case "confirmColor": {
                             const task = async () => {
@@ -302,10 +305,11 @@ module.exports = {
                                     components: [],
                                 });
 
-                                return await interaction.followUp({
+                                await interaction.followUp({
                                     content: error.message,
                                     ephemeral: true,
                                 });
+                                return;
                             }
 
                             purchaseEmbed.setColor(config.green);
@@ -314,27 +318,29 @@ module.exports = {
                                 components: [],
                             });
 
-                            return await interaction.channel.send({
+                            await interaction.channel.send({
                                 content: `<@${userID}> exchanged **${cost} ${config.emojiToken} Tokens** for the color ${addRole}!`,
                                 allowedMentions: { parse: [] },
                             });
-                            break;
+                            return;
                         }
                     }
                 } catch (error) {
                     console.error(error);
-                    return await interaction.followUp({
+                    await interaction.followUp({
                         content: "Confirmation not received within `1 minute`, cancelling.",
                         ephemeral: true,
                     });
+                    return;
                 }
             });
         } catch (error) {
             console.error(error);
-            return await interaction.followUp({
+            await interaction.followUp({
                 content: "Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
+            return;
         }
     },
 };
