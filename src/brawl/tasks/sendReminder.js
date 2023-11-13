@@ -1,6 +1,6 @@
 const client = require("../../index");
 const config = require("../../../config.json");
-const ScheduleModel = require("../../../data/schemas/scheduleSchema");
+const ScheduleModel = require("../../schedule/schemas/scheduleSchema");
 
 async function reminder(data) {
     const judgesChannel = client.channels.cache.get(config.judgesChannelID);
