@@ -8,7 +8,7 @@ const QA = [
     },
     {
         question: `How do you earn tokens?`,
-        answer: `Tokens are earned through community engagement.\n 1. Every 5 drops rewards you a ${config.emojiToken}! Drops count every 30 minutes and can be from any of the bots below. See <#1144103186974646402> for details.\n - <@${config.karutaID}>\n - <@${config.sofiID}>\n - <@${config.tofuID}>\n - <@${config.gachaponID}>`,
+        answer: `Tokens are earned through community engagement.\nEvery 5 drops rewards you a ${config.emojiToken}! Drops count every 30 minutes and can be from any of the bots below. See <#1144103186974646402> for details.\n- <@${config.karutaID}>\n- <@${config.sofiID}>\n- <@${config.tofuID}>\n- <@${config.gachaponID}>`,
     },
     {
         question: `What can I spend tokens on?`,
