@@ -1,15 +1,18 @@
 const cron = require("node-cron");
+const cronParser = require('cron-parser');
 const ScheduleModel = require("../schemas/scheduleSchema");
 
 async function loadSchedules() {
+    console.log("[LOAD SCHEDULES] Loading schedules...");
     try {
-        console.log("[LOAD SCHEDULES] Loading schedules...");
-
         const schedules = await ScheduleModel.find();
         const currentDateTime = new Date();
-        schedules.forEach((schedule) => {
-            const nextScheduledDate = cron.schedule(schedule.cron).nextDate();
 
+        schedules.forEach((schedule) => {
+            const task = require(`../../${schedule.task}`);
+            console.log(task)
+
+            const nextScheduledDate = cronParser.parseExpression(schedule.cron).next();
             console.log(
                 `[LOAD SCHEDULES] Next scheduled date for ${schedule.name}:`,
                 nextScheduledDate
@@ -17,13 +20,12 @@ async function loadSchedules() {
             if (nextScheduledDate <= currentDateTime) {
                 // Execute the task immediately if the next scheduled date has passed
                 console.log(`[LOAD SCHEDULES] Executing task for ${schedule.name} immediately`);
-                const task = require(`./tasks/${schedule.task}`);
                 task(schedule.data);
-            } else {
+            } 
+            else {
                 // Schedule the task as usual
                 console.log(`[LOAD SCHEDULES] Scheduling ${schedule.name}`);
                 cron.schedule(schedule.cron, () => {
-                    const task = require(`../../${schedule.task}`);
                     task(schedule.data);
                 });
             }
