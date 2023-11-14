@@ -1,7 +1,7 @@
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require("discord.js");
 
-async function buttonPages(interaction, pages) {
-    await interaction.deferReply();
+async function buttonPages(interaction, pages, ephemeral) {
+    await interaction.deferReply({ ephemeral: ephemeral });
 
     // 1 page, no buttons
     if (pages.length === 1) {

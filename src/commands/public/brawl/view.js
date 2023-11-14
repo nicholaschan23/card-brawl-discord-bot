@@ -1,6 +1,6 @@
 const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
 const formatTitle = require("../../../brawl/src/formatTitle");
-const buttonPages = require("../../../brawl/src/pagination");
+const buttonPages = require("../../../support/src/pagination");
 const config = require("../../../../config.json");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 
@@ -59,6 +59,6 @@ module.exports = {
                 description = "";
             }
         }
-        buttonPages(interaction, pages);
+        buttonPages(interaction, pages, false);
     },
 };
