@@ -72,17 +72,17 @@ module.exports = {
         const image = attachment ? attachment.proxyURL : null;
         const winners = interaction.options.getInteger("winners") ?? 1;
 
-        // const duration = interaction.options.getInteger("duration") ?? 1;
-        // const currentDate = new Date();
-        // const endTime = new Date(currentDate);
-        // endTime.setUTCDate(currentDate.getUTCDate() + duration);
-        // const unixEndTime = Math.floor(endTime.getTime() / 1000); // Seconds
-
-        const durationInSeconds = 60;
+        const duration = interaction.options.getInteger("duration") ?? 1;
         const currentDate = new Date();
-        const endTime = new Date(currentDate.getTime() + durationInSeconds * 1000);
-        const utcEndTime = new Date(endTime.toUTCString());
-        const unixEndTime = Math.floor(utcEndTime.getTime() / 1000);
+        const endTime = new Date(currentDate);
+        endTime.setUTCDate(currentDate.getUTCDate() + duration);
+        const unixEndTime = Math.floor(endTime.getTime() / 1000); // Seconds
+
+        // const durationInSeconds = 60;
+        // const currentDate = new Date();
+        // const endTime = new Date(currentDate.getTime() + durationInSeconds * 1000);
+        // const utcEndTime = new Date(endTime.toUTCString());
+        // const unixEndTime = Math.floor(utcEndTime.getTime() / 1000);
 
         const sponsor = interaction.options.getUser("sponsor") ?? interaction.user;
         if (sponsor.bot) {
@@ -200,13 +200,10 @@ module.exports = {
         await scheduleModel.save();
         console.log("[GIVEAWAY CREATE] Defined end giveaway schema");
 
-        giveawayModel.open = false;
-        endGiveaway(scheduleModel.data);
-
-
-        // cron.schedule(scheduleModel.cron, () => {
-        //     endGiveaway(scheduleModel.data);
-        // });
-        // console.log("Scheduled end giveaway");
+        // Schedule when to roll winner
+        cron.schedule(scheduleModel.cron, () => {
+            endGiveaway(scheduleModel.data);
+        });
+        console.log("Scheduled end giveaway");
     },
 };
