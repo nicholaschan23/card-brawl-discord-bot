@@ -71,7 +71,7 @@ async function enterGiveaway(interaction) {
         let upgrade = `Become a <@&${config.activeBoosterRole}> or <@&${config.serverSubscriberRole}> to enter more!`;
         if (maxEntries === gconfig.activeBoosterCap) {
             upgrade = `Become a <@&${config.serverSubscriberRole}> to enter more!`;
-        } else if (maxEntires === gconfig.serverSubscriberCap) {
+        } else if (maxEntries === gconfig.serverSubscriberCap) {
             upgrade = "You've entered the max amount of entries.";
         }
 
@@ -151,7 +151,7 @@ async function enterGiveaway(interaction) {
             )
             .setColor(config.green);
 
-        await interaction.followUp({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
         return;
     }
 
