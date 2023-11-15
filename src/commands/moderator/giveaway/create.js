@@ -85,6 +85,12 @@ module.exports = {
         const unixEndTime = Math.floor(utcEndTime.getTime() / 1000);
 
         const sponsor = interaction.options.getUser("sponsor") ?? interaction.user;
+        if (sponsor.bot) {
+            return await interaction.reply({
+                content: "The sponsor cannot be a bot.",
+                ephemeral: true,
+            });
+        }
         const sponsorID = sponsor.id;
 
         // Intialize giveaway schema model
@@ -194,9 +200,13 @@ module.exports = {
         await scheduleModel.save();
         console.log("[GIVEAWAY CREATE] Defined end giveaway schema");
 
-        cron.schedule(scheduleModel.cron, () => {
-            endGiveaway(scheduleModel.data);
-        });
-        console.log("Scheduled end giveaway");
+        giveawayModel.open = false;
+        endGiveaway(scheduleModel.data);
+
+
+        // cron.schedule(scheduleModel.cron, () => {
+        //     endGiveaway(scheduleModel.data);
+        // });
+        // console.log("Scheduled end giveaway");
     },
 };

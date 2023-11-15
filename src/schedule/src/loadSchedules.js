@@ -1,38 +1,37 @@
 const cron = require("node-cron");
-const cronParser = require("cron-parser");
 const ScheduleModel = require("../schemas/scheduleSchema");
 
-async function loadSchedules() {
-    console.log("[LOAD SCHEDULES] Loading schedules...");
+// TODO: Implement auto-deleting schedules
+function hasCronPassed(cronExpression) {
     try {
-        const schedules = await ScheduleModel.find();
+        const cronSchedule = cron.schedule(cronExpression);
+        const nextScheduledDate = cronSchedule.nextDate();
         const currentDateTime = new Date();
+        console.log(nextScheduledDate);
+        console.log(currentDateTime);
 
-        schedules.forEach((schedule) => {
-            const task = require(`../../${schedule.task}`);
-            console.log(task);
-
-            const nextScheduledDate = cronParser.parseExpression(schedule.cron).next();
-            console.log(
-                `[LOAD SCHEDULES] Next scheduled date for ${schedule.name}:`,
-                nextScheduledDate
-            );
-            if (nextScheduledDate <= currentDateTime) {
-                // Execute the task immediately if the next scheduled date has passed
-                console.log(`[LOAD SCHEDULES] Executing task for ${schedule.name} immediately`);
-                task(schedule.data);
-            } else {
-                // Schedule the task as usual
-                console.log(`[LOAD SCHEDULES] Scheduling ${schedule.name}`);
-                cron.schedule(schedule.cron, () => {
-                    task(schedule.data);
-                });
-            }
-        });
-        console.log(`[LOAD SCHEDULES] Successfully loaded ${schedules.length} schedules`);
+        return nextScheduledDate <= currentDateTime;
     } catch (error) {
-        console.error("[LOAD SCHEDULES] Error loading schedules:", error);
+        console.error(error);
     }
+}
+
+async function loadSchedules() {
+    const schedules = await ScheduleModel.find();
+
+    console.log(`[LOAD SCHEDULES] Loading ${schedules.length} schedules...`);
+    try {
+        for (const schedule of schedules) {
+            const task = require(`../../${schedule.task}`);
+            console.log(`[LOAD SCHEDULES] Scheduling ${schedule.name}`);
+            cron.schedule(schedule.cron, () => {
+                task(schedule.data);
+            });
+        }
+    } catch (error) {
+        console.error(error);
+    }
+    console.log(`[LOAD SCHEDULES] Successfully loaded ${schedules.length} schedules`);
 }
 
 module.exports = loadSchedules;
