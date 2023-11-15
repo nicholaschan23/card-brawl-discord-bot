@@ -35,7 +35,7 @@ async function buttonPages(interaction, pages, ephemeral) {
 
     const collector = await currentPage.createMessageComponentCollector({
         componentType: ComponentType.Button,
-        time: 60000,
+        time: 60_000,
     });
 
     collector.on("collect", async (i) => {
@@ -54,21 +54,37 @@ async function buttonPages(interaction, pages, ephemeral) {
             if (index === pages.length - 1) next.setDisabled(true);
             else next.setDisabled(false);
 
-            await currentPage.edit({
-                embeds: [pages[index]],
-                components: [row],
-            });
+            if (ephemeral) {
+                await interaction.editReply({
+                    embeds: [pages[index]],
+                    components: [row],
+                    fetchReply: true,
+                });
+            } else {
+                await currentPage.edit({
+                    embeds: [pages[index]],
+                    components: [row],
+                });
+            }
 
             collector.resetTimer();
         }
     });
 
     // End the collector
-    collector.on("end", async (i) => {
-        await currentPage.edit({
-            embeds: [pages[index]],
-            components: [],
-        });
+    collector.on("end", async () => {
+        if (ephemeral) {
+            await interaction.editReply({
+                embeds: [pages[index]],
+                components: [],
+                fetchReply: true,
+            });
+        } else {
+            await currentPage.edit({
+                embeds: [pages[index]],
+                components: [],
+            });
+        }
     });
     return currentPage;
 }
