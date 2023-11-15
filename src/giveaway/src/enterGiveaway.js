@@ -45,6 +45,7 @@ async function enterGiveaway(interaction) {
             embeds: [getTokenHelpEmbed()],
             ephemeral: true,
         });
+        console.log(`[INFO] [enterGiveaway] No inventory found:`, userID)
         return;
     }
     // User has available balance (at least 1 token)
@@ -80,10 +81,11 @@ async function enterGiveaway(interaction) {
             .setDescription(entries + " " + upgrade)
             .setColor(config.blue);
 
-        await interaction.followUp({
+        await interaction.reply({
             embeds: [embed],
             ephemeral: true,
         });
+        console.log(`[INFO] [enterGiveaway] Already have max entries:`, userID)
         return;
     }
 
@@ -94,14 +96,10 @@ async function enterGiveaway(interaction) {
             userID,
         }).exec();
 
-        // Check if it exists
-        if (!inventoryModel) {
-            throw new Error(`You have no inventory yet.`);
-        }
-
         // Check balance
         const balance = inventoryModel.numTokens;
         if (balance < amount) {
+            console.log(`[INFO] [enterGiveaway] Insufficient balance:`, userID)
             throw new Error(`You don't have enough **${config.emojiToken} Tokens**.`);
         }
 
@@ -152,7 +150,7 @@ async function enterGiveaway(interaction) {
             .setColor(config.green);
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
-        console.log(`Successfully entered giveaway`)
+        console.log(`[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`, userID)
         return;
     }
 
@@ -290,6 +288,7 @@ async function enterGiveaway(interaction) {
                                 embeds: [successEmbed],
                                 ephemeral: true,
                             });
+                            console.log(`[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`, userID)
                             return;
                         }
                     }
