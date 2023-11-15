@@ -154,7 +154,7 @@ module.exports = {
                         components: [row],
                     });
                     giveawayModel.messageID = message.id;
-                    await channel.send(`Click 🎉 to join the giveaway!`);
+                    await channel.send(`<@&${config.giveawayRole}> Click 🎉 to join the giveaway!`);
 
                     // Save BrawlSetupModel
                     try {
