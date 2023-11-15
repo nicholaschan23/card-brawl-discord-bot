@@ -12,7 +12,7 @@ const QA = [
     },
     {
         question: `What can I spend tokens on?`,
-        answer: `Currently, the available options to spend tokens on are listed below. More features coming soon!\n- Role color (\`/role color\`\n- Giveaways (<#${config.giveawayChannelID}>))`,
+        answer: `Currently, the available options to spend tokens on are listed below. More features coming soon!\n- Role color (\`/role color\`)\n- Giveaways (<#${config.giveawayChannelID}>)`,
     },
 ];
 
