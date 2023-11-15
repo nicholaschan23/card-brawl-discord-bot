@@ -40,7 +40,7 @@ async function enterGiveaway(interaction) {
 
     // Inventory undefined
     if (!inventory) {
-        await interaction.followUp({
+        await interaction.reply({
             content: `You need **1 ${config.emojiToken} Token** to enter this giveaway!`,
             embeds: [getTokenHelpEmbed()],
             ephemeral: true,
@@ -152,6 +152,7 @@ async function enterGiveaway(interaction) {
             .setColor(config.green);
 
         await interaction.reply({ embeds: [embed], ephemeral: true });
+        console.log(`Successfully entered giveaway`)
         return;
     }
 
