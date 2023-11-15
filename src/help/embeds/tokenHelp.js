@@ -8,11 +8,11 @@ const QA = [
     },
     {
         question: `How do you earn tokens?`,
-        answer: `Tokens are earned through community engagement.\nEvery 5 drops rewards you a ${config.emojiToken}! Drops count every 30 minutes and can be from any of the bots below. See <#1144103186974646402> for details.\n- <@${config.karutaID}>\n- <@${config.sofiID}>\n- <@${config.tofuID}>\n- <@${config.gachaponID}>`,
+        answer: `There are various ways to earn tokens through community engagement.\n 1. Every 5 drops rewards you a ${config.emojiToken}! Drops count every 30 minutes and can be from any of the bots below. See <#1144103186974646402> for details.\n - <@${config.karutaID}>\n - <@${config.sofiID}>\n - <@${config.tofuID}>\n - <@${config.gachaponID}>\n- Sponsoring giveaways earns you 10% of total ${config.emojiToken} entered! The more appealing the giveaway, the more participants, the more tokens.`,
     },
     {
         question: `What can I spend tokens on?`,
-        answer: `Currently, the available options to spend tokens on are listed below. More features coming soon!\n- Role color (Use command \`/role color\`)`,
+        answer: `Currently, the available options to spend tokens on are listed below. More features coming soon!\n- Role color (\`/role color\`\n- Giveaways (<#${config.giveawayChannelID}>))`,
     },
 ];
 
