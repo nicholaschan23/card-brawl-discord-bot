@@ -2,8 +2,17 @@ const client = require("../../index");
 
 async function rollWinner(giveawayModel, numWinners) {
     const entries = new Map(giveawayModel.entries);
+
     // Remove already drawn winners
     giveawayModel.drawn.forEach((entry) => entries.delete(entry));
+
+    // Edge cases
+    if (entries.size === 0) {
+        return;
+    }
+    if (entries.size < numWinners) {
+        numWinners = entries.size
+    }
 
     let winners = [];
     try {

@@ -1,16 +1,21 @@
 const { EmbedBuilder } = require("discord.js");
+const gconfig = require("../giveaway-config.json")
 const config = require("../../../config.json");
 
 function getGiveawayEmbed(giveawayModel, image) {
     const token = config.emojiToken;
 
-    const headers = `Sponsor: <@${giveawayModel.sponsor}>\nHost: <@${giveawayModel.host}>\nWinners: **${giveawayModel.winners}**\nRequirement: **1 ${token} = 1 entry**\nEnds: <t:${giveawayModel.unixEndTime}:R>`;
-    const entries = `**Entry Limit**:\n@everyone **${config.everyoneGiveawayCap}** entry\n<@&${config.serverBoosterRole}> **${config.serverBoosterGiveawayBonus}** entries\n<@&${config.activeBoosterRole}> **${config.activeBoosterGiveawayBonus}** entries\n<@&${config.serverSubscriberRole}> **${config.serverSubscriberGiveawayBonus}** entries`;
+    const headers = `Sponsor: <@${giveawayModel.sponsor}>\nHost: <@${giveawayModel.host}>\nWinners: **${giveawayModel.winners}**\nClosed: <t:${giveawayModel.unixEndTime}:R>`;
+    const entries = `**Entry Limit**: *(1 entry is 1 ${token})*\n@everyone **${gconfig.everyoneCap}** entry\n<@&${config.serverBoosterRole}> **${gconfig.serverBoosterCap}** entries\n<@&${config.activeBoosterRole}> **${gconfig.activeBoosterCap}** entries\n<@&${config.serverSubscriberRole}> **${gconfig.serverSubscriberCap}** entries`;
 
     const embed = new EmbedBuilder()
         .setTitle(`${giveawayModel.prize}`)
         .setDescription(headers + "\n\n" + entries)
-        .setImage(image);
+        .setFooter( {text: `Sponsors gain ${gconfig.percentYield}% of total Tokens entered!`})
+
+    if (image) {
+        embed.setImage(image);
+    }
     return embed;
 }
 

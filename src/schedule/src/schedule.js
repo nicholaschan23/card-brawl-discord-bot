@@ -3,7 +3,6 @@ const {
     GuildScheduledEventEntityType,
     GuildScheduledEventPrivacyLevel,
 } = require("discord.js");
-const loadSchedules = require("./loadSchedules");
 const client = require("../../index");
 const config = require("../../../config.json");
 const ScheduleModel = require("../schemas/scheduleSchema");
@@ -99,6 +98,9 @@ async function createGuildEvent(setupModel) {
     });
     await remind24.save();
     console.log("[GUILD EVENT] Defined 24 hour reminder schema");
+    cron.schedule(remind24.cron, () => {
+        task(remind24.data);
+    });
 
     const remind1 = new ScheduleModel({
         name: "1H",
@@ -111,6 +113,9 @@ async function createGuildEvent(setupModel) {
     });
     await remind1.save();
     console.log("[GUILD EVENT] Defined 1 hour reminder schema");
+    cron.schedule(remind1.cron, () => {
+        task(remind1.data);
+    });
 
     const start = new ScheduleModel({
         name: setupModel.name,
@@ -120,8 +125,9 @@ async function createGuildEvent(setupModel) {
     });
     await start.save();
     console.log("[GUILD EVENT] Defined start schema");
-
-    loadSchedules();
+    cron.schedule(start.cron, () => {
+        task(start.data);
+    });
 }
 
 module.exports = { unixTimeToCron, getNextSaturday, createGuildEvent };

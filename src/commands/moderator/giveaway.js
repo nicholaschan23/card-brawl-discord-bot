@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const create = require("./giveaway/create");
+const reroll = require("./giveaway/reroll");
 
 module.exports = {
     category: "moderator",
@@ -7,12 +8,17 @@ module.exports = {
         .setName("giveaway")
         .setDescription("Giveaway main command.")
         .addSubcommand(create.data)
+        .addSubcommand(reroll.data)
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
             case "create": {
                 await create.execute(interaction);
+                break;
+            }
+            case "reroll": {
+                await reroll.execute(interaction);
                 break;
             }
             default: {

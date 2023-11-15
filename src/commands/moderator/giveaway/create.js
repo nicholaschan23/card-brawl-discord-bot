@@ -4,8 +4,10 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
+const endGiveaway = require("../../../giveaway/tasks/endGiveaway");
 const getGiveawayEmbed = require("../../../giveaway/embeds/giveawayAnnouncement");
 const { unixTimeToCron } = require("../../../schedule/src/schedule");
+const cron = require("node-cron");
 const client = require("../../../index");
 const config = require("../../../../config.json");
 const GiveawayModel = require("../../../giveaway/schemas/giveawaySchema");
@@ -20,6 +22,12 @@ module.exports = {
             option
                 .setName("prize")
                 .setDescription("Title of the cards that are being given away.")
+                .setRequired(true)
+        )
+        .addUserOption((option) =>
+            option
+                .setName("sponsor")
+                .setDescription("Sponsor of this giveaway. (Default host)")
                 .setRequired(true)
         )
         .addAttachmentOption((option) =>
@@ -41,9 +49,6 @@ module.exports = {
                 .setDescription("Duration of the giveaway in days (Default: 1 day).")
                 .setMinValue(1)
                 .setMaxValue(3)
-        )
-        .addUserOption((option) =>
-            option.setName("sponsor").setDescription("Sponsor of this giveaway. (Default host)")
         ),
     async execute(interaction) {
         // Moderator permissions
@@ -58,19 +63,26 @@ module.exports = {
         const prize = interaction.options.getString("prize");
 
         const attachment = interaction.options.getAttachment("image");
-        if (attachment.contentType !== "image/png") {
+        if (attachment && attachment.contentType !== "image/png") {
             return await interaction.reply({
-                content: "The attachment is not a image png.",
+                content: "The attachment is not an image png.",
                 ephemeral: true,
             });
         }
+        const image = attachment ? attachment.proxyURL : null;
         const winners = interaction.options.getInteger("winners") ?? 1;
 
-        const duration = interaction.options.getInteger("duration") ?? 1;
+        // const duration = interaction.options.getInteger("duration") ?? 1;
+        // const currentDate = new Date();
+        // const endTime = new Date(currentDate);
+        // endTime.setUTCDate(currentDate.getUTCDate() + duration);
+        // const unixEndTime = Math.floor(endTime.getTime() / 1000); // Seconds
+
+        const durationInSeconds = 60;
         const currentDate = new Date();
-        const endTime = new Date(currentDate);
-        endTime.setUTCDate(currentDate.getUTCDate() + duration);
-        const unixEndTime = Math.floor(endTime.getTime() / 1000); // Seconds
+        const endTime = new Date(currentDate.getTime() + durationInSeconds * 1000);
+        const utcEndTime = new Date(endTime.toUTCString());
+        const unixEndTime = Math.floor(utcEndTime.getTime() / 1000);
 
         const sponsor = interaction.options.getUser("sponsor") ?? interaction.user;
         const sponsorID = sponsor.id;
@@ -85,7 +97,7 @@ module.exports = {
         });
 
         // Send embed
-        const giveawayEmbed = getGiveawayEmbed(giveawayModel, attachment.proxyURL);
+        const giveawayEmbed = getGiveawayEmbed(giveawayModel, image);
         giveawayEmbed.setColor(config.blue);
         const cancel = new ButtonBuilder()
             .setCustomId("cancelGiveaway")
@@ -117,7 +129,7 @@ module.exports = {
                         embeds: [giveawayEmbed],
                         components: [],
                     });
-                    break;
+                    return;
                 }
                 case "confirmGiveaway": {
                     // Announce brawl bracket creation for contestants to join
@@ -126,19 +138,17 @@ module.exports = {
                         .setEmoji("🎉")
                         .setStyle(ButtonStyle.Primary);
                     const participants = new ButtonBuilder()
-                        .setCustomId("participants")
-                        .setEmoji(config.emojiToken)
+                        .setCustomId("viewParticipants")
                         .setLabel("Participants")
                         .setStyle(ButtonStyle.Secondary);
                     const row = new ActionRowBuilder().addComponents(enter, participants);
-                    // const channel = client.channels.cache.get(config.giveawayChannelID);
-                    const channel = interaction.channel;
+                    const channel = client.channels.cache.get(config.giveawayChannelID);
                     const message = await channel.send({
                         embeds: [giveawayEmbed],
                         components: [row],
                     });
                     giveawayModel.messageID = message.id;
-                    await channel.send(`Giveaway Click 🎉 to join the giveaway!`);
+                    await channel.send(`Click 🎉 to join the giveaway!`);
 
                     // Save BrawlSetupModel
                     try {
@@ -155,7 +165,7 @@ module.exports = {
 
                     giveawayEmbed.setColor(config.green);
                     await confirmation.update({
-                        content: "Card Brawl created!",
+                        content: "Giveaway created!",
                         embeds: [giveawayEmbed],
                         components: [],
                     });
@@ -171,17 +181,22 @@ module.exports = {
             });
         }
 
-        // Schedule ending the giveaway
-        const endGiveaway = new ScheduleModel({
-            name: `Giveaway${giveawayModel.messageID}`,
-            task: "sendReminder",
+        // Schedule ending the giveaway in case bot restart
+        const scheduleModel = new ScheduleModel({
+            name: `endGiveaway${giveawayModel.messageID}`,
+            task: "giveaway/tasks/endGiveaway",
             cron: `${unixTimeToCron(giveawayModel.unixEndTime * 1000)}`,
             data: {
                 messageID: giveawayModel.messageID,
-                scheduleName: `Giveaway${giveawayModel.messageID}`,
+                scheduleName: `endGiveaway${giveawayModel.messageID}`,
             },
         });
-        await endGiveaway.save();
+        await scheduleModel.save();
         console.log("[GIVEAWAY CREATE] Defined end giveaway schema");
+
+        cron.schedule(scheduleModel.cron, () => {
+            endGiveaway(scheduleModel.data);
+        });
+        console.log("Scheduled end giveaway");
     },
 };

@@ -38,11 +38,15 @@ module.exports = {
 
         // Announce winner
         const winnerArray = await rollWinner(giveawayModel, 1);
+        if (!winnerArray) {
+            console.warn("[ROLL WINNER] There are no more participants to roll as winners");
+            return await interaction.reply("There are no more participants to roll as winners.");
+        }
         const winnerMentions = `<@${winnerArray[0]}>`;
         const channel = client.channels.cache.get(config.giveawayChannelID);
         await channel.send({
             content: `Congrats to ${winnerMentions}! 🎉`,
-            embeds: [getWinnerEmbed(winnerMentions, giveawayModel.host, messageID)],
+            embeds: [getWinnerEmbed(winnerMentions, giveawayModel.host, messageID, giveawayModel.prize)],
         });
     },
 };
