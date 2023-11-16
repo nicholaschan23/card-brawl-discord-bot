@@ -180,18 +180,18 @@ async function enterGiveaway(interaction) {
         .then(async (i) => {
             amount = i.fields.getTextInputValue("entryAmount");
             if (isNaN(amount)) {
-                i.reply({ content: "Please enter a number.", ephemeral: true });
+                await i.reply({ content: "Please enter a number.", ephemeral: true });
                 return;
             }
             amount = parseInt(amount);
 
             if (amount === 0) {
-                i.reply({ content: "Please enter a number greater than **0**.", ephemeral: true });
+                await i.reply({ content: "Please enter a number greater than **0**.", ephemeral: true });
                 return;
             }
 
             if (amount > maxIn) {
-                i.reply({
+                await i.reply({
                     content: `You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
                     ephemeral: true,
                 });
@@ -199,7 +199,7 @@ async function enterGiveaway(interaction) {
             }
 
             if (amount > balance) {
-                i.reply({
+                await i.reply({
                     content: `You don't have **${amount} ${config.emojiToken} Tokens**.`,
                     ephemeral: true,
                 });
