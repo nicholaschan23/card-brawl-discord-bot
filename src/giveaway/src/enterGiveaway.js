@@ -104,7 +104,7 @@ async function enterGiveaway(interaction) {
         }
 
         // Update balance
-        // inventoryModel.numTokens -= amount;
+        inventoryModel.numTokens -= amount;
 
         await inventoryModel.save();
     };
