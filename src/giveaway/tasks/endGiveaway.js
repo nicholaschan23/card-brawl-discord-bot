@@ -73,7 +73,7 @@ async function endGiveaway(data) {
 
         await channel.send({
             content: `Congrats to ${winnerMentions}! 🎉`,
-            embeds: [getWinnerEmbed(winnerMentions, giveawayModel.host, messageID)],
+            embeds: [getWinnerEmbed(winnerMentions, giveawayModel.host, messageID, giveawayModel.prize)],
         });
     }
 
