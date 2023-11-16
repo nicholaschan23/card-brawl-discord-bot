@@ -15,7 +15,7 @@ module.exports = {
         ),
     async execute(interaction) {
         // Moderator permissions
-        if (!interaction.member.roles.cache.some((role) => role.name === "Owner")) {
+        if (!interaction.member.roles.cache.some((role) => role.name === "Moderator")) {
             return await interaction.reply({
                 content: "You do not have permission to use this command.",
                 ephemeral: true,
