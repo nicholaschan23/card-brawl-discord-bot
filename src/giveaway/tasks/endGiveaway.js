@@ -1,4 +1,5 @@
 const { ActionRowBuilder, EmbedBuilder } = require("discord.js");
+const getWinnerEmbed = require("../../giveaway/embeds/giveawayWinner")
 const rollWinner = require("../src/rollWinner");
 const client = require("../../index");
 const gconfig = require("../../giveaway/giveaway-config.json");
