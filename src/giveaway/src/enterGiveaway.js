@@ -48,6 +48,16 @@ async function enterGiveaway(interaction) {
         console.log(`[INFO] [enterGiveaway] No inventory found:`, userID)
         return;
     }
+    // No tokens
+    if (inventory.numTokens === 0) {
+        await interaction.reply({
+            content: `You need **1 ${config.emojiToken} Token** to enter this giveaway!`,
+            embeds: [getTokenHelpEmbed()],
+            ephemeral: true,
+        });
+        console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userID)
+        return;
+    }
     // User has available balance (at least 1 token)
     const balance = inventory.numTokens;
 
