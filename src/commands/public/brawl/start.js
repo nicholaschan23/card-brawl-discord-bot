@@ -66,7 +66,7 @@ module.exports = {
                     });
                 });
             };
-            client.setupModelQueue.enqueue(task);
+            await client.setupModelQueue.enqueue(task);
             console.log("[BRAWL START] Closed Card Brawl");
         }
 

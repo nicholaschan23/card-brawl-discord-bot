@@ -176,7 +176,15 @@ module.exports = {
 
         // Confirmation received
         console.log("[BRAWL ENTER] Found Card Details embed for: " + interaction.user.tag);
-        const embedMessage = collected.first();
+        let embedMessage;
+        try {
+            embedMessage = collected.first();
+        } catch (error) {
+            return await interaction.followUp({
+                content: "Card embed not found.",
+                ephemeral: true,
+            });
+        }
         const botResponseEmbed = embedMessage.embeds[0].data;
         const description = botResponseEmbed.description;
 
@@ -341,7 +349,7 @@ module.exports = {
 
                 // Add card to the brawl in database
                 try {
-                    client.setupModelQueue.enqueue(task);
+                    await client.setupModelQueue.enqueue(task);
                     await channel.send(
                         `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                     );

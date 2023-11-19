@@ -39,7 +39,7 @@ async function rollWinner(giveawayModel, numWinners) {
         const task = async () => {
             await giveawayModel.save();
         };
-        client.giveawayQueue.enqueue(task);
+        await client.giveawayQueue.enqueue(task);
 
         return winners;
     } catch (error) {

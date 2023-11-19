@@ -34,7 +34,7 @@ async function startBrawl(data) {
                 });
             });
         };
-        client.setupModelQueue.enqueue(task);
+        await client.setupModelQueue.enqueue(task);
     }
 
     // Get BrawlBracketModel

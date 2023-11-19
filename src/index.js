@@ -36,6 +36,8 @@ client.events = new Collection();
 client.cooldowns = new Collection();
 client.commands = new Collection();
 
+client.commandsActive = {}
+
 const loadEvents = require("./client/handlers/eventHandler");
 loadEvents(client);
 
