@@ -25,7 +25,7 @@ class Match {
         this.winner = matchSchema.winner;
     }
 
-    async addBonusVotes(userIDs) {
+    async addBonusVotes(userIDs, myUserStat) {
         const guild = client.guilds.cache.get(config.guildID);
 
         let totalCount = 0;
@@ -44,6 +44,8 @@ class Match {
                 bonus = Math.max(bconfig.activeBoosterBonus, bconfig.serverSubscriberBonus);
             }
             totalCount += bonus;
+            
+            myUserStat.updateVotesGiven(reactedUser, 1);
         }
 
         return totalCount;
@@ -176,8 +178,8 @@ class Match {
         let bonus1 = 0;
         let bonus2 = 0;
         try {
-            bonus1 = await this.addBonusVotes(users1);
-            bonus2 = await this.addBonusVotes(users2);
+            bonus1 = await this.addBonusVotes(users1, myUserStat);
+            bonus2 = await this.addBonusVotes(users2, myUserStat);
         } catch (error) {
             console.error("Failed to calculate bonus votes:", error);
         }
@@ -386,7 +388,7 @@ class BrawlBracketHelper {
         this.setupModel.cards.forEach((card) => {
             userIDs.push(card.userID);
         });
-        await this.myUserStat.updateCardsEntered(userIDs);
+        this.myUserStat.updateCardsEntered(userIDs);
         await this.myUserStat.saveProgress();
     }
 
@@ -432,7 +434,7 @@ class BrawlBracketHelper {
         await this.channel.send({
             embeds: [leastEmbed],
         });
-        await this.myUserStat.updateMentions(leastID);
+        this.myUserStat.updateMentions(leastID);
         await delay(2);
 
         // Most votes embed
@@ -448,7 +450,7 @@ class BrawlBracketHelper {
         await this.channel.send({
             embeds: [mostEmbed],
         });
-        await this.myUserStat.updateMentions(mostID);
+        this.myUserStat.updateMentions(mostID);
         await delay(2);
     }
 
@@ -459,7 +461,7 @@ class BrawlBracketHelper {
         const winnerID = this.setupModel.cards.get(winnerCard).userID;
 
         // Update user stats for win
-        await this.myUserStat.updateWin(winnerID);
+        this.myUserStat.updateWin(winnerID);
 
         // Send winner embed
         await this.channel.send({

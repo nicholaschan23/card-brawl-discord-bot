@@ -49,7 +49,7 @@ module.exports = {
         // Close card competition
         if (setupModel.open) {
             const task = async () => {
-                setupModel = await BrawlSetupModel.findOne({ name }).exec();
+                // setupModel = await BrawlSetupModel.findOne({ name }).exec();
                 setupModel.open = false;
                 await setupModel.save();
 
@@ -93,9 +93,10 @@ module.exports = {
 
         // Check if in progress, finished, etc.
         if (myBrawlBracket.getStatus() === 2) {
-            return await interaction.reply(
+             await interaction.reply(
                 `The **${setupModel.name}** Card Brawl has already finished!`
             );
+            return
         }
         if (myBrawlBracket.getStatus() === 1) {
             await interaction.reply(`Resuming the **${setupModel.name}** Card Brawl...`);

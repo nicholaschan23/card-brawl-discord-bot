@@ -27,13 +27,13 @@ module.exports = {
         .addUserOption((option) =>
             option
                 .setName("sponsor")
-                .setDescription("Sponsor of this giveaway. (Default host)")
+                .setDescription("Sponsor of this giveaway.")
                 .setRequired(true)
         )
         .addAttachmentOption((option) =>
             option
                 .setName("image")
-                .setDescription("Image of the cards being given away.")
+                .setDescription("Image of the card being given away.")
                 .setRequired(true)
         )
         .addIntegerOption((option) =>
@@ -48,7 +48,7 @@ module.exports = {
                 .setName("duration")
                 .setDescription("Duration of the giveaway in days (Default: 1 day).")
                 .setMinValue(1)
-                .setMaxValue(3)
+                .setMaxValue(7)
         ),
     async execute(interaction) {
         // Moderator permissions
