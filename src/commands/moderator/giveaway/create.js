@@ -34,7 +34,6 @@ module.exports = {
             option
                 .setName("image")
                 .setDescription("Image of the card being given away.")
-                .setRequired(true)
         )
         .addIntegerOption((option) =>
             option
