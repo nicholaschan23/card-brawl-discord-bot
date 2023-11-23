@@ -14,7 +14,7 @@ module.exports = {
                 message.content.includes("A wishlisted card is dropping")
             ) {
                 console.log("[READ MESSAGES] Wishlist card dropped");
-                await message.channel.send(
+                message.channel.send(
                     `<@&${config.wishlistDropRole}> A wishlisted card is dropping!`
                 );
                 return;
@@ -49,8 +49,8 @@ module.exports = {
                     });
 
                     // Event drop ping
-                    collector.on("collect", async (reaction) => {
-                        await message.reply(
+                    collector.on("collect", (reaction) => {
+                        message.reply(
                             `<@&${config.eventDropRole}> A ${reaction.emoji.name} has dropped!`
                         );
                     });
