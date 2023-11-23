@@ -44,14 +44,21 @@ async function endGiveaway(data) {
 
     // Give sponsor tokens
     const userID = giveawayModel.sponsor;
-    const inventoryTask = async () => {
-        const inventoryModel = await UserInventoryModel.findOne({ userID }).exec();
-        inventoryModel.numTokens += yield;
-        await inventoryModel.save();
-    };
-    await client.inventoryQueue.enqueue(inventoryTask);
-
     if (yield > 0) {
+        const inventoryTask = async () => {
+            let inventoryModel = await UserInventoryModel.findOne({ userID }).exec();
+            if (!inventoryModel) {
+                inventoryModel = new UserInventoryModel({
+                    userID: userID,
+                    lastUnixTime: 0,
+                    tokenCounter: 0,
+                });
+            }
+            inventoryModel.numTokens += yield;
+            await inventoryModel.save();
+        };
+        await client.inventoryQueue.enqueue(inventoryTask);
+
         await channel.send(
             `Thank you <@${userID}> for sponsoring this giveaway! You've received **${yield} ${config.emojiToken} Tokens**!`
         );
@@ -65,8 +72,8 @@ async function endGiveaway(data) {
     // Get array of winners and convert to mentions
     const winnerArray = await rollWinner(giveawayModel, giveawayModel.winners);
     if (!winnerArray) {
+        await channel.send("There are no participants to roll as winners.");
         console.warn("There are no participants to roll as winners");
-        channel.send("There are no participants to roll as winners.");
     } else {
         const addMentions = [...winnerArray.map((element) => `<@${element}>`)];
         const winnerMentions = addMentions.join(", ");
