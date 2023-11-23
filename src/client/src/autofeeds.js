@@ -26,11 +26,11 @@ function autofeedInit() {
     });
 
     // Karuta ping roles
-    const colorRoles = (client, config) => {
+    const colorRoles = async (client, config) => {
         try {
             const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
 
-            karutaDrop.send({
+            await karutaDrop.send({
                 content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
                 allowedMentions: { parse: [] },
             });
@@ -51,10 +51,10 @@ function autofeedInit() {
 
             let events = await guild.scheduledEvents.fetch();
             events = [...events.values()];
-            events.forEach((event) => {
+            events.forEach(async (event) => {
                 if (event.name.includes("Card Brawl")) {
                     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
-                    karutaDrop.send({
+                    await karutaDrop.send({
                         content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> channel to learn more.`,
                         allowedMentions: { parse: [] },
                     });
@@ -71,10 +71,10 @@ function autofeedInit() {
     });
 
     // Karuta help
-    const karutaHelp = (client) => {
+    const karutaHelp = async (client) => {
         try {
             const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
-            karutaDrop.send(
+            await karutaDrop.send(
                 `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
             );
             console.log("[AUTOFEED] Sent Karuta help reminder");
@@ -87,10 +87,10 @@ function autofeedInit() {
     });
 
     // Karuta wishlist
-    const karutaWishlist = (client) => {
+    const karutaWishlist = async (client) => {
         try {
             const karutaDrop = client.channels.cache.get(config.karutaDropChannelID);
-            karutaDrop.send(
+            await karutaDrop.send(
                 `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`!`
             );
             console.log("[AUTOFEED] Sent Karuta wishlist reminder");
