@@ -69,6 +69,16 @@ async function enterGiveaway(interaction) {
     const messageID = interaction.message.id;
     const messageLink = `https://discord.com/channels/${config.guildID}/${interaction.channel.id}/${messageID}`;
     const giveaway = await GiveawayModel.findOne({ messageID }).exec();
+
+    if (userID === giveaway.sponsor) {
+        await interaction.reply({
+            content: "You cannot enter your own giveaway.",
+            ephemeral: true,
+        });
+        console.log(`[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`, userID)
+        return;
+    }
+
     const currentEntries = giveaway.entries.get(userID) ?? 0;
     let amount = 0;
 
