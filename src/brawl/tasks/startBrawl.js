@@ -38,7 +38,7 @@ async function startBrawl(data) {
     }
 
     // Get BrawlBracketModel
-    const bracketModel = await BrawlBracketModel.findOne({ name }).exec();
+    let bracketModel = await BrawlBracketModel.findOne({ name }).exec();
     if (!bracketModel) {
         // Create brawl bracket model in database if it doesn't exist
         bracketModel = new BrawlBracketModel({
