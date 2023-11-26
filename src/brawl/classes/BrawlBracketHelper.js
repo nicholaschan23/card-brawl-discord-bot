@@ -13,6 +13,7 @@ const client = require("../../index");
 const bconfig = require("../brawl-config.json");
 const config = require("../../../config.json");
 const UserStatHelper = require("./UserStatHelper");
+const { deleteMany } = require("../schemas/userStatSchema");
 
 class Match {
     /**
@@ -44,7 +45,7 @@ class Match {
                 bonus = Math.max(bconfig.activeBoosterBonus, bconfig.serverSubscriberBonus);
             }
             totalCount += bonus;
-            
+
             myUserStat.updateVotesGiven(reactedUser, 1);
         }
 
@@ -455,10 +456,47 @@ class BrawlBracketHelper {
     }
 
     async announceWinner() {
-        const winnerCard =
-            this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1]
-                .winner;
+        const finalsMatch =
+            this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1];
+        const winnerCard = finalsMatch.winner;
         const winnerID = this.setupModel.cards.get(winnerCard).userID;
+
+        const secondCard = finalsMatch.card1 === winnerCard ? finalsMatch.card2 : finalsMatch.card1;
+        const secondID = this.setupModel.cards.get(secondCard).userID;
+
+        const semisMatch =
+            this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2]
+                .winner === winnerCard
+                ? this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 3]
+                : this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2];
+        const thirdCard = semisMatch.card1 === winnerCard ? semisMatch.card2 : semisMatch.card1;
+        const thirdID = this.setupModel.cards.get(thirdCard).userID;
+
+        // 3rd place
+        const thirdImage = this.setupModel.cards.get(thirdCard).imageLink;
+        const thirdEmbed = new EmbedBuilder()
+            .setTitle("Third Place")
+            .setDescription(
+                `Card: \`${thirdCard}\` by <@${thirdID}>`
+            )
+            .setImage(thirdImage);
+        await this.channel.send({
+            embeds: [thirdEmbed],
+        });
+        await delay(2);
+
+        // 2nd place
+        const secondImage = this.setupModel.cards.get(thirdCard).imageLink;
+        const secondEmbed = new EmbedBuilder()
+            .setTitle("Second Place")
+            .setDescription(
+                `\nCard: \`${secondCard}\` by <@${secondID}>`
+            )
+            .setImage(secondImage);
+        await this.channel.send({
+            embeds: [secondEmbed],
+        });
+        await delay(2);
 
         // Update user stats for win
         this.myUserStat.updateWin(winnerID);
