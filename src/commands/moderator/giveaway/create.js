@@ -50,14 +50,6 @@ module.exports = {
                 .setMaxValue(7)
         ),
     async execute(interaction) {
-        // Moderator permissions
-        if (!interaction.member.roles.cache.some((role) => role.name === "Moderator")) {
-            return await interaction.reply({
-                content: "You do not have permission to use this command.",
-                ephemeral: true,
-            });
-        }
-
         // Gather input variables
         const prize = interaction.options.getString("prize");
 

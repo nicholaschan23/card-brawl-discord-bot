@@ -14,14 +14,6 @@ module.exports = {
             option.setName("id").setDescription("Message ID of the giveaway.").setRequired(true)
         ),
     async execute(interaction) {
-        // Moderator permissions
-        if (!interaction.member.roles.cache.some((role) => role.name === "Moderator")) {
-            return await interaction.reply({
-                content: "You do not have permission to use this command.",
-                ephemeral: true,
-            });
-        }
-
         // Get giveaway model
         const messageID = interaction.options.getString("id");
         const giveawayModel = await GiveawayModel.findOne({ messageID }).exec();

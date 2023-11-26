@@ -11,6 +11,14 @@ module.exports = {
         .addSubcommand(reroll.data)
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
     async execute(interaction) {
+        // Moderator permissions
+        if (!interaction.member.roles.cache.some((role) => role.name === "Moderator")) {
+            return await interaction.reply({
+                content: "You do not have permission to use this command.",
+                ephemeral: true,
+            });
+        }
+
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
             case "create": {
