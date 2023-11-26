@@ -35,79 +35,23 @@ const getUserRoleValue = (member) => {
 };
 
 async function enterGiveaway(interaction) {
+    const guild = interaction.guild;
     const userID = interaction.user.id;
-    const inventory = await UserInventoryModel.findOne({ userID }).exec();
 
-    // Inventory undefined
-    if (!inventory) {
-        await interaction.reply({
-            content: `You need **1 ${config.emojiToken} Token** to enter this giveaway!`,
-            embeds: [getTokenHelpEmbed()],
-            ephemeral: true,
-        });
-        console.log(`[INFO] [enterGiveaway] No inventory found:`, userID)
-        return;
-    }
-    // No tokens
-    if (inventory.numTokens === 0) {
-        await interaction.reply({
-            content: `You need **1 ${config.emojiToken} Token** to enter this giveaway!`,
-            embeds: [getTokenHelpEmbed()],
-            ephemeral: true,
-        });
-        console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userID)
-        return;
-    }
-    // User has available balance (at least 1 token)
-    const balance = inventory.numTokens;
+    const inventory = await UserInventoryModel.findOne({ userID }).exec();
+    const balance = inventory ? inventory.numTokens : 0;
 
     // Get user's max allowed entries
-    const guild = interaction.guild;
     const member = await guild.members.fetch(userID);
-    const maxEntries = getUserRoleValue(member);
+    const maxEntries = await getUserRoleValue(member);
 
     const messageID = interaction.message.id;
     const messageLink = `https://discord.com/channels/${config.guildID}/${interaction.channel.id}/${messageID}`;
+
     const giveaway = await GiveawayModel.findOne({ messageID }).exec();
-
-    if (userID === giveaway.sponsor) {
-        await interaction.reply({
-            content: "You cannot enter your own giveaway.",
-            ephemeral: true,
-        });
-        console.log(`[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`, userID)
-        return;
-    }
-
     const currentEntries = giveaway.entries.get(userID) ?? 0;
+
     let amount = 0;
-
-    // If already have max entries, display how to get more
-    if (currentEntries === maxEntries) {
-        let entries = `You have **${currentEntries} entries** in this giveaway.`;
-        if (maxEntries === 1) {
-            entries = `You have **1 entry** in this giveaway.`;
-        }
-
-        let upgrade = `Become a <@&${config.activeBoosterRole}> or <@&${config.serverSubscriberRole}> to enter more!`;
-        if (maxEntries === gconfig.activeBoosterCap) {
-            upgrade = `Become a <@&${config.serverSubscriberRole}> to enter more!`;
-        } else if (maxEntries === gconfig.serverSubscriberCap) {
-            upgrade = "You've entered the max amount of entries.";
-        }
-
-        const embed = new EmbedBuilder()
-            .setTitle("Giveaway")
-            .setDescription(entries + " " + upgrade)
-            .setColor(config.blue);
-
-        await interaction.reply({
-            embeds: [embed],
-            ephemeral: true,
-        });
-        console.log(`[INFO] [enterGiveaway] Already have max entries:`, userID)
-        return;
-    }
 
     // Concurrent save inventory model
     const inventoryTask = async () => {
@@ -119,7 +63,7 @@ async function enterGiveaway(interaction) {
         // Check balance
         const balance = inventoryModel.numTokens;
         if (balance < amount) {
-            console.log(`[INFO] [enterGiveaway] Insufficient balance:`, userID)
+            console.log(`[INFO] [enterGiveaway] Insufficient balance:`, userID);
             throw new Error(`You don't have enough **${config.emojiToken} Tokens**.`);
         }
 
@@ -147,175 +91,240 @@ async function enterGiveaway(interaction) {
         await giveawayModel.save();
     };
 
-    // If not entered yet, user has available balance, and only allowed 1 entry -> automatically enter
-    if (currentEntries === 0 && balance >= 1 && maxEntries === 1) {
-        amount = 1;
-        try {
-            await client.inventoryQueue.enqueue(inventoryTask);
-            await client.giveawayQueue.enqueue(giveawayTask);
-        } catch (error) {
-            console.error(error)
-            await interaction.reply({
-                content: error.message,
-                ephemeral: true,
-            });
-            return;
-        }
+    if (balance > 0 && currentEntries < maxEntries && userID !== giveaway.sponsor) {
+        console.log("[INFO] [enterGiveaway] modal sent to:", userID)
 
-        const embed = new EmbedBuilder()
-            .setTitle("Giveaway")
-            .setDescription(
-                `Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
-            )
-            .setColor(config.green);
+        // Can enter multiple entries
+        const modal = new ModalBuilder()
+            .setCustomId("giveawayEnterlModal")
+            .setTitle("Giveaway Entry");
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
-        console.log(`[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`, userID)
-        return;
-    }
+        // Create the text input components
+        const maxIn = maxEntries - currentEntries;
+        const entryAmount = new TextInputBuilder()
+            .setCustomId("entryAmount")
+            .setLabel(`How many entries would you like to add?`)
+            .setValue(`${maxIn}`)
+            .setPlaceholder(`Current entries: ${currentEntries} | Entry limit: ${maxEntries}`)
+            .setStyle(TextInputStyle.Short)
+            .setMinLength(1)
+            .setMaxLength(1)
+            .setRequired(true);
+        const actionRow = new ActionRowBuilder().addComponents(entryAmount);
 
-    // Can enter multiple entries
-    const modal = new ModalBuilder().setCustomId("giveawayEnterlModal").setTitle("Giveaway Entry");
+        // Add inputs to the modal
+        modal.addComponents(actionRow);
+        await interaction.showModal(modal);
 
-    // Create the text input components
-    const maxIn = maxEntries - currentEntries;
-    const entryAmount = new TextInputBuilder()
-        .setCustomId("entryAmount")
-        .setLabel(`How many entries would you like to add?`)
-        .setValue(`${maxIn}`)
-        .setPlaceholder(`Current entries: ${currentEntries} | Entry limit: ${maxEntries}`)
-        .setStyle(TextInputStyle.Short)
-        .setMinLength(1)
-        .setMaxLength(1)
-        .setRequired(true);
-    const actionRow = new ActionRowBuilder().addComponents(entryAmount);
+        // Collect a modal submit interaction
+        await interaction
+            .awaitModalSubmit({ filter: (i) => i.customId === "giveawayEnterlModal", time: 60_000 })
+            .then(async (i) => {
+                amount = i.fields.getTextInputValue("entryAmount");
+                if (isNaN(amount)) {
+                    await i.reply({ content: "Please enter a number.", ephemeral: true });
+                    return;
+                }
+                amount = parseInt(amount);
 
-    // Add inputs to the modal
-    modal.addComponents(actionRow);
-    await interaction.showModal(modal);
+                if (amount === 0) {
+                    await i.reply({
+                        content: "Please enter a number greater than **0**.",
+                        ephemeral: true,
+                    });
+                    return;
+                }
 
-    // Collect a modal submit interaction
-    await interaction
-        .awaitModalSubmit({ filter: (i) => i.customId === "giveawayEnterlModal", time: 60_000 })
-        .then(async (i) => {
-            amount = i.fields.getTextInputValue("entryAmount");
-            if (isNaN(amount)) {
-                await i.reply({ content: "Please enter a number.", ephemeral: true });
-                return;
-            }
-            amount = parseInt(amount);
+                if (amount > maxIn) {
+                    await i.reply({
+                        content: `You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
+                        ephemeral: true,
+                    });
+                    return;
+                }
 
-            if (amount === 0) {
-                await i.reply({ content: "Please enter a number greater than **0**.", ephemeral: true });
-                return;
-            }
+                if (amount > balance) {
+                    await i.reply({
+                        content: `You don't have **${amount} ${config.emojiToken} Tokens**.`,
+                        ephemeral: true,
+                    });
+                    return;
+                }
 
-            if (amount > maxIn) {
-                await i.reply({
-                    content: `You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
+                // Buttons
+                const cancel = new ButtonBuilder()
+                    .setCustomId("cancelEnterGiveaway")
+                    .setEmoji("❌")
+                    .setStyle(ButtonStyle.Secondary);
+                const confirm = new ButtonBuilder()
+                    .setCustomId("confirmEnterGiveaway")
+                    .setEmoji(config.emojiToken)
+                    .setLabel(`${amount}`)
+                    .setStyle(ButtonStyle.Success);
+                const row = new ActionRowBuilder().addComponents(cancel, confirm);
+
+                const embed = new EmbedBuilder()
+                    .setTitle("Giveaway")
+                    .setDescription(
+                        `Would you like to exchange **${amount} ${
+                            config.emojiToken
+                        } Tokens** to have a total of **${amount + currentEntries}** entries?`
+                    );
+                const response = await i.reply({
+                    fetchReply: true,
+                    embeds: [embed],
+                    components: [row],
                     ephemeral: true,
                 });
-                return;
-            }
 
-            if (amount > balance) {
-                await i.reply({
-                    content: `You don't have **${amount} ${config.emojiToken} Tokens**.`,
-                    ephemeral: true,
-                });
-                return;
-            }
+                // Wait for confirmation
+                try {
+                    const collector = response.createMessageComponentCollector({
+                        componentType: ComponentType.Button,
+                        max: 1,
+                        time: 60_000,
+                    });
 
-            // Buttons
-            const cancel = new ButtonBuilder()
-                .setCustomId("cancelEnterGiveaway")
-                .setEmoji("❌")
-                .setStyle(ButtonStyle.Secondary);
-            const confirm = new ButtonBuilder()
-                .setCustomId("confirmEnterGiveaway")
-                .setEmoji(config.emojiToken)
-                .setLabel(`${amount}`)
-                .setStyle(ButtonStyle.Success);
-            const row = new ActionRowBuilder().addComponents(cancel, confirm);
-
-            const embed = new EmbedBuilder()
-                .setTitle("Giveaway")
-                .setDescription(
-                    `Would you like to exchange **${amount} ${
-                        config.emojiToken
-                    } Tokens** to have a total of **${amount + currentEntries}** entries?`
-                );
-            const response = await i.reply({
-                fetchReply: true,
-                embeds: [embed],
-                components: [row],
-                ephemeral: true,
-            });
-
-            // Wait for confirmation
-            try {
-                const collector = response.createMessageComponentCollector({
-                    componentType: ComponentType.Button,
-                    max: 1,
-                    time: 60_000,
-                });
-
-                collector.on("collect", async (i) => {
-                    switch (i.customId) {
-                        case "cancelEnterGiveaway": {
-                            embed.setColor(config.red);
-                            await i.update({
-                                embeds: [embed],
-                                components: [],
-                            });
-                            return;
-                        }
-                        case "confirmEnterGiveaway": {
-                            // Place task in concurrency queue
-                            try {
-                                await client.inventoryQueue.enqueue(inventoryTask);
-                                await client.giveawayQueue.enqueue(giveawayTask);
-                            } catch (error) {
+                    collector.on("collect", async (i) => {
+                        switch (i.customId) {
+                            case "cancelEnterGiveaway": {
                                 embed.setColor(config.red);
                                 await i.update({
                                     embeds: [embed],
                                     components: [],
                                 });
-
-                                await interaction.followUp({
-                                    content: error.message,
-                                    ephemeral: true,
-                                });
                                 return;
                             }
+                            case "confirmEnterGiveaway": {
+                                // Place task in concurrency queue
+                                try {
+                                    await client.inventoryQueue.enqueue(inventoryTask);
+                                    await client.giveawayQueue.enqueue(giveawayTask);
+                                } catch (error) {
+                                    embed.setColor(config.red);
+                                    await i.update({
+                                        embeds: [embed],
+                                        components: [],
+                                    });
 
-                            embed.setColor(config.green);
-                            await i.update({
-                                embeds: [embed],
-                                components: [],
-                            });
+                                    await interaction.followUp({
+                                        content: error.message,
+                                        ephemeral: true,
+                                    });
+                                    return;
+                                }
 
-                            const successEmbed = new EmbedBuilder()
-                                .setTitle("Giveaway")
-                                .setDescription(
-                                    `Success! Your **${
-                                        amount + currentEntries
-                                    } entries** for this [giveaway](${messageLink}) are confirmed!`
-                                )
-                                .setColor(config.green);
+                                embed.setColor(config.green);
+                                await i.update({
+                                    embeds: [embed],
+                                    components: [],
+                                });
 
-                            await interaction.followUp({
-                                embeds: [successEmbed],
-                                ephemeral: true,
-                            });
-                            console.log(`[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`, userID)
-                            return;
+                                const successEmbed = new EmbedBuilder()
+                                    .setTitle("Giveaway")
+                                    .setDescription(
+                                        `Success! Your **${
+                                            amount + currentEntries
+                                        } entries** for this [giveaway](${messageLink}) are confirmed!`
+                                    )
+                                    .setColor(config.green);
+
+                                await interaction.followUp({
+                                    embeds: [successEmbed],
+                                    ephemeral: true,
+                                });
+                                console.log(
+                                    `[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`,
+                                    userID
+                                );
+                                return;
+                            }
                         }
-                    }
+                    });
+                } catch (error) {}
+            })
+            .catch(console.error);
+    } else {
+        await interaction.deferReply({ ephemeral: true });
+
+        // Sponsor cannot enter their own giveaway
+        if (userID === giveaway.sponsor) {
+            await interaction.editReply({
+                content: "You cannot enter your own giveaway.",
+                ephemeral: true,
+            });
+            console.log(`[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`, userID);
+            return;
+        }
+
+        // No tokens
+        if (balance === 0) {
+            await interaction.editReply({
+                content: `You need **1 ${config.emojiToken} Token** to enter this giveaway!`,
+                embeds: [getTokenHelpEmbed()],
+                ephemeral: true,
+            });
+            console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userID);
+            return;
+        }
+
+        // If already have max entries, display how to get more
+        if (currentEntries === maxEntries) {
+            let entries = `You have **${currentEntries} entries** in this giveaway.`;
+            if (maxEntries === 1) {
+                entries = `You have **1 entry** in this giveaway.`;
+            }
+
+            let upgrade = `Become a <@&${config.activeBoosterRole}> or <@&${config.serverSubscriberRole}> to enter more!`;
+            if (maxEntries === gconfig.activeBoosterCap) {
+                upgrade = `Become a <@&${config.serverSubscriberRole}> to enter more!`;
+            } else if (maxEntries === gconfig.serverSubscriberCap) {
+                upgrade = "You've entered the max amount of entries.";
+            }
+
+            const embed = new EmbedBuilder()
+                .setTitle("Giveaway")
+                .setDescription(entries + " " + upgrade)
+                .setColor(config.blue);
+
+            await interaction.editReply({
+                embeds: [embed],
+                ephemeral: true,
+            });
+            console.log(`[INFO] [enterGiveaway] Already have max entries:`, userID);
+            return;
+        }
+
+        // If not entered yet, user has available balance, and only allowed 1 entry -> automatically enter
+        if (currentEntries === 0 && maxEntries === 1) {
+            amount = 1;
+            try {
+                await client.inventoryQueue.enqueue(inventoryTask);
+                await client.giveawayQueue.enqueue(giveawayTask);
+            } catch (error) {
+                console.error(error);
+                await interaction.editReply({
+                    content: error.message,
+                    ephemeral: true,
                 });
-            } catch (error) {}
-        })
-        .catch(console.error);
+                return;
+            }
+
+            const embed = new EmbedBuilder()
+                .setTitle("Giveaway")
+                .setDescription(
+                    `Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
+                )
+                .setColor(config.green);
+
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
+            console.log(
+                `[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`,
+                userID
+            );
+            return;
+        }
+    }
 }
 
 module.exports = enterGiveaway;
