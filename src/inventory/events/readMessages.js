@@ -13,7 +13,7 @@ module.exports = {
                 message.content.includes("A card from your wishlist is dropping") ||
                 message.content.includes("A wishlisted card is dropping")
             ) {
-                console.log("[READ MESSAGES] Wishlist card dropped");
+                console.log("[INFO] [readMessages] Wishlist card dropped");
                 message.channel.send(
                     `<@&${config.wishlistDropRole}> A wishlisted card is dropping!`
                 );
@@ -57,12 +57,12 @@ module.exports = {
 
                     collector.on("end", (collected) => {
                         if (collected.size > 0) {
-                            console.log(`[READ MESSAGES] Karuta drop reaction collected`);
+                            console.log(`[INFO] [readMessages] Karuta drop reaction collected`);
                         }
                     });
                 } catch (error) {
-                    console.log(
-                        "[READ MESSAGE] Something went wrong with the Karuta drop. Couldn't find reactions",
+                    console.error(
+                        "[ERROR] [readMessages] Something went wrong with the Karuta drop. Couldn't find reactions",
                         error
                     );
                 }
@@ -74,14 +74,14 @@ module.exports = {
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
-                        console.warn("[READ MESSAGES] Couldn't find number of cards dropped");
+                        console.warn("[WARN] [readMessages] Couldn't find number of cards dropped");
                         return;
                     }
                     const numCards = parseInt(match[1], 10);
 
                     // Server drop ping
                     if (message.content.includes("cards since this server is currently active")) {
-                        console.log("[READ MESSAGES] Server drop ping");
+                        console.log("[INFO] [readMessages] Server drop ping");
                         await message.reply(
                             `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
                         );
@@ -103,7 +103,7 @@ module.exports = {
             ) {
                 const user = message.mentions.users.first();
                 if (!user) {
-                    return console.warn("[READ MESSAGES] Couldn't find user");
+                    return console.warn("[WARN] [readMessages] Couldn't find user that dropped cards");
                 }
                 if (user.bot) {
                     return;
@@ -115,7 +115,7 @@ module.exports = {
                     const uim = await UserInventoryModel.findOne({ userID }).exec();
                     // Inventory doesn't exist, create one
                     if (!uim) {
-                        console.log(`[INVENTORY] Inventory created: ${userID}`);
+                        console.log(`[INFO] [inventory] Inventory created: ${user.tag}`);
                         const model = new UserInventoryModel({
                             userID: userID,
                             lastUnixTime: currentUnixTime,
@@ -129,10 +129,10 @@ module.exports = {
                     if (currentUnixTime >= uim.lastUnixTime + 30 * 60) {
                         uim.tokenCounter++;
                         uim.lastUnixTime = currentUnixTime;
-                        console.log(`[INVENTORY] Token counter ${uim.tokenCounter}: ${userID}`);
+                        console.log(`[INFO] [inventory] Token counter ${uim.tokenCounter}: ${user.tag}`);
 
                         if (uim.tokenCounter === 5) {
-                            console.log(`[INVENTORY] Token received: ${userID}`);
+                            console.log(`[INFO] [inventory] Token received: ${user.tag}`);
                             uim.tokenCounter = 0;
                             uim.numTokens++;
                             await message.channel.send(
@@ -146,7 +146,7 @@ module.exports = {
                         await client.inventoryQueue.enqueue(task);
                     }
                 } catch (error) {
-                    console.error("[INVENTORY]", error);
+                    console.error("[ERROR] [inventory]", error);
                 }
             }
         }
