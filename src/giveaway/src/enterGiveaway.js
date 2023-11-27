@@ -37,6 +37,7 @@ const getUserRoleValue = (member) => {
 async function enterGiveaway(interaction) {
     const guild = interaction.guild;
     const userID = interaction.user.id;
+    const userTag = interaction.user.tag;
 
     const inventory = await UserInventoryModel.findOne({ userID }).exec();
     const balance = inventory ? inventory.numTokens : 0;
@@ -63,7 +64,7 @@ async function enterGiveaway(interaction) {
         // Check balance
         const balance = inventoryModel.numTokens;
         if (balance < amount) {
-            console.log(`[INFO] [enterGiveaway] Insufficient balance:`, userID);
+            console.log(`[INFO] [enterGiveaway] Insufficient balance:`, userTag);
             throw new Error(`You don't have enough **${config.emojiToken} Tokens**.`);
         }
 
@@ -92,7 +93,7 @@ async function enterGiveaway(interaction) {
     };
 
     if (balance > 0 && currentEntries < maxEntries && userID !== giveaway.sponsor) {
-        console.log("[INFO] [enterGiveaway] modal sent to:", userID)
+        console.log("[INFO] [enterGiveaway] modal sent to:", userTag);
 
         // Can enter multiple entries
         const modal = new ModalBuilder()
@@ -235,7 +236,7 @@ async function enterGiveaway(interaction) {
                                 });
                                 console.log(
                                     `[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`,
-                                    userID
+                                    userTag
                                 );
                                 return;
                             }
@@ -253,7 +254,10 @@ async function enterGiveaway(interaction) {
                 content: "You cannot enter your own giveaway.",
                 ephemeral: true,
             });
-            console.log(`[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`, userID);
+            console.log(
+                `[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`,
+                userTag
+            );
             return;
         }
 
@@ -264,7 +268,7 @@ async function enterGiveaway(interaction) {
                 embeds: [getTokenHelpEmbed()],
                 ephemeral: true,
             });
-            console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userID);
+            console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userTag);
             return;
         }
 
@@ -291,7 +295,7 @@ async function enterGiveaway(interaction) {
                 embeds: [embed],
                 ephemeral: true,
             });
-            console.log(`[INFO] [enterGiveaway] Already have max entries:`, userID);
+            console.log(`[INFO] [enterGiveaway] Already have max entries:`, userTag);
             return;
         }
 
@@ -320,7 +324,7 @@ async function enterGiveaway(interaction) {
             await interaction.editReply({ embeds: [embed], ephemeral: true });
             console.log(
                 `[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`,
-                userID
+                userTag
             );
             return;
         }
