@@ -88,8 +88,12 @@ module.exports = {
         });
 
         // Send embed
-        const giveawayEmbed = getGiveawayEmbed(giveawayModel, image);
+        const giveawayEmbed = getGiveawayEmbed(giveawayModel);
         giveawayEmbed.setColor(config.blue);
+        if (image) {
+            console.log("[INFO] [createGiveaway] Image found")
+            giveawayEmbed.setImage(image);
+        }
         const cancel = new ButtonBuilder()
             .setCustomId("cancelGiveaway")
             .setLabel("Cancel")

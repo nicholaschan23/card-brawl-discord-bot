@@ -2,7 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const gconfig = require("../giveaway-config.json")
 const config = require("../../../config.json");
 
-function getGiveawayEmbed(giveawayModel, image) {
+function getGiveawayEmbed(giveawayModel) {
     const token = config.emojiToken;
 
     const headers = `Sponsor: <@${giveawayModel.sponsor}>\nHost: <@${giveawayModel.host}>\nWinners: **${giveawayModel.winners}**\nClosed: <t:${giveawayModel.unixEndTime}:R>`;
@@ -12,10 +12,6 @@ function getGiveawayEmbed(giveawayModel, image) {
         .setTitle(`${giveawayModel.prize}`)
         .setDescription(headers + "\n\n" + entries)
         .setFooter( {text: `Sponsors gain ${gconfig.percentYield}% of total Tokens entered!`})
-
-    if (image) {
-        embed.setImage(image);
-    }
     return embed;
 }
 
