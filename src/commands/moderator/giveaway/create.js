@@ -69,12 +69,6 @@ module.exports = {
         endTime.setUTCDate(currentDate.getUTCDate() + duration);
         const unixEndTime = Math.floor(endTime.getTime() / 1000); // Seconds
 
-        // const durationInSeconds = 60;
-        // const currentDate = new Date();
-        // const endTime = new Date(currentDate.getTime() + durationInSeconds * 1000);
-        // const utcEndTime = new Date(endTime.toUTCString());
-        // const unixEndTime = Math.floor(utcEndTime.getTime() / 1000);
-
         const sponsor = interaction.options.getUser("sponsor") ?? interaction.user;
         if (sponsor.bot) {
             return await interaction.reply({

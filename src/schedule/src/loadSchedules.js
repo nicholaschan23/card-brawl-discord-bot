@@ -1,14 +1,13 @@
+const cronParser = require("cron-parser");
 const cron = require("node-cron");
 const ScheduleModel = require("../schemas/scheduleSchema");
 
-// TODO: Implement auto-deleting schedules
 function hasCronPassed(cronExpression) {
     try {
-        const cronSchedule = cron.schedule(cronExpression);
-        const nextScheduledDate = cronSchedule.nextDate();
+        const interval = cronParser.parseExpression(cronExpression);
+        const nextScheduledDate = interval.next().toDate();
         const currentDateTime = new Date();
-        console.log(nextScheduledDate);
-        console.log(currentDateTime);
+        nextScheduledDate.setFullYear(currentDateTime.getFullYear());
 
         return nextScheduledDate <= currentDateTime;
     } catch (error) {
@@ -23,15 +22,20 @@ async function loadSchedules() {
     try {
         for (const schedule of schedules) {
             const task = require(`../../${schedule.task}`);
-            console.log(`[LOAD SCHEDULES] Scheduling ${schedule.name}`);
-            cron.schedule(schedule.cron, () => {
+            if (hasCronPassed(schedule.cron)) {
+                console.log(`[INFO] [loadSchedules] Invoking ${schedule.name}`);
                 task(schedule.data);
-            });
+            } else {
+                console.log(`[INFO] [loadSchedules] Scheduling ${schedule.name}`);
+                cron.schedule(schedule.cron, () => {
+                    task(schedule.data);
+                });
+            }
         }
     } catch (error) {
         console.error(error);
     }
-    console.log(`[LOAD SCHEDULES] Successfully loaded ${schedules.length} schedules`);
+    console.log(`[INFO] [loadingSchedules] Successfully loaded ${schedules.length} schedules`);
 }
 
 module.exports = loadSchedules;
