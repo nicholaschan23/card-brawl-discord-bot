@@ -7,7 +7,11 @@ function hasCronPassed(cronExpression) {
         const interval = cronParser.parseExpression(cronExpression);
         const nextScheduledDate = interval.next().toDate();
         const currentDateTime = new Date();
-        nextScheduledDate.setFullYear(currentDateTime.getFullYear());
+
+        // Check if cron is in the last, current, or next month in the same year
+        if (Math.abs(nextScheduledDate.getMonth() - currentDateTime.getMonth()) <= 1) {
+            nextScheduledDate.setFullYear(currentDateTime.getFullYear());
+        }
 
         return nextScheduledDate <= currentDateTime;
     } catch (error) {
