@@ -39,7 +39,7 @@ async function loadSchedules() {
     } catch (error) {
         console.error(error);
     }
-    console.log(`[INFO] [loadingSchedules] Successfully loaded ${schedules.length} schedules`);
+    console.log(`[INFO] [loadSchedules] Successfully loaded ${schedules.length} schedules`);
 }
 
 module.exports = loadSchedules;
