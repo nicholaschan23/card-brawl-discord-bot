@@ -467,8 +467,8 @@ class BrawlBracketHelper {
         const semisMatch =
             this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2]
                 .winner === winnerCard
-                ? this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 3]
-                : this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2];
+                ? this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2]
+                : this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 3];
         const thirdCard = semisMatch.card1 === winnerCard ? semisMatch.card2 : semisMatch.card1;
         const thirdID = this.setupModel.cards.get(thirdCard).userID;
 
