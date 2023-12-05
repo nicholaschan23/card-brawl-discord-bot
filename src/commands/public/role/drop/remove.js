@@ -6,7 +6,7 @@ module.exports = {
     category: "public/role",
     data: new SlashCommandSubcommandBuilder()
         .setName("remove")
-        .setDescription("Remove a drop role from yourself.")
+        .setDescription("Remove a Karuta drop role from yourself.")
         .addStringOption((option) =>
             option
                 .setName("role")

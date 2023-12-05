@@ -32,7 +32,7 @@ module.exports = {
     category: "public/role",
     data: new SlashCommandSubcommandBuilder()
         .setName("add")
-        .setDescription("Add drop roles to yourself.")
+        .setDescription("Add a Karuta drop role to yourself.")
         .addStringOption((option) =>
             option
                 .setName("role")

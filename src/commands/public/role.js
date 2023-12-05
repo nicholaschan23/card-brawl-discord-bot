@@ -11,7 +11,7 @@ module.exports = {
         .addSubcommandGroup((group) =>
             group
                 .setName("drop")
-                .setDescription("Manage Karuta drop pings")
+                .setDescription("Manage Karuta drop pings.")
                 .addSubcommand(add.data)
                 .addSubcommand(remove.data)
         )
