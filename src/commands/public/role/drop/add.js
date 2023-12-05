@@ -1,6 +1,6 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const client = require("../../../index");
-const config = require("../../../../config.json");
+const client = require("../../../../index");
+const config = require("../../../../../config.json");
 
 const ranks = [
     "Copper V",
@@ -34,16 +34,16 @@ module.exports = {
         .setName("add")
         .setDescription("Add drop roles to yourself.")
         .addStringOption((option) =>
-        option
-            .setName("role")
-            .setDescription("Role you want to add.")
-            .addChoices(
-                { name: "Server Drop", value: "Server Drop" },
-                { name: "Wishlist Drop", value: "Wishlist Drop" },
-                { name: "Event Drop", value: "Event Drop" }
-            )
-            .setRequired(true)
-    ),
+            option
+                .setName("role")
+                .setDescription("Role you want to add.")
+                .addChoices(
+                    { name: "Server Drop", value: "Server Drop" },
+                    { name: "Wishlist Drop", value: "Wishlist Drop" },
+                    { name: "Event Drop", value: "Event Drop" }
+                )
+                .setRequired(true)
+        ),
     async execute(interaction) {
         const guild = client.guilds.cache.get(config.guildID);
         const member = await guild.members.fetch(interaction.user.id);

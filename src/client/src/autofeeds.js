@@ -13,7 +13,7 @@ function autofeedInit() {
             const wishlistDrop = guild.roles.cache.find((r) => r.name === "Wishlist Drop");
             const eventDrop = guild.roles.cache.find((r) => r.name === "Event Drop");
             karutaDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${serverDrop.id}>, <@&${wishlistDrop.id}>, or <@&${eventDrop.id}>? Use command \`/role add\`!`,
+                content: `:shinto_shrine: Want to get notified for <@&${serverDrop.id}>, <@&${wishlistDrop.id}>, or <@&${eventDrop.id}>? Use command \`/role drop\`!`,
                 allowedMentions: { parse: [] },
             });
             console.log("[AUTOFEED] Sent Karuta roles reminder");
