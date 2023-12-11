@@ -4,7 +4,7 @@ const cron = require("node-cron");
 
 async function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
-    const karutaDrop = await client.channels.fetch(config.channelID.karutaDrop);
+    const karutaDrop = await client.channels.fetch(config.channelID.karutaUpdatesDrop);
 
     // Karuta drop roles
     cron.schedule("0 * * * *", () => {
@@ -46,7 +46,7 @@ async function autofeedInit() {
                 if (event.name.includes("Card Brawl")) {
                     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
                     karutaDrop.send({
-                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit <#${config.channelID.competitors}> to learn more. Click the button below to show you're interested.`,
+                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit <#${config.channelID.brawCompetitors}> to learn more. Click the button below to show you're interested.`,
                     });
                     console.log("[INFO] [autofeed] Sent 'Card Brawl promotion' reminder");
                     return;
