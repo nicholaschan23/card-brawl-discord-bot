@@ -2,7 +2,7 @@ const client = require("../../index");
 const config = require("../../../config.json");
 const cron = require("node-cron");
 
-async function autofeedInit() {
+function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
     const karutaDrop = client.channels.cache.get(config.channelID.karutaUpdatesDrop);
 

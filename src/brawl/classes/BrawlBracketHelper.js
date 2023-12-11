@@ -344,7 +344,7 @@ class BrawlBracketHelper {
             if (this.bracketModel.matches.length === 0) {
                 this.bracketModel.currentRound++;
                 this.bracketModel.currentMatch = 1;
-                await this.generateNextRound();
+                this.generateNextRound();
             }
 
             // Finals announcements
