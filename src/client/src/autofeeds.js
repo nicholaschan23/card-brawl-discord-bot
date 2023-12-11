@@ -10,7 +10,7 @@ function autofeedInit() {
     cron.schedule("0 * * * *", () => {
         try {
             karutaDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.serverDrop}?, <@&${config.roleID.wishlistDrop}>, or <@&${config.roleID.eventDrop}>? Use command \`/role drop\`!`,
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.serverDrop}>, <@&${config.roleID.wishlistDrop}>, or <@&${config.roleID.eventDrop}>? Use command \`/role drop\`!`,
                 allowedMentions: { parse: [] },
             });
             console.log("[INFO] [autofeed] Sent 'Karuta drop roles' reminder");
