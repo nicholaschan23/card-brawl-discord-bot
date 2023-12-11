@@ -21,7 +21,7 @@ async function startBrawl(data) {
             setupModel.open = false;
             await setupModel.save();
 
-            const competitorsChannel = await client.channels.fetch(
+            const competitorsChannel = client.channels.cache.get(
                 config.channelID.brawCompetitors
             );
             competitorsChannel.messages.fetch(setupModel.messageID).then((message) => {
@@ -54,7 +54,7 @@ async function startBrawl(data) {
     const myBrawlBracket = new BrawlBracketHelper(bracketModel, setupModel);
 
     // Channel to send messages
-    const judgesChannel = await client.channels.fetch(config.channelID.brawJudges);
+    const judgesChannel = client.channels.cache.get(config.channelID.brawJudges);
 
     if (myBrawlBracket.getStatus() === 2) {
         // Delete schedule

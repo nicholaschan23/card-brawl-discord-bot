@@ -77,8 +77,8 @@ async function createGuildEvent(setupModel) {
 
     // Send scheduled event invite link
     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
-    const karutaUpdate = await client.channels.fetch(config.channelID.karutaUpdates);
-    const brawlAnnounce = await client.channels.fetch(config.channelID.brawlUpdates);
+    const karutaUpdate = client.channels.cache.get(config.channelID.karutaUpdates);
+    const brawlAnnounce = client.channels.cache.get(config.channelID.brawlUpdates);
     const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.brawCompetitors}> to learn more. Click the button below to show pthers you're interested.`;
     karutaUpdate.send({
         content: content,

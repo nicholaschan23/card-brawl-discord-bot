@@ -4,7 +4,7 @@ const cron = require("node-cron");
 
 async function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
-    const karutaDrop = await client.channels.fetch(config.channelID.karutaUpdatesDrop);
+    const karutaDrop = client.channels.cache.get(config.channelID.karutaUpdatesDrop);
 
     // Karuta drop roles
     cron.schedule("0 * * * *", () => {

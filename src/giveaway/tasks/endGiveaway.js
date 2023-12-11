@@ -9,7 +9,7 @@ const config = require("../../../config.json");
 
 async function endGiveaway(data) {
     const messageID = data.messageID;
-    const channel = await client.channels.fetch(config.channelID.giveaway);
+    const channel = client.channels.cache.get(config.channelID.giveaway);
     const giveawayModel = await GiveawayModel.findOne({ messageID }).exec();
     if (!giveawayModel) {
         console.error("Couldn't find giveaway model in database");

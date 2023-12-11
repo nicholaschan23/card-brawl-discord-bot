@@ -25,7 +25,7 @@ module.exports = {
         ),
     async execute(interaction) {
         const name = formatTitle(interaction.options.getString("name"));
-        const channel = await client.channels.fetch(interaction.channel.id);
+        const channel = client.channels.cache.get(interaction.channel.id);
         const userID = interaction.user.id;
 
         // Find brawl setup in database
@@ -352,7 +352,7 @@ module.exports = {
 
                     // Update announcement embed
                     const updatedEmbed = getAnnouncementEmbed(recentSetupModel);
-                    const competitorsChannel = await client.channels.fetch(
+                    const competitorsChannel = client.channels.cache.get(
                         config.channelID.brawCompetitors
                     );
                     competitorsChannel.messages

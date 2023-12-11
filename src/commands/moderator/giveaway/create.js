@@ -135,9 +135,7 @@ module.exports = {
                         .setLabel("Participants")
                         .setStyle(ButtonStyle.Secondary);
                     const row = new ActionRowBuilder().addComponents(enter, participants);
-                    const channel = await client.channels.fetch(
-                        config.channelID.giveaway
-                    );
+                    const channel = client.channels.cache.get(config.channelID.giveaway);
                     const message = await channel.send({
                         embeds: [giveawayEmbed],
                         components: [row],

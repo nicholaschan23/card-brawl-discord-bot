@@ -336,7 +336,7 @@ class BrawlBracketHelper {
 
     // Conduct the tournament
     async conductTournament() {
-        const channel = await client.channels.fetch(config.channelID.brawJudges);
+        const channel = client.channels.cache.get(config.channelID.brawJudges);
         const totalRounds = Math.log2(this.idealSize);
 
         while (this.bracketModel.completedMatches.length !== this.idealSize - 1) {
@@ -519,7 +519,7 @@ class BrawlBracketHelper {
         });
 
         // Edit announcement message with image of winning card
-        const competitorsChannel = await client.channels.fetch(
+        const competitorsChannel = client.channels.cache.get(
             config.channelID.brawCompetitors
         );
         competitorsChannel.messages.fetch(this.setupModel.messageID).then((message) => {

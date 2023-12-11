@@ -3,7 +3,7 @@ const client = require("../../index");
 const config = require("../../../config.json");
 
 async function reminder(data) {
-    const channel = await client.channels.fetch(config.channelID.brawJudges);
+    const channel = client.channels.cache.get(config.channelID.brawJudges);
     await channel.send({
         content: data.message,
     });
