@@ -1,5 +1,5 @@
-const imageSchema = require("./cardImageSchema");
 const mongoose = require("mongoose");
+const imageSchema = require("./cardImageSchema");
 
 // Define a schema for storing brawl setups
 const setupSchema = new mongoose.Schema({

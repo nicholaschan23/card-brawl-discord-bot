@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const { config } = require("../../index");
 
 function getEnterEmbed(setupModel) {
     const theme = setupModel.theme;
@@ -11,30 +11,36 @@ function getEnterEmbed(setupModel) {
     let sketchText;
     switch (sketch) {
         case "prohibited": {
-            sketchText = "\n🩸 Not Sketched";
+            sketchText = "🩸 Not Sketched";
             break;
         }
         case "optional": {
-            sketchText = "\n🩸 Sketched";
+            sketchText = "🩸 Sketched";
             break;
         }
     }
 
     // Description
-    const headers = `Size: **${size}** card${
-        size === 1 ? "" : "s"
-    } submitted\nTheme: **${theme}**\nSeries: **${series ?? "Any"}**\nDate: <t:${unixStartTime}:f>`;
-
-    const requirements = `\n\n**Requirements**:${
-        series ? "\n🏷️ Match series" : ""
-    }\n🖼️ Framed\n🎨 Morphed${
-        sketch === "prohibited" ? sketchText : ""
-    }\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed${sketch === "optional" ? sketchText : ""}`;
+    const headers =
+        `Size: **${size}** card${size === 1 ? "" : "s"} submitted\n` +
+        `Theme: **${theme}**\n` +
+        `Series: **${series ?? "Any"}**\n` +
+        `Date: <t:${unixStartTime}:f>`;
+    const requirements =
+        `**Requirements**:` +
+        `${series ? "\n🏷️ Match series" : ""}\n` +
+        `🖼️ Framed\n` +
+        `🎨 Morphed` +
+        `${sketch === "prohibited" ? sketchText : ""}\n\n` +
+        `**Optional**:\n` +
+        `💧 Dyed\n` +
+        `✂️ Trimmed` +
+        `${sketch === "optional" ? "\n" + sketchText : ""}`;
 
     const embed = new EmbedBuilder()
-        .setColor(config.blue)
+        .setColor(config.embed.blue)
         .setTitle(`Enter Card Brawl`)
-        .setDescription(headers + requirements);
+        .setDescription(headers + "\n\n" + requirements);
     return embed;
 }
 

@@ -1,4 +1,4 @@
-const client = require("../../index");
+const { client } = require("../../index");
 
 async function rollWinner(giveawayModel, numWinners) {
     const entries = new Map(giveawayModel.entries);
@@ -11,14 +11,17 @@ async function rollWinner(giveawayModel, numWinners) {
         return;
     }
     if (entries.size < numWinners) {
-        numWinners = entries.size
+        numWinners = entries.size;
     }
 
     let winners = [];
     try {
         for (let i = 0; i < numWinners; i++) {
             // Calculate the total sum of weights
-            const totalWeight = [...entries.values()].reduce((sum, weight) => sum + weight, 0);
+            const totalWeight = [...entries.values()].reduce(
+                (sum, weight) => sum + weight,
+                0
+            );
 
             // Generate a random number between 0 and the total sum of weights
             const randomNum = Math.random() * totalWeight;

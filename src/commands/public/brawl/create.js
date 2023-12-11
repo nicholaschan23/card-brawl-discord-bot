@@ -4,12 +4,11 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const formatTitle = require("../../../brawl/src/formatTitle");
 const { getNextSaturday, createGuildEvent } = require("../../../schedule/src/schedule");
-const client = require("../../../index");
-const config = require("../../../../config.json");
-const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const { client, config } = require("../../../index");
 
 module.exports = {
     category: "public/brawl",
@@ -19,7 +18,9 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName("name")
-                .setDescription("Name contestants will use to enter the card competition.")
+                .setDescription(
+                    "Name contestants will use to enter the card competition."
+                )
                 .setRequired(true)
         )
         .addStringOption((option) =>
@@ -70,10 +71,12 @@ module.exports = {
         try {
             const setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (setupModel) {
-                return await interaction.reply(`Another Card Brawl already exists with this name.`);
+                return await interaction.reply(
+                    `Another Card Brawl already exists with this name.`
+                );
             }
         } catch (error) {
-            console.error("[BRAWL CREATE] Error retrieving BrawlSetupModel:", error);
+            console.error("[ERROR] [create] Error retrieving 'BrawlSetupModel':", error);
             return await interaction.reply(
                 `Error retrieving Card Brawl. Notifying <@${config.developerID}>.`
             );
@@ -119,7 +122,7 @@ module.exports = {
 
             switch (confirmation.customId) {
                 case "cancelCreate": {
-                    setupBrawlEmbed.setColor(config.red);
+                    setupBrawlEmbed.setColor(config.embed.red);
                     await confirmation.update({
                         embeds: [setupBrawlEmbed],
                         components: [],
@@ -128,9 +131,9 @@ module.exports = {
                 }
                 case "confirmCreate": {
                     // Announce brawl bracket creation for contestants to join
-                    const channel = client.channels.cache.get(config.competitorsChannelID);
+                    const channel = client.channels.cache.get(config.channelID.competitors);
                     const message = await channel.send({
-                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
+                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                         embeds: [setupBrawlEmbed],
                     });
 
@@ -149,8 +152,11 @@ module.exports = {
                     try {
                         await setupModel.save();
                     } catch (error) {
-                        console.error("[BRAWL CREATE] Error saving BrawlSetupModel:", error);
-                        setupBrawlEmbed.setColor(config.red);
+                        console.error(
+                            "[BRAWL CREATE] Error saving BrawlSetupModel:",
+                            error
+                        );
+                        setupBrawlEmbed.setColor(config.embed.red);
                         await confirmation.update({
                             embeds: [setupBrawlEmbed],
                             components: [],
@@ -161,7 +167,7 @@ module.exports = {
                     // Create server event
                     createGuildEvent(setupModel);
 
-                    setupBrawlEmbed.setColor(config.green);
+                    setupBrawlEmbed.setColor(config.embed.green);
                     await confirmation.update({
                         content: "Card Brawl created!",
                         embeds: [setupBrawlEmbed],

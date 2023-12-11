@@ -1,8 +1,8 @@
 const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
-const formatTitle = require("../../../brawl/src/formatTitle");
-const buttonPages = require("../../../support/src/pagination");
-const config = require("../../../../config.json");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const buttonPages = require("../../../support/src/pagination");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const { config } = require("../../../index");
 
 module.exports = {
     category: "public/brawl",
@@ -36,7 +36,8 @@ module.exports = {
         let lines = [];
         const mapArray = Array.from(setupModel.entries.entries());
         mapArray.forEach(([key, value]) => {
-            const entries = value.length == 1 ? "(**1** entry)" : `(**${value.length}** entries)`;
+            const entries =
+                value.length == 1 ? "(**1** entry)" : `(**${value.length}** entries)`;
             lines.push(`${lines.length + 1}. <@${key}> ${entries}`);
         });
 

@@ -34,7 +34,7 @@ module.exports = {
             }
             default: {
                 console.error(
-                    `[ROLE] There was no execute case for the "${subcommand}" subcommand`
+                    "[ERROR] [role] There was no execute case for the '${subcommand}' subcommand"
                 );
                 await interaction.reply(
                     `There was no execute case for the \`${subcommand}\` subcommand.`

@@ -8,11 +8,9 @@ const {
     ComponentType,
     EmbedBuilder,
 } = require("discord.js");
-const getPreviewEmbed = require("../../../color/embeds/colorPreview");
-const client = require("../../../index");
-const config = require("../../../../config.json");
-const color = require("../../../color/color-config.json");
 const UserInventoryModel = require("../../../inventory/schemas/userInventorySchema");
+const getPreviewEmbed = require("../../../color/embeds/colorPreview");
+const { client, config } = require("../../../index");
 
 const colors = [
     "Red",
@@ -41,89 +39,94 @@ const neonColors = [
 const colorSelect = [
     {
         label: "Red",
-        value: color.red,
+        value: config.roleID.red,
     },
     {
         label: "Pink",
-        value: color.pink,
+        value: config.roleID.pink,
     },
     {
         label: "Purple",
-        value: color.purple,
+        value: config.roleID.purple,
     },
     {
         label: "Deep Purple",
-        value: color.deepPurple,
+        value: config.roleID.deepPurple,
     },
     {
         label: "Indigo",
-        value: color.indigo,
+        value: config.roleID.indigo,
     },
     {
         label: "Blue",
-        value: color.blue,
+        value: config.roleID.blue,
     },
     {
         label: "Light Blue",
-        value: color.lightBlue,
+        value: config.roleID.lightBlue,
     },
     {
         label: "Cyan",
-        value: color.cyan,
+        value: config.roleID.cyan,
     },
     {
         label: "Teal",
-        value: color.teal,
+        value: config.roleID.teal,
     },
     {
         label: "Green",
-        value: color.green,
+        value: config.roleID.green,
     },
 ];
 const neonColorSelect = [
     {
         label: "Neon Red",
-        value: color.neonRed,
+        value: config.roleID.neonRed,
     },
     {
         label: "Neon Pink",
-        value: color.neonPink,
+        value: config.roleID.neonPink,
     },
     {
         label: "Neon Purple",
-        value: color.neonPurple,
+        value: config.roleID.neonPurple,
     },
     {
         label: "Neon Deep Purple",
-        value: color.neonDeepPurple,
+        value: config.roleID.neonDeepPurple,
     },
     {
         label: "Neon Indigo",
-        value: color.neonIndigo,
+        value: config.roleID.neonIndigo,
     },
     {
         label: "Neon Blue",
-        value: color.neonBlue,
+        value: config.roleID.neonBlue,
     },
     {
         label: "Neon Light Blue",
-        value: color.neonLightBlue,
+        value: config.roleID.neonLightBlue,
     },
     {
         label: "Neon Cyan",
-        value: color.neonCyan,
+        value: config.roleID.neonCyan,
     },
     {
         label: "Neon Teal",
-        value: color.neonTeal,
+        value: config.roleID.neonTeal,
     },
     {
         label: "Neon Green",
-        value: color.neonGreen,
+        value: config.roleID.neonGreen,
     },
 ];
 
-const blacklistRoles = ["Community Manager", "Moderator", "Server Subscriber", "Twitch Subscriber"];
+const blacklistRoles = [
+    "Community Manager",
+    "Moderator",
+    "Server Subscriber",
+    "Twitch Subscriber",
+];
 
 const findCurrentColorRole = (member, roles) => {
     for (const roleName of roles) {
@@ -143,7 +146,7 @@ module.exports = {
         .setDescription("Add a color role to yourself."),
     async execute(interaction) {
         const userID = await interaction.user.id;
-        const guild = await client.guilds.cache.get(config.guildID);
+        const guild = client.guilds.cache.get(config.guildID);
         const member = await guild.members.fetch(userID);
 
         const allColorSelect = [...colorSelect, ...neonColorSelect];
@@ -154,7 +157,9 @@ module.exports = {
             .setMaxValues(1)
             .addOptions(
                 allColorSelect.map((color) =>
-                    new StringSelectMenuOptionBuilder().setLabel(color.label).setValue(color.value)
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(color.label)
+                        .setValue(color.value)
                 )
             );
         const row1 = new ActionRowBuilder().addComponents(select);
@@ -180,7 +185,7 @@ module.exports = {
             collector.on("collect", async (i) => {
                 const blacklist = findCurrentColorRole(member, blacklistRoles);
                 if (blacklist) {
-                    previewEmbed.setColor(config.red);
+                    previewEmbed.setColor(config.embed.red);
                     await response1.edit({
                         embeds: [previewEmbed],
                         components: [],
@@ -200,7 +205,7 @@ module.exports = {
 
                 // Already have selected color
                 if (currentRole === addRole) {
-                    previewEmbed.setColor(config.red);
+                    previewEmbed.setColor(config.embed.red);
                     await response1.edit({
                         embeds: [previewEmbed],
                         components: [],
@@ -215,7 +220,7 @@ module.exports = {
                 }
 
                 // Mark previous embed as done and successful
-                previewEmbed.setColor(config.green);
+                previewEmbed.setColor(config.embed.green);
                 await i.update({
                     embeds: [previewEmbed],
                     components: [],
@@ -226,8 +231,10 @@ module.exports = {
 
                 // Purchase confirmation embed
                 let description =
-                    currentRole !== null ? `You already have the color ${currentRole}.\n` : "";
-                description += `Would you like to exchange **${cost} ${config.emojiToken} Tokens** for the color ${addRole}?`;
+                    currentRole !== null
+                        ? `You already have the color ${currentRole}.\n`
+                        : "";
+                description += `Would you like to exchange **${cost} ${config.emoji.token} Tokens** for the color ${addRole}?`;
                 const purchaseEmbed = new EmbedBuilder().setDescription(description);
 
                 // Buttons
@@ -237,7 +244,7 @@ module.exports = {
                     .setStyle(ButtonStyle.Secondary);
                 const confirm = new ButtonBuilder()
                     .setCustomId("confirmColor")
-                    .setEmoji(config.emojiToken)
+                    .setEmoji(config.emoji.token)
                     .setLabel(`${cost}`)
                     .setStyle(ButtonStyle.Success);
                 const row2 = new ActionRowBuilder().addComponents(cancel, confirm);
@@ -258,7 +265,7 @@ module.exports = {
 
                     switch (confirmation.customId) {
                         case "cancelColor": {
-                            purchaseEmbed.setColor(config.red);
+                            purchaseEmbed.setColor(config.embed.red);
                             await confirmation.update({
                                 embeds: [purchaseEmbed],
                                 components: [],
@@ -281,7 +288,7 @@ module.exports = {
                                 const balance = inventoryModel.numTokens;
                                 if (balance < cost) {
                                     throw new Error(
-                                        `You don't have enough **${config.emojiToken} Tokens**.`
+                                        `You don't have enough **${config.emoji.token} Tokens**.`
                                     );
                                 }
 
@@ -299,7 +306,7 @@ module.exports = {
                             try {
                                 await client.inventoryQueue.enqueue(task);
                             } catch (error) {
-                                purchaseEmbed.setColor(config.red);
+                                purchaseEmbed.setColor(config.embed.red);
                                 await confirmation.update({
                                     embeds: [purchaseEmbed],
                                     components: [],
@@ -312,14 +319,14 @@ module.exports = {
                                 return;
                             }
 
-                            purchaseEmbed.setColor(config.green);
+                            purchaseEmbed.setColor(config.embed.green);
                             await confirmation.update({
                                 embeds: [purchaseEmbed],
                                 components: [],
                             });
 
                             await interaction.channel.send({
-                                content: `<@${userID}> exchanged **${cost} ${config.emojiToken} Tokens** for the color ${addRole}!`,
+                                content: `<@${userID}> exchanged **${cost} ${config.emoji.token} Tokens** for the color ${addRole}!`,
                                 allowedMentions: { parse: [] },
                             });
                             return;
@@ -328,7 +335,8 @@ module.exports = {
                 } catch (error) {
                     console.error(error);
                     await interaction.followUp({
-                        content: "Confirmation not received within `1 minute`, cancelling.",
+                        content:
+                            "Confirmation not received within `1 minute`, cancelling.",
                         ephemeral: true,
                     });
                     return;

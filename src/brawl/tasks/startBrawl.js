@@ -1,13 +1,12 @@
+const BrawlBracketHelper = require("../classes/BrawlBracketHelper");
+const BrawlBracketModel = require("../schemas/brawlBracketSchema");
+const BrawlSetupModel = require("../schemas/brawlSetupSchema");
+const ScheduleModel = require("../../schedule/schemas/scheduleSchema");
+const delay = require("../src/delay");
 const getAnnouncementEmbed = require("../embeds/brawlAnnouncement");
 const getIntroductionEmbed = require("../embeds/brawlIntroduction");
 const getConclusionEmbed = require("../embeds/brawlConclusion");
-const delay = require("../src/delay");
-const client = require("../../index");
-const config = require("../../../config.json");
-const BrawlSetupModel = require("../schemas/brawlSetupSchema");
-const BrawlBracketModel = require("../schemas/brawlBracketSchema");
-const ScheduleModel = require("../../schedule/schemas/scheduleSchema");
-const BrawlBracketHelper = require("../classes/BrawlBracketHelper");
+const { client, config } = require("../../index");
 
 async function startBrawl(data) {
     const name = data.name;
@@ -21,15 +20,15 @@ async function startBrawl(data) {
             setupModel.open = false;
             await setupModel.save();
 
-            const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
+            const competitorsChannel = client.channels.cache.get(config.channelID.competitors);
             competitorsChannel.messages.fetch(setupModel.messageID).then((message) => {
                 const updatedEmbed = getAnnouncementEmbed(setupModel);
-                updatedEmbed.setColor(config.red);
+                updatedEmbed.setColor(config.embed.red);
                 updatedEmbed.setFooter({
                     text: "This Card Brawl is closed!",
                 });
                 message.edit({
-                    content: `The \`${setupModel.name}\` Card Brawl is closed! 🥊 <@&${config.competitorRole}>`,
+                    content: `The \`${setupModel.name}\` Card Brawl is closed! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                     embeds: [updatedEmbed],
                 });
             });
@@ -52,7 +51,7 @@ async function startBrawl(data) {
     const myBrawlBracket = new BrawlBracketHelper(bracketModel, setupModel);
 
     // Channel to send messages
-    const judgesChannel = client.channels.cache.get(config.judgesChannelID);
+    const judgesChannel = client.channels.cache.get(config.channelID.judges);
 
     if (myBrawlBracket.getStatus() === 2) {
         // Delete schedule
@@ -67,7 +66,7 @@ async function startBrawl(data) {
     }
     if (myBrawlBracket.getStatus() === 1) {
         await judgesChannel.send(
-            `<@&${config.judgeRole}> An unexpected crash occured. Resuming the **${setupModel.name}** Card Brawl...`
+            `<@&${config.roleID.brawlJudge}> An unexpected crash occured. Resuming the **${setupModel.name}** Card Brawl...`
         );
         await delay(3);
     } else if (myBrawlBracket.getStatus() === 0) {
@@ -76,7 +75,7 @@ async function startBrawl(data) {
 
         // Introduction
         let message = await judgesChannel.send({
-            content: `We'll be starting in \`5 minutes\`. <@&${config.judgeRole}>`,
+            content: `We'll be starting in \`5 minutes\`. <@&${config.roleID.brawlJudge}>`,
             embeds: [getIntroductionEmbed(setupModel)],
         });
         await message.react("🥳");

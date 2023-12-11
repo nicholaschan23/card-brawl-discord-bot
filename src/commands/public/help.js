@@ -8,7 +8,7 @@ const {
 } = require("discord.js");
 const getBrawlHelpEmbed = require("../../brawl/embeds/brawlHelp");
 const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
-const config = require("../../../config.json");
+const { config } = require("../../index");
 
 const helpSelect = [
     {
@@ -19,7 +19,7 @@ const helpSelect = [
     {
         label: "Token",
         value: "token",
-        emoji: config.emojiToken,
+        emoji: config.emoji.token,
     },
 ];
 
@@ -29,7 +29,9 @@ module.exports = {
     async execute(interaction) {
         const embed = new EmbedBuilder()
             .setTitle("Help")
-            .setDescription("Select the topic you'd like help with using the dropdown menu below.");
+            .setDescription(
+                "Select the topic you'd like help with using the dropdown menu below."
+            );
 
         const select = new StringSelectMenuBuilder()
             .setCustomId("helpSelect")
@@ -77,14 +79,8 @@ module.exports = {
                 });
                 collector.resetTimer();
             });
-
-            // collector.on("end", async (i) => {
-            //     await i.edit({
-            //         components: [],
-            //     });
-            // });
         } catch (error) {
-            console.log("Timed out", error.message);
+            console.log("[WARN] [help] Timed out", error.message);
         }
     },
 };

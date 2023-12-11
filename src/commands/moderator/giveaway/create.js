@@ -4,14 +4,13 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
+const GiveawayModel = require("../../../giveaway/schemas/giveawaySchema");
+const ScheduleModel = require("../../../schedule/schemas/scheduleSchema");
 const endGiveaway = require("../../../giveaway/tasks/endGiveaway");
 const getGiveawayEmbed = require("../../../giveaway/embeds/giveawayAnnouncement");
 const { unixTimeToCron } = require("../../../schedule/src/schedule");
+const { client, config } = require("../../../index");
 const cron = require("node-cron");
-const client = require("../../../index");
-const config = require("../../../../config.json");
-const GiveawayModel = require("../../../giveaway/schemas/giveawaySchema");
-const ScheduleModel = require("../../../schedule/schemas/scheduleSchema");
 
 module.exports = {
     category: "moderator/giveaway",
@@ -31,9 +30,7 @@ module.exports = {
                 .setRequired(true)
         )
         .addAttachmentOption((option) =>
-            option
-                .setName("image")
-                .setDescription("Image of the card being given away.")
+            option.setName("image").setDescription("Image of the card being given away.")
         )
         .addIntegerOption((option) =>
             option
@@ -89,9 +86,9 @@ module.exports = {
 
         // Send embed
         const giveawayEmbed = getGiveawayEmbed(giveawayModel);
-        giveawayEmbed.setColor(config.blue);
+        giveawayEmbed.setColor(config.embed.blue);
         if (image) {
-            console.log("[INFO] [createGiveaway] Image found")
+            console.log("[INFO] [createGiveaway] Image found");
             giveawayEmbed.setImage(image);
         }
         const cancel = new ButtonBuilder()
@@ -119,7 +116,7 @@ module.exports = {
 
             switch (confirmation.customId) {
                 case "cancelGiveaway": {
-                    giveawayEmbed.setColor(config.red);
+                    giveawayEmbed.setColor(config.embed.red);
                     await confirmation.update({
                         embeds: [giveawayEmbed],
                         components: [],
@@ -137,20 +134,25 @@ module.exports = {
                         .setLabel("Participants")
                         .setStyle(ButtonStyle.Secondary);
                     const row = new ActionRowBuilder().addComponents(enter, participants);
-                    const channel = client.channels.cache.get(config.giveawayChannelID);
+                    const channel = client.channels.cache.get(config.channelID.giveaway);
                     const message = await channel.send({
                         embeds: [giveawayEmbed],
                         components: [row],
                     });
                     giveawayModel.messageID = message.id;
-                    await channel.send(`<@&${config.giveawayRole}> Click 🎉 to join the giveaway!`);
+                    await channel.send(
+                        `<@&${config.roleID.giveaway}> Click 🎉 to join the giveaway!`
+                    );
 
                     // Save BrawlSetupModel
                     try {
                         await giveawayModel.save();
                     } catch (error) {
-                        console.error("[GIVEAWAY CREATE] Error saving GiveawayModel:", error);
-                        giveawayEmbed.setColor(config.red);
+                        console.error(
+                            "[GIVEAWAY CREATE] Error saving GiveawayModel:",
+                            error
+                        );
+                        giveawayEmbed.setColor(config.embed.red);
                         await confirmation.update({
                             embeds: [giveawayEmbed],
                             components: [],
@@ -158,7 +160,7 @@ module.exports = {
                         return;
                     }
 
-                    giveawayEmbed.setColor(config.green);
+                    giveawayEmbed.setColor(config.embed.green);
                     await confirmation.update({
                         content: "Giveaway created!",
                         embeds: [giveawayEmbed],

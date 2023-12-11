@@ -1,8 +1,7 @@
 const { Events, Collection } = require("discord.js");
 const enterGiveaway = require("../../giveaway/src/enterGiveaway");
 const viewParticipants = require("../../giveaway/src/viewParticipants");
-const client = require("../../index");
-const config = require("../../../config.json");
+const { client, config } = require("../../index");
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -10,15 +9,12 @@ module.exports = {
         if (interaction.isChatInputCommand()) {
             const command = interaction.client.commands.get(interaction.commandName);
             if (!command) {
-                console.error(
-                    `[SLASH COMMANDS] No command matching ${interaction.commandName} was found`
-                );
+                console.error(`[ERROR] [slashCommands] No command matching ${interaction.commandName} was found`);
                 return;
             }
 
             // Global command cooldown
             const cooldowns = client.cooldowns;
-            // const { cooldowns } = require("../../index");
             if (!cooldowns.has(command.data.name)) {
                 cooldowns.set(command.data.name, new Collection());
             }
@@ -45,7 +41,6 @@ module.exports = {
                     });
                 }
             }
-
             timestamps.set(interaction.user.id, now);
             setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
@@ -53,10 +48,7 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch (error) {
-                console.error(
-                    `[SLASH COMMANDS] Error executing command ${command.data.name}:`,
-                    error
-                );
+                console.error(`[ERROR] [slashCommands] Error executing command ${command.data.name}:`, error);
                 if (interaction.replied || interaction.deferred) {
                     await interaction.followUp({
                         content: "Error while executing this command!",
@@ -73,7 +65,7 @@ module.exports = {
             const command = interaction.client.commands.get(interaction.commandName);
             if (!command) {
                 console.error(
-                    `[SLASH COMMANDS] No command matching ${interaction.commandName} was found`
+                    `[ERROR] [slashCommands] No command matching ${interaction.commandName} was found`
                 );
                 return;
             }
@@ -82,8 +74,7 @@ module.exports = {
                 await command.autocomplete(interaction);
             } catch (error) {
                 console.error(
-                    `[SLASH COMMANDS] Error autocompleting command ${command.data.name}:`,
-                    error
+                    `[ERROR] [slashCommands] Error autocompleting command ${command.data.name}:`, error
                 );
             }
         } else if (interaction.isButton()) {

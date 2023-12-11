@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
-const buttonPages = require("../../support/src/pagination")
 const GiveawayModel = require("../schemas/giveawaySchema");
+const buttonPages = require("../../support/src/pagination");
+const { config } = require("../../index");
 
 async function viewParticipants(interaction) {
     const messageID = interaction.message.id;
@@ -18,8 +18,8 @@ async function viewParticipants(interaction) {
     mapArray.forEach(([key, value]) => {
         const entries =
             value == 1
-                ? `(**1** ${config.emojiToken} entry)`
-                : `(**${value}** ${config.emojiToken} entries)`;
+                ? `(**1** ${config.emoji.token} entry)`
+                : `(**${value}** ${config.emoji.token} entries)`;
         lines.push(`${lines.length + 1}. <@${key}> ${entries}`);
     });
 

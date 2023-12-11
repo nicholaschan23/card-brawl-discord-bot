@@ -1,6 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const client = require("../../../../index");
-const config = require("../../../../../config.json");
+const { client, config } = require("../../../../index");
 
 module.exports = {
     category: "public/role",
@@ -23,7 +22,9 @@ module.exports = {
         const member = await guild.members.fetch(interaction.user.id);
         const role = interaction.options.getString("role");
 
-        const hasRole = interaction.member.roles.cache.some((roleName) => roleName.name === role);
+        const hasRole = interaction.member.roles.cache.some(
+            (roleName) => roleName.name === role
+        );
 
         const temp = guild.roles.cache.find((r) => r.name === role);
         if (hasRole) {

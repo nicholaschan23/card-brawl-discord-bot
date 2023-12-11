@@ -1,15 +1,13 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
-const getIntroductionEmbed = require("../../../brawl/embeds/brawlIntroduction");
-const getConclusionEmbed = require("../../../brawl/embeds/brawlConclusion");
-const formatTitle = require("../../../brawl/src/formatTitle");
-const delay = require("../../../brawl/src/delay");
-const client = require("../../../index");
-const bconfig = require("../../../brawl/brawl-config.json");
-const config = require("../../../../config.json");
-const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
-const BrawlBracketModel = require("../../../brawl/schemas/brawlBracketSchema");
 const BrawlBracketHelper = require("../../../brawl/classes/BrawlBracketHelper");
+const BrawlBracketModel = require("../../../brawl/schemas/brawlBracketSchema");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const delay = require("../../../brawl/src/delay");
+const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
+const getConclusionEmbed = require("../../../brawl/embeds/brawlConclusion");
+const getIntroductionEmbed = require("../../../brawl/embeds/brawlIntroduction");
+const formatTitle = require("../../../brawl/src/formatTitle");
+const { client, config } = require("../../../index");
 
 module.exports = {
     category: "public/brawl",
@@ -38,7 +36,9 @@ module.exports = {
         try {
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
-                return await interaction.reply(`No Card Brawl found with the name **${name}**.`);
+                return await interaction.reply(
+                    `No Card Brawl found with the name **${name}**.`
+                );
             }
         } catch (error) {
             console.error("[BRAWL START] Error retrieving BrawlSetupModel:", error);
@@ -49,22 +49,25 @@ module.exports = {
         // Close card competition
         if (setupModel.open) {
             const task = async () => {
-                // setupModel = await BrawlSetupModel.findOne({ name }).exec();
                 setupModel.open = false;
                 await setupModel.save();
 
-                const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
-                competitorsChannel.messages.fetch(setupModel.messageID).then((message) => {
-                    const updatedEmbed = getAnnouncementEmbed(setupModel);
-                    updatedEmbed.setColor(config.red);
-                    updatedEmbed.setFooter({
-                        text: "This Card Brawl is closed!",
+                const competitorsChannel = client.channels.cache.get(
+                    config.channelID.competitors
+                );
+                competitorsChannel.messages
+                    .fetch(setupModel.messageID)
+                    .then((message) => {
+                        const updatedEmbed = getAnnouncementEmbed(setupModel);
+                        updatedEmbed.setColor(config.embed.red);
+                        updatedEmbed.setFooter({
+                            text: "This Card Brawl is closed!",
+                        });
+                        message.edit({
+                            content: `The \`${setupModel.name}\` Card Brawl is closed! 🥊 <@&${config.roleID.brawlCompetitor}>`,
+                            embeds: [updatedEmbed],
+                        });
                     });
-                    message.edit({
-                        content: `The \`${setupModel.name}\` Card Brawl is closed! 🥊 <@&${config.competitorRole}>`,
-                        embeds: [updatedEmbed],
-                    });
-                });
             };
             await client.setupModelQueue.enqueue(task);
             console.log("[BRAWL START] Closed Card Brawl");
@@ -88,15 +91,15 @@ module.exports = {
         }
 
         // Get competitors and create brawl bracket
-        const judgesChannel = client.channels.cache.get(config.judgesChannelID);
+        const judgesChannel = client.channels.cache.get(config.channelID.judges);
         const myBrawlBracket = new BrawlBracketHelper(bracketModel, setupModel);
 
         // Check if in progress, finished, etc.
         if (myBrawlBracket.getStatus() === 2) {
-             await interaction.reply(
+            await interaction.reply(
                 `The **${setupModel.name}** Card Brawl has already finished!`
             );
-            return
+            return;
         }
         if (myBrawlBracket.getStatus() === 1) {
             await interaction.reply(`Resuming the **${setupModel.name}** Card Brawl...`);
@@ -107,13 +110,11 @@ module.exports = {
 
             // Introduction
             const message = await judgesChannel.send({
-                content: `We'll be starting in \`${bconfig.startTime / 60} minutes\`. <@&${
-                    config.judgeRole
-                }>`,
+                content: `We'll be starting in \`${config.brawl.startTime / 60} minutes\`. <@&${config.roleID.brawlJudge}>`,
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            await delay(bconfig.startTime - 3);
+            await delay(config.brawl.startTime - 3);
             await judgesChannel.send("# 3");
             await delay(1);
             await judgesChannel.send("# 2");
@@ -123,7 +124,7 @@ module.exports = {
             await judgesChannel.send("# Let the Card Brawl begin! 🥊");
             await delay(2);
             await judgesChannel.send(
-                "If you don't see your card in **Round 1**, you've received a free pass to **Round 2**! We may skip a few matches..."
+                "If you don't see your card in **Round 1**, you're lucky and automatically are in **Round 2**! Skipping a few matches..."
             );
             await delay(2);
         }

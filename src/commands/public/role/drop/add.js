@@ -1,6 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const client = require("../../../../index");
-const config = require("../../../../../config.json");
+const { config } = require("../../../../index");
 
 const ranks = [
     "Copper V",
@@ -45,7 +44,7 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const guild = client.guilds.cache.get(config.guildID);
+        const guild = config.guild;
         const member = await guild.members.fetch(interaction.user.id);
         const role = interaction.options.getString("role");
 

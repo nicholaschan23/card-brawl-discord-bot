@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
-const getInventoryEmbed = require("../../inventory/embeds/userInventory");
-const config = require("../../../config.json");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
+const getInventoryEmbed = require("../../inventory/embeds/userInventory");
+const { config } = require("../../index");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +10,9 @@ module.exports = {
         .addUserOption((option) =>
             option
                 .setName("user")
-                .setDescription("To view the inventory for a user, please provide their name.")
+                .setDescription(
+                    "To view the inventory for a user, please provide their name."
+                )
         ),
     category: "public",
     async execute(interaction) {
@@ -61,7 +63,10 @@ module.exports = {
                 ephemeral: true,
             });
         } catch (error) {
-            console.error("[INVENTORY] Error retrieving UserInventoryModel:", error);
+            console.error(
+                "[ERROR] [inventory] Error retrieving 'UserInventoryModel':",
+                error
+            );
             await interaction.reply(
                 `Error retrieving the user's inventory. Notifying <@${config.developerID}>.`
             );

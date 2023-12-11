@@ -1,5 +1,5 @@
 const UserStatModel = require("../schemas/userStatSchema");
-const client = require("../../index");
+const { client } = require("../../index");
 
 class UserStatHelper {
     constructor() {

@@ -1,7 +1,8 @@
 const { EmbedBuilder } = require("discord.js");
 
 function getWinnerEmbed(bracketModel, setupModel) {
-    const winner = bracketModel.completedMatches[bracketModel.completedMatches.length - 1].winner;
+    const winner =
+        bracketModel.completedMatches[bracketModel.completedMatches.length - 1].winner;
     const winnerUserID = setupModel.cards.get(winner).userID;
 
     const embed = new EmbedBuilder()

@@ -39,7 +39,9 @@ module.exports = {
         // Manage autocomplete
         const focusedValue = interaction.options.getFocused();
         const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
-        await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+        await interaction.respond(
+            filtered.map((choice) => ({ name: choice, value: choice }))
+        );
     },
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -70,7 +72,7 @@ module.exports = {
             }
             default: {
                 console.error(
-                    `[BRAWL] There was no execute case for the "${subcommand}" subcommand`
+                    `[ERROR] [brawl] There was no execute case for the '${subcommand}' subcommand`
                 );
                 await interaction.reply(
                     `There was no execute case for the \`${subcommand}\` subcommand.`

@@ -28,8 +28,7 @@ async function mongooseConnect() {
     process.on("SIGINT", () => {
         // Close the Mongoose connection when the process is terminated
         mongoose.connection.close();
-        console.log("[MONGODB] Mongoose connection closed due to process termination"
-        );
+        console.log("[MONGODB] Mongoose connection closed due to process termination");
         process.exit(0); // Exit the process gracefully
     });
 }

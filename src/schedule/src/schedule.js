@@ -3,11 +3,10 @@ const {
     GuildScheduledEventEntityType,
     GuildScheduledEventPrivacyLevel,
 } = require("discord.js");
-const client = require("../../index");
-const config = require("../../../config.json");
-const cron = require("node-cron");
-const ScheduleModel = require("../schemas/scheduleSchema");
 const fs = require("fs");
+const ScheduleModel = require("../schemas/scheduleSchema");
+const { client, config } = require("../../index");
+const cron = require("node-cron");
 
 // Unix timestamp must be in milliseconds
 function unixTimeToCron(unixTime) {
@@ -55,20 +54,21 @@ async function createGuildEvent(setupModel) {
         scheduledEndTime: new Date(unixEndTime),
         privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
         entityType: GuildScheduledEventEntityType.External,
-        description: `Get ready for a showdown of creativity in our card competition live event! It's your chance to showcase your card-styling skills and vote for your favorite designs. 🥊\n\n**Event Details**:\nTheme: ${
-            setupModel.theme
-        }\nPrize: <@&${config.brawlChampionRole}>\nDate: <t:${
-            unixStartTime / 1000
-        }:F>\n\n**How to Participate**:\nBe a competitor! See the <#${
-            config.competitorsChannelID
-        }> channel.\nBe a judge! See the <#${
-            config.judgesChannelID
-        }> channel at the event start time.\n\n**Notifications**:\nGet the below roles in <id:customize> for reminders on Card Brawl events!\n<@&${
-            config.competitorRole
-        }>: Get notified to submit cards to compete.\n<@&${
-            config.judgeRole
-        }>: Get notified when the event goes live to vote.\n\nSee you at the Card Brawl! 🥊`,
-        entityMetadata: { location: `<#${config.judgesChannelID}>` },
+        description:
+            `Get ready for a showdown of creativity in our card competition live event! It's your chance to showcase your card-styling skills and vote for your favorite designs. 🥊\n\n` +
+            `**Event Details**:\n` +
+            `Theme: ${setupModel.theme}\n` +
+            `Prize: <@&${config.roleID.brawlChampion}>\n` +
+            `Date: <t:${unixStartTime / 1000}:F>\n\n` +
+            `**How to Participate**:\n` +
+            `Be a competitor! See the <#${config.channelID.competitors}> channel.\n` +
+            `Be a judge! See the <#${config.channelID.judges}> channel at the event start time.\n\n` +
+            `**Notifications**:\n` +
+            `Get the below roles in <id:customize> for reminders on Card Brawl events!\n` +
+            `<@&${config.roleID.brawlCompetitor}>: Get notified to submit cards to compete.\n` +
+            `<@&${config.roleID.brawlJudge}>: Get notified when the event goes live to vote.\n\n` +
+            `See you at the Card Brawl! 🥊`,
+        entityMetadata: { location: `<#${config.channelID.judges}>` },
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",
     });
@@ -76,14 +76,15 @@ async function createGuildEvent(setupModel) {
 
     // Send scheduled event invite link
     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
-    const karutaUpdate = client.channels.cache.get(config.karutaUpdateChannelID);
-    const brawlAnnounce = client.channels.cache.get(config.brawlAnnouncementChannelID);
+    const karutaUpdate = client.channels.cache.get(config.channelID.karuta);
+    const brawlAnnounce = client.channels.cache.get(config.channelID.brawlAnnouncement);
+    const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.competitors}> to learn more! Click the button below to show pthers you're interested!`;
     karutaUpdate.send({
-        content: `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
+        content: content,
         allowedMentions: { parse: [] },
     });
     brawlAnnounce.send({
-        content: `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.competitorsChannelID}> to learn more.`,
+        content: content,
         allowedMentions: { parse: [] },
     });
     console.log("[GUILD EVENT] Sent event links");
@@ -93,7 +94,7 @@ async function createGuildEvent(setupModel) {
         task: "brawl/tasks/sendReminder",
         cron: `${unixTimeToCron(unixStartTime - 24 * 60 * 60 * 1000)}`,
         data: {
-            message: `This is the last chance to enter the Card Brawl! Submissions close in \`1 day\`. <@&${config.competitorRole}>`,
+            message: `This is the last chance to enter the Card Brawl! Submissions close in \`1 day\`. <@&${config.roleID.brawlCompetitor}>`,
             scheduleName: "24H",
         },
     });
@@ -108,7 +109,7 @@ async function createGuildEvent(setupModel) {
         task: "brawl/tasks/sendReminder",
         cron: `${unixTimeToCron(unixStartTime - 60 * 60 * 1000)}`,
         data: {
-            message: `The Card Brawl will be starting soon! Be back in \`1 hour\`. <@&${config.judgeRole}>`,
+            message: `The Card Brawl will be starting soon! Be back in \`1 hour\`. <@&${config.roleID.brawlJudge}>`,
             scheduleName: "1H",
         },
     });

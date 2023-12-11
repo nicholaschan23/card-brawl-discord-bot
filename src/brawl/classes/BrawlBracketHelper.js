@@ -5,15 +5,12 @@ const {
     ActionRowBuilder,
     ComponentType,
 } = require("discord.js");
+const UserStatHelper = require("./UserStatHelper");
+const delay = require("../src/delay");
 const getWinnerEmbed = require("../embeds/brawlWinner");
 const mergeImages = require("../src/meregeImages");
 const shuffleArray = require("../src/shuffleArray");
-const delay = require("../src/delay");
-const client = require("../../index");
-const bconfig = require("../brawl-config.json");
-const config = require("../../../config.json");
-const UserStatHelper = require("./UserStatHelper");
-const { deleteMany } = require("../schemas/userStatSchema");
+const { client, config } = require("../../index");
 
 class Match {
     /**
@@ -30,7 +27,6 @@ class Match {
         const guild = client.guilds.cache.get(config.guildID);
 
         let totalCount = 0;
-
         for (const reactedUser of userIDs) {
             let bonus = 0;
             const member = await guild.members.fetch(reactedUser);
@@ -39,10 +35,15 @@ class Match {
                 bonus = 1;
             } else if (
                 member.roles.cache.some(
-                    (role) => role.name === "Active Booster" || role.name === "Server Subscriber"
+                    (role) =>
+                        role.name === "Active Booster" ||
+                        role.name === "Server Subscriber"
                 )
             ) {
-                bonus = Math.max(bconfig.activeBoosterBonus, bconfig.serverSubscriberBonus);
+                bonus = Math.max(
+                    config.brawl.activeBoosterBonus,
+                    config.brawl.serverSubscriberBonus
+                );
             }
             totalCount += bonus;
 
@@ -58,7 +59,9 @@ class Match {
 
         // Free match
         if (this.winner !== null) {
-            console.log(`[BRAWL BRACKET] Round ${round}: Match ${match} already has winner`);
+            console.log(
+                `[BRAWL BRACKET] Round ${round}: Match ${match} already has winner`
+            );
             const completedMatchSchema = {
                 card1: null,
                 card2: null,
@@ -104,7 +107,7 @@ class Match {
         // Button listeners
         const collector = await message.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: bconfig.voteTime * 1000,
+            time: config.brawl.voteTime * 1000,
         });
 
         // Collect responses
@@ -165,7 +168,7 @@ class Match {
                 components: [row],
             });
         });
-        await delay(bconfig.voteTime);
+        await delay(config.brawl.voteTime);
 
         // Count votes
         let count1 = users1.size;
@@ -281,14 +284,15 @@ class BrawlBracketHelper {
         this.setupModel = setupModel;
 
         this.idealSize = Math.pow(2, Math.ceil(Math.log2(this.setupModel.cards.size)));
-        this.channel = client.channels.cache.get(config.judgesChannelID);
+        this.channel = client.channels.cache.get(config.channelID.judges);
         this.myUserStat = new UserStatHelper();
     }
 
     getStatus() {
         if (this.bracketModel.matches.length === 0) {
             if (this.bracketModel.completedMatches.length === 0) return 0; // Brawl has not started
-            if (this.bracketModel.completedMatches.length === this.idealSize - 1) return 2; // Brawl is finished
+            if (this.bracketModel.completedMatches.length === this.idealSize - 1)
+                return 2; // Brawl is finished
         }
         return 1; // Brawl is in progress
     }
@@ -457,28 +461,35 @@ class BrawlBracketHelper {
 
     async announceWinner() {
         const finalsMatch =
-            this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 1];
+            this.bracketModel.completedMatches[
+                this.bracketModel.completedMatches.length - 1
+            ];
         const winnerCard = finalsMatch.winner;
         const winnerID = this.setupModel.cards.get(winnerCard).userID;
 
-        const secondCard = finalsMatch.card1 === winnerCard ? finalsMatch.card2 : finalsMatch.card1;
+        const secondCard =
+            finalsMatch.card1 === winnerCard ? finalsMatch.card2 : finalsMatch.card1;
         const secondID = this.setupModel.cards.get(secondCard).userID;
 
         const semisMatch =
-            this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2]
-                .winner === winnerCard
-                ? this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 2]
-                : this.bracketModel.completedMatches[this.bracketModel.completedMatches.length - 3];
-        const thirdCard = semisMatch.card1 === winnerCard ? semisMatch.card2 : semisMatch.card1;
+            this.bracketModel.completedMatches[
+                this.bracketModel.completedMatches.length - 2
+            ].winner === winnerCard
+                ? this.bracketModel.completedMatches[
+                      this.bracketModel.completedMatches.length - 2
+                  ]
+                : this.bracketModel.completedMatches[
+                      this.bracketModel.completedMatches.length - 3
+                  ];
+        const thirdCard =
+            semisMatch.card1 === winnerCard ? semisMatch.card2 : semisMatch.card1;
         const thirdID = this.setupModel.cards.get(thirdCard).userID;
 
         // 3rd place
         const thirdImage = this.setupModel.cards.get(thirdCard).imageLink;
         const thirdEmbed = new EmbedBuilder()
             .setTitle("Third Place")
-            .setDescription(
-                `Card: \`${thirdCard}\` by <@${thirdID}>`
-            )
+            .setDescription(`Card: \`${thirdCard}\` by <@${thirdID}>`)
             .setImage(thirdImage);
         await this.channel.send({
             embeds: [thirdEmbed],
@@ -486,12 +497,10 @@ class BrawlBracketHelper {
         await delay(2);
 
         // 2nd place
-        const secondImage = this.setupModel.cards.get(thirdCard).imageLink;
+        const secondImage = this.setupModel.cards.get(secondCard).imageLink;
         const secondEmbed = new EmbedBuilder()
             .setTitle("Second Place")
-            .setDescription(
-                `\nCard: \`${secondCard}\` by <@${secondID}>`
-            )
+            .setDescription(`\nCard: \`${secondCard}\` by <@${secondID}>`)
             .setImage(secondImage);
         await this.channel.send({
             embeds: [secondEmbed],
@@ -503,22 +512,24 @@ class BrawlBracketHelper {
 
         // Send winner embed
         await this.channel.send({
-            content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.brawlChampionRole}>!`,
+            content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.roleID.brawlChampion}>!`,
             embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
             allowedMentions: { parse: [] },
         });
 
         // Edit announcement message with image of winning card
-        const competitorsChannel = client.channels.cache.get(config.competitorsChannelID);
+        const competitorsChannel = client.channels.cache.get(
+            config.channelID.competitors
+        );
         competitorsChannel.messages.fetch(this.setupModel.messageID).then((message) => {
             const updatedEmbed = new EmbedBuilder(message.embeds[0]);
-            updatedEmbed.setColor(config.yellow);
+            updatedEmbed.setColor(config.embed.yellow);
             updatedEmbed.setImage(this.setupModel.cards.get(winnerCard).imageLink);
             updatedEmbed.setFooter({
                 text: "This Card Brawl has a winner!",
             });
             message.edit({
-                content: `The \`${this.setupModel.name}\` Card Brawl has a winner! 🥊 <@&${config.competitorRole}>`,
+                content: `The \`${this.setupModel.name}\` Card Brawl has a winner! 🥊 <@${config.roleID.brawlCompetitor}>`,
                 embeds: [updatedEmbed],
             });
         });
@@ -531,7 +542,9 @@ class BrawlBracketHelper {
             if (member) {
                 member.roles.add(role);
             } else {
-                console.warn("[BRAWL BRACKET] User not found to give Brawl Champion role");
+                console.warn(
+                    "[BRAWL BRACKET] User not found to give Brawl Champion role"
+                );
             }
         } catch (error) {
             console.error("[BRAWL BRACKET] Error giving Brawl Champion role:", error);

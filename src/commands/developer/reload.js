@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const client = require("../../index");
+const { client } = require("../../index");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,7 +8,7 @@ module.exports = {
         .addStringOption((option) =>
             option
                 .setName("command")
-                .setDescription("The command to reload.")
+                .setDescription("What command do you want to reload?")
                 .setRequired(true)
                 .setAutocomplete(true)
         )
@@ -17,7 +17,9 @@ module.exports = {
         const focusedValue = interaction.options.getFocused();
         const choices = [...client.commands.keys()];
         const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
-        await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+        await interaction.respond(
+            filtered.map((choice) => ({ name: choice, value: choice }))
+        );
     },
     async execute(interaction) {
         const commandName = interaction.options.getString("command", true).toLowerCase();
@@ -27,7 +29,9 @@ module.exports = {
             return interaction.reply(`There is no command with name \`${commandName}\`!`);
         }
 
-        delete require.cache[require.resolve(`../${command.category}/${command.data.name}.js`)];
+        delete require.cache[
+            require.resolve(`../${command.category}/${command.data.name}.js`)
+        ];
 
         try {
             interaction.client.commands.delete(command.data.name);
@@ -35,10 +39,10 @@ module.exports = {
             interaction.client.commands.set(newCommand.data.name, newCommand);
             await interaction.reply(`Command \`${newCommand.data.name}\` was reloaded!`);
         } catch (error) {
-            console.error("[RELOAD] Error reloading a command");
             await interaction.reply(
                 `Error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``
             );
+            console.error("[ERROR] [reload] Error reloading a command");
         }
     },
 };

@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const bconfig = require("../brawl-config.json")
-const config = require("../../../config.json");
+const { config } = require("../../index");
 
 function getAnnouncementEmbed(setupModel) {
     const name = setupModel.name;
@@ -13,33 +12,43 @@ function getAnnouncementEmbed(setupModel) {
     let sketchText;
     switch (sketch) {
         case "prohibited": {
-            sketchText = "\n🩸 Not Sketched";
+            sketchText = "🩸 Not Sketched";
             break;
         }
         case "optional": {
-            sketchText = "\n🩸 Sketched";
+            sketchText = "🩸 Sketched";
             break;
         }
     }
 
     // Description
-    const headers = `Size: **${size}** card${
-        size === 1 ? "" : "s"
-    } submitted\nTheme: **${theme}**\nSeries: **${series ?? "Any"}**\nDate: <t:${unixStartTime}:f>`;
-
-    const requirements = `\n\n**Requirements**:${
-        series ? "\n🏷️ Match series" : ""
-    }\n🖼️ Framed\n🎨 Morphed${
-        sketch === "prohibited" ? sketchText : ""
-    }\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed${sketch === "optional" ? sketchText : ""}`;
-
-    const bonuses = `\n\n**Bonus Entries**:\n<@&${config.serverSubscriberRole}> **+1** entry\n\n**Bonus Votes**: *(Does not stack)*\n<@&${config.activeBoosterRole}> **+${bconfig.activeBoosterBonus}** vote\n<@&${config.serverSubscriberRole}> **+${bconfig.serverSubscriberBonus}** vote`;
-    // `Size: **${size}** cards\nStatus: **${size - competitors}/${size}** spots available\nTheme: **${theme}**\nDate: <t:${unixStartTime}:f>\n\n**Bonus Entries**: *(1x = 1 extra)*\n<@&${config.serverSubscriberRole}> **1x** entry\n\n**Bonus Votes**:\n<@&${config.serverBoosterRole}> **${config.serverBoosterBonus}x** vote\n<@&${config.activeBoosterRole}> **${config.activeBoosterBonus}x** votes\n<@&${config.serverSubscriberRole}> **${config.serverSubscriberBonus}x** votes\n\n**Requirements**:\n🖼️ Framed\n🎨 Morphed\n🩸 Not Sketched\n\n**Optional**:\n💧 Dyed\n✂️ Trimmed`
+    const headers =
+        `Size: **${size}** card${size === 1 ? "" : "s"} submitted\n` +
+        `Theme: **${theme}**\n` +
+        `Series: **${series ?? "Any"}**\n` +
+        `Date: <t:${unixStartTime}:f>`;
+    const requirements =
+        `**Requirements**:` +
+        `${series ? "\n🏷️ Match series" : ""}\n` +
+        `🖼️ Framed\n` +
+        `🎨 Morphed` +
+        `${sketch === "prohibited" ? sketchText : ""}\n\n` +
+        `**Optional**:\n` +
+        `💧 Dyed\n` +
+        `✂️ Trimmed` +
+        `${sketch === "optional" ? "\n" + sketchText : ""}`;
+    const bonuses =
+        `**Entries**:\n` +
+        `@everyone **1** entry` +
+        `<@&${config.roleID.serverSubscriber}> **${config.brawl.serverSubscriberEntry}** entries\n\n` +
+        `**Bonus Votes**: *(Does not stack)*\n` +
+        `<@&${config.roleID.activeBooster}> **+${config.brawl.activeBoosterBonus}** vote\n` +
+        `<@&${config.roleID.serverSubscriber}> **+${config.brawl.serverSubscriberBonus}** vote`;
 
     const embed = new EmbedBuilder()
-        .setColor(config.blue)
+        .setColor(config.embed.blue)
         .setTitle(`${name}`)
-        .setDescription(headers + requirements + bonuses);
+        .setDescription(headers + "\n\n" + requirements + "\n\n" + bonuses);
     return embed;
 }
 

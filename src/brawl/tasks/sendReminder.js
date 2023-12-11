@@ -1,10 +1,9 @@
-const client = require("../../index");
-const config = require("../../../config.json");
 const ScheduleModel = require("../../schedule/schemas/scheduleSchema");
+const { client, config } = require("../../index");
 
 async function reminder(data) {
-    const judgesChannel = client.channels.cache.get(config.judgesChannelID);
-    await judgesChannel.send({
+    const channel = client.channels.cache.get(config.channelID.judges);
+    await channel.send({
         content: data.message,
     });
 
@@ -12,9 +11,9 @@ async function reminder(data) {
     const name = data.scheduleName;
     try {
         await ScheduleModel.deleteOne({ name }).exec();
-        console.log(`[SEND REMINDER] ${name} schedule deleted`);
+        console.log(`[INFO] [sendReminder] ${name} schedule deleted`);
     } catch (error) {
-        console.error(`[SEND REMINDER] Error deleting schedule ${name}:`, error);
+        console.error(`[ERROR] [sendReminder] Error deleting schedule ${name}:`, error);
     }
 }
 

@@ -8,8 +8,7 @@ const {
 const getEnterEmbed = require("../../../brawl/embeds/brawlEnter");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const formatTitle = require("../../../brawl/src/formatTitle");
-const client = require("../../../index");
-const config = require("../../../../config.json");
+const { client, config } = require("../../../index");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 
 module.exports = {
@@ -47,7 +46,9 @@ module.exports = {
 
         // Check preconditions
         if (!setupModel.open) {
-            return await interaction.reply(`The **${setupModel.name}** Card Brawl is closed!`);
+            return await interaction.reply(
+                `The **${setupModel.name}** Card Brawl is closed!`
+            );
         }
 
         // Developer debugging bypass
@@ -56,18 +57,23 @@ module.exports = {
             if (setupModel.entries.get(userID)) {
                 // Already an entry
                 if (
-                    interaction.member.roles.cache.some((role) => role.name === "Server Subscriber")
+                    interaction.member.roles.cache.some(
+                        (role) => role.name === "Server Subscriber"
+                    )
                 ) {
-                    // Server subscriber gets max 2 entries
-                    if (setupModel.entries.get(userID).length === 2) {
+                    // Server subscriber gets bonus entries
+                    if (
+                        setupModel.entries.get(userID).length ===
+                        config.brawl.serverSubscriberEntry
+                    ) {
                         return await interaction.reply({
-                            content: `<@${userID}>, you already entered **2 cards** for the **${setupModel.name}** Card Brawl.`,
+                            content: `<@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`,
                             allowedMentions: { parse: [] },
                         });
                     }
                 } else {
                     return await interaction.reply({
-                        content: `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`,
+                        content: `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`,
                         allowedMentions: { parse: [] },
                     });
                 }
@@ -106,7 +112,7 @@ module.exports = {
         } catch (error) {
             console.warn("[BRAWL ENTER] Command timed out:", interaction.user.tag);
 
-            enterEmbed.setColor(config.red);
+            enterEmbed.setColor(config.embed.red);
             await confirmation.update({
                 content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
                 embeds: [enterEmbed],
@@ -123,7 +129,7 @@ module.exports = {
         // Confirmation received
         switch (confirmation.customId) {
             case "cancelEnter": {
-                enterEmbed.setColor(config.red);
+                enterEmbed.setColor(config.embed.red);
                 return await confirmation.update({
                     content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
                     embeds: [enterEmbed],
@@ -132,7 +138,7 @@ module.exports = {
                 });
             }
             case "confirmEnter": {
-                enterEmbed.setColor(config.green);
+                enterEmbed.setColor(config.embed.green);
                 await confirmation.update({
                     content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
                     embeds: [enterEmbed],
@@ -151,7 +157,7 @@ module.exports = {
 
         // Read card details embed
         const botResponseFilter = (response) =>
-            response.author.id === config.karutaID &&
+            response.author.id === config.botID.karuta &&
             response.channelId === interaction.channel.id &&
             response.mentions.repliedUser &&
             response.mentions.repliedUser.id === userID &&
@@ -175,7 +181,9 @@ module.exports = {
         }
 
         // Confirmation received
-        console.log("[BRAWL ENTER] Found Card Details embed for: " + interaction.user.tag);
+        console.log(
+            "[BRAWL ENTER] Found Card Details embed for: " + interaction.user.tag
+        );
         let embedMessage;
         try {
             embedMessage = collected.first();
@@ -235,7 +243,9 @@ module.exports = {
 
         // Display card confirmation
         const cardImage = botResponseEmbed.thumbnail.url; // .proxy_url
-        const cardEmbed = new EmbedBuilder().setColor(botResponseEmbed.color).setImage(cardImage);
+        const cardEmbed = new EmbedBuilder()
+            .setColor(botResponseEmbed.color)
+            .setImage(cardImage);
         response = await channel.send({
             content: `<@${userID}>, is this the correct card you want to submit?`,
             embeds: [cardEmbed],
@@ -253,7 +263,7 @@ module.exports = {
         } catch (error) {
             console.warn("[BRAWL ENTER] Command timed out:", interaction.user.tag);
 
-            cardEmbed.setColor(config.red);
+            cardEmbed.setColor(config.embed.red);
             await response.edit({
                 content: `<@${userID}>, is this the correct card you want to submit?`,
                 embeds: [cardEmbed],
@@ -270,7 +280,7 @@ module.exports = {
         // Button press confirmed
         switch (confirmation.customId) {
             case "cancelEnter": {
-                cardEmbed.setColor(config.red);
+                cardEmbed.setColor(config.embed.red);
                 return await confirmation.update({
                     content: `<@${userID}>, is this the correct card you want to submit?`,
                     embeds: [cardEmbed],
@@ -282,11 +292,15 @@ module.exports = {
                 // Get the most recent setupModel queue to handle concurrent saving
                 const task = async () => {
                     // Get most recent setupModel at the head of the queue
-                    const recentSetupModel = await BrawlSetupModel.findOne({ name }).exec();
+                    const recentSetupModel = await BrawlSetupModel.findOne({
+                        name,
+                    }).exec();
 
                     // Check eligibility again
                     if (!recentSetupModel.open) {
-                        throw new Error(`The **${recentSetupModel.name}** Card Brawl is closed!`);
+                        throw new Error(
+                            `The **${recentSetupModel.name}** Card Brawl is closed!`
+                        );
                     }
 
                     if (recentSetupModel.cards.get(cardCode)) {
@@ -305,15 +319,18 @@ module.exports = {
                                     (role) => role.name === "Server Subscriber"
                                 )
                             ) {
-                                // Server subscriber gets max 2 entries
-                                if (setupModel.entries.get(userID).length === 2) {
+                                // Server subscriber gets bonus entries
+                                if (
+                                    setupModel.entries.get(userID).length ===
+                                    config.brawl.serverSubscriberEntry
+                                ) {
                                     throw new Error(
-                                        `<@${userID}>, you already entered **2 cards** for the **${setupModel.name}** Card Brawl.`
+                                        `<@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`
                                     );
                                 }
                             } else {
                                 throw new Error(
-                                    `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.serverSubscriberRole}> to submit **2 cards**!`
+                                    `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`
                                 );
                             }
                         }
@@ -335,13 +352,13 @@ module.exports = {
                     // Update announcement embed
                     const updatedEmbed = getAnnouncementEmbed(recentSetupModel);
                     const competitorsChannel = client.channels.cache.get(
-                        config.competitorsChannelID
+                        config.channelID.competitors
                     );
                     competitorsChannel.messages
                         .fetch(recentSetupModel.messageID)
                         .then((message) => {
                             message.edit({
-                                content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.competitorRole}>`,
+                                content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                                 embeds: [updatedEmbed],
                             });
                         });
@@ -354,7 +371,7 @@ module.exports = {
                         `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                     );
 
-                    cardEmbed.setColor(config.green);
+                    cardEmbed.setColor(config.embed.green);
                     await confirmation.update({
                         content: `<@${userID}>, is this the correct card you want to submit?`,
                         embeds: [cardEmbed],
@@ -364,7 +381,7 @@ module.exports = {
                 } catch (error) {
                     console.error("[BRAWL ENTER]:", error);
 
-                    cardEmbed.setColor(config.red);
+                    cardEmbed.setColor(config.embed.red);
                     await confirmation.update({
                         content: `<@${userID}>, is this the correct card you want to submit?`,
                         embeds: [cardEmbed],
@@ -380,6 +397,9 @@ module.exports = {
                 break;
             }
         }
-        console.log(`[BRAWL ENTER] Successfully submitted ${cardCode} to the ${setupModel.name} Card Brawl:`, interaction.user.tag);
+        console.log(
+            `[BRAWL ENTER] Successfully submitted ${cardCode} to the ${setupModel.name} Card Brawl:`,
+            interaction.user.tag
+        );
     },
 };

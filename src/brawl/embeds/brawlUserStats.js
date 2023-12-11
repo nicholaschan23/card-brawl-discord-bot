@@ -18,7 +18,9 @@ function getUserStatEmbed(userStatModel) {
         "Ties won",
         "Tournament Wins",
     ];
-    const competitorContent = alignTextToLongest(competitorStats, compeititorSuffix).join("\n");
+    const competitorContent = alignTextToLongest(competitorStats, compeititorSuffix).join(
+        "\n"
+    );
 
     // Judge stats
     const judgeStats = [
@@ -27,7 +29,12 @@ function getUserStatEmbed(userStatModel) {
         `${userStatModel.votesReceived}`,
         `${userStatModel.votesHighest}`,
     ];
-    const judgeSuffix = ["Matches judged", "Votes given", "Votes received", "Highest votes"];
+    const judgeSuffix = [
+        "Matches judged",
+        "Votes given",
+        "Votes received",
+        "Highest votes",
+    ];
     const judgeContent = alignTextToLongest(judgeStats, judgeSuffix).join("\n");
 
     const embed = new EmbedBuilder()

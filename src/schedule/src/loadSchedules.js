@@ -1,6 +1,6 @@
-const cronParser = require("cron-parser");
-const cron = require("node-cron");
 const ScheduleModel = require("../schemas/scheduleSchema");
+const cron = require("node-cron");
+const cronParser = require("cron-parser");
 
 function hasCronPassed(cronExpression) {
     try {

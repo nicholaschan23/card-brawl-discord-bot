@@ -23,7 +23,7 @@ module.exports = {
             }
             default: {
                 console.error(
-                    `[CHANNEL] There was no execute case for the "${subcommand}" subcommand`
+                    `[ERROR] [channel] There was no execute case for the "${subcommand}" subcommand`
                 );
                 await interaction.reply(
                     `There was no execute case for the \`${subcommand}\` subcommand.`

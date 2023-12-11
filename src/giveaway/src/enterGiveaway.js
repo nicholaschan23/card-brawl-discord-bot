@@ -8,20 +8,27 @@ const {
     ButtonStyle,
     ComponentType,
 } = require("discord.js");
-const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
-const gconfig = require("../giveaway-config.json");
-const config = require("../../../config.json");
-const client = require("../../index");
 const GiveawayModel = require("../schemas/giveawaySchema");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
+const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
+const { client, config } = require("../../index");
 
-const bonusRoles = {
-    "Server Subscriber": gconfig.serverSubscriberCap,
-    "Active Booster": gconfig.activeBoosterCap,
-    "Server Booster": gconfig.serverBoosterCap,
-};
+// Config variables
+const everyoneCap = config.giveaway.everyoneCap;
+const serverBoosterCap = config.giveaway.serverBoosterCap;
+const activeBoosterCap = config.giveaway.activeBoosterCap;
+const serverSubscriberCap = config.giveaway.serverSubscriberCap;
+const red = config.embed.red;
+const green = config.embed.green;
+const blue = config.embed.blue;
+const token = config.emoji.token;
 
 const getUserRoleValue = (member) => {
+    const bonusRoles = {
+        "Server Booster": serverBoosterCap,
+        "Active Booster": activeBoosterCap,
+        "Server Subscriber": serverSubscriberCap,
+    };
     const userRoles = member.roles.cache;
 
     for (const roleName in bonusRoles) {
@@ -31,7 +38,7 @@ const getUserRoleValue = (member) => {
     }
 
     // If no matching role is found, return a default value
-    return gconfig.everyoneCap;
+    return everyoneCap;
 };
 
 async function enterGiveaway(interaction) {
@@ -65,7 +72,7 @@ async function enterGiveaway(interaction) {
         const balance = inventoryModel.numTokens;
         if (balance < amount) {
             console.log(`[INFO] [enterGiveaway] Insufficient balance:`, userTag);
-            throw new Error(`You don't have enough **${config.emojiToken} Tokens**.`);
+            throw new Error(`You don't have enough **${token} Tokens**.`);
         }
 
         // Update balance
@@ -106,7 +113,9 @@ async function enterGiveaway(interaction) {
             .setCustomId("entryAmount")
             .setLabel(`How many entries would you like to add?`)
             .setValue(`${maxIn}`)
-            .setPlaceholder(`Current entries: ${currentEntries} | Entry limit: ${maxEntries}`)
+            .setPlaceholder(
+                `Current entries: ${currentEntries} | Entry limit: ${maxEntries}`
+            )
             .setStyle(TextInputStyle.Short)
             .setMinLength(1)
             .setMaxLength(1)
@@ -119,7 +128,10 @@ async function enterGiveaway(interaction) {
 
         // Collect a modal submit interaction
         await interaction
-            .awaitModalSubmit({ filter: (i) => i.customId === "giveawayEnterlModal", time: 60_000 })
+            .awaitModalSubmit({
+                filter: (i) => i.customId === "giveawayEnterlModal",
+                time: 60_000,
+            })
             .then(async (i) => {
                 amount = i.fields.getTextInputValue("entryAmount");
                 if (isNaN(amount)) {
@@ -146,7 +158,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount > balance) {
                     await i.reply({
-                        content: `You don't have **${amount} ${config.emojiToken} Tokens**.`,
+                        content: `You don't have **${amount} ${token} Tokens**.`,
                         ephemeral: true,
                     });
                     return;
@@ -159,7 +171,7 @@ async function enterGiveaway(interaction) {
                     .setStyle(ButtonStyle.Secondary);
                 const confirm = new ButtonBuilder()
                     .setCustomId("confirmEnterGiveaway")
-                    .setEmoji(config.emojiToken)
+                    .setEmoji(token)
                     .setLabel(`${amount}`)
                     .setStyle(ButtonStyle.Success);
                 const row = new ActionRowBuilder().addComponents(cancel, confirm);
@@ -167,9 +179,9 @@ async function enterGiveaway(interaction) {
                 const embed = new EmbedBuilder()
                     .setTitle("Giveaway")
                     .setDescription(
-                        `Would you like to exchange **${amount} ${
-                            config.emojiToken
-                        } Tokens** to have a total of **${amount + currentEntries}** entries?`
+                        `Would you like to exchange **${amount} ${token} Tokens** to have a total of **${
+                            amount + currentEntries
+                        }** entries?`
                     );
                 const response = await i.reply({
                     fetchReply: true,
@@ -189,7 +201,7 @@ async function enterGiveaway(interaction) {
                     collector.on("collect", async (i) => {
                         switch (i.customId) {
                             case "cancelEnterGiveaway": {
-                                embed.setColor(config.red);
+                                embed.setColor(red);
                                 await i.update({
                                     embeds: [embed],
                                     components: [],
@@ -202,7 +214,7 @@ async function enterGiveaway(interaction) {
                                     await client.inventoryQueue.enqueue(inventoryTask);
                                     await client.giveawayQueue.enqueue(giveawayTask);
                                 } catch (error) {
-                                    embed.setColor(config.red);
+                                    embed.setColor(red);
                                     await i.update({
                                         embeds: [embed],
                                         components: [],
@@ -215,7 +227,7 @@ async function enterGiveaway(interaction) {
                                     return;
                                 }
 
-                                embed.setColor(config.green);
+                                embed.setColor(green);
                                 await i.update({
                                     embeds: [embed],
                                     components: [],
@@ -228,7 +240,7 @@ async function enterGiveaway(interaction) {
                                             amount + currentEntries
                                         } entries** for this [giveaway](${messageLink}) are confirmed!`
                                     )
-                                    .setColor(config.green);
+                                    .setColor(green);
 
                                 await interaction.followUp({
                                     embeds: [successEmbed],
@@ -264,7 +276,7 @@ async function enterGiveaway(interaction) {
         // No tokens
         if (balance === 0) {
             await interaction.editReply({
-                content: `You need **1 ${config.emojiToken} Token** to enter this giveaway!`,
+                content: `You need **1 ${token} Token** to enter this giveaway!`,
                 embeds: [getTokenHelpEmbed()],
                 ephemeral: true,
             });
@@ -279,17 +291,17 @@ async function enterGiveaway(interaction) {
                 entries = `You have **1 entry** in this giveaway.`;
             }
 
-            let upgrade = `Become a <@&${config.activeBoosterRole}> or <@&${config.serverSubscriberRole}> to enter more!`;
-            if (maxEntries === gconfig.activeBoosterCap) {
-                upgrade = `Become a <@&${config.serverSubscriberRole}> to enter more!`;
-            } else if (maxEntries === gconfig.serverSubscriberCap) {
-                upgrade = "You've entered the max amount of entries.";
+            let upgrade = `Become a <@&${config.roleID.activeBooster}> or <@&${config.roleID.serverSubscriber}> to have more entries!`;
+            if (maxEntries === activeBoosterCap) {
+                upgrade = `Become a <@&${config.roleID.serverSubscriber}> to have more entries!`;
+            } else if (maxEntries === serverSubscriberCap) {
+                upgrade = "You have the max amount of entries.";
             }
 
             const embed = new EmbedBuilder()
                 .setTitle("Giveaway")
                 .setDescription(entries + " " + upgrade)
-                .setColor(config.blue);
+                .setColor(blue);
 
             await interaction.editReply({
                 embeds: [embed],
@@ -319,7 +331,7 @@ async function enterGiveaway(interaction) {
                 .setDescription(
                     `Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
                 )
-                .setColor(config.green);
+                .setColor(green);
 
             await interaction.editReply({ embeds: [embed], ephemeral: true });
             console.log(

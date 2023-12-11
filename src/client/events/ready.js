@@ -2,7 +2,7 @@ const { Events } = require("discord.js");
 const autofeedInit = require("../src/autofeeds");
 const loadCommands = require("../handlers/commandHandler");
 const loadSchedules = require("../../schedule/src/loadSchedules");
-const client = require("../../index");
+const { client } = require("../../index");
 
 module.exports = {
     name: Events.ClientReady,

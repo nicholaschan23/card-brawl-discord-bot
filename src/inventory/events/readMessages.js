@@ -1,13 +1,12 @@
 const { Events } = require("discord.js");
-const client = require("../../index");
-const config = require("../../../config.json");
 const UserInventoryModel = require("../schemas/userInventorySchema");
+const { client, config } = require("../../index");
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         // Karuta bot message
-        if (message.author.bot && message.author.id === config.karutaID) {
+        if (message.author.bot && message.author.id === config.botID.karuta) {
             // Wishlist drop ping
             if (
                 message.content.includes("A card from your wishlist is dropping") ||
@@ -15,7 +14,7 @@ module.exports = {
             ) {
                 console.log("[INFO] [readMessages] Wishlist card dropped");
                 message.channel.send(
-                    `<@&${config.wishlistDropRole}> A wishlisted card is dropping!`
+                    `<@&${config.roleID.wishlistDrop}> A wishlisted card is dropping!`
                 );
                 return;
             }
@@ -28,15 +27,16 @@ module.exports = {
                 // Emoji filter
                 const filter = (reaction, reactingUser) => {
                     return (
-                        (reactingUser.id === config.karutaID && reaction.emoji.name === "🍬") ||
-                        reaction.emoji.name === "🍫" ||
-                        reaction.emoji.name === "🎀" ||
-                        reaction.emoji.name === "🥀" ||
-                        reaction.emoji.name === "🌻" ||
-                        reaction.emoji.name === "🌹" ||
-                        reaction.emoji.name === "🌼" ||
-                        reaction.emoji.name === "🌷" ||
-                        reaction.emoji.name === "💐"
+                        reactingUser.id === config.botID.karuta &&
+                        (reaction.emoji.name === "🍬" ||
+                            reaction.emoji.name === "🍫" ||
+                            reaction.emoji.name === "🎀" ||
+                            reaction.emoji.name === "🥀" ||
+                            reaction.emoji.name === "🌻" ||
+                            reaction.emoji.name === "🌹" ||
+                            reaction.emoji.name === "🌼" ||
+                            reaction.emoji.name === "🌷" ||
+                            reaction.emoji.name === "💐")
                     );
                 };
 
@@ -51,13 +51,15 @@ module.exports = {
                     // Event drop ping
                     collector.on("collect", (reaction) => {
                         message.reply(
-                            `<@&${config.eventDropRole}> A ${reaction.emoji.name} has dropped!`
+                            `<@&${config.roleID.eventDrop}> A ${reaction.emoji.name} has dropped!`
                         );
                     });
 
                     collector.on("end", (collected) => {
                         if (collected.size > 0) {
-                            console.log(`[INFO] [readMessages] Karuta drop reaction collected`);
+                            console.log(
+                                `[INFO] [readMessages] Karuta drop reaction collected`
+                            );
                         }
                     });
                 } catch (error) {
@@ -70,20 +72,29 @@ module.exports = {
                 const guild = client.guilds.cache.get(config.guildID);
                 const starflight = await guild.members.fetch("816328822051045436");
                 // Only server drop pin if other bot is offline
-                if (starflight.presence === null || starflight.presence.status !== "online") {
+                if (
+                    starflight.presence === null ||
+                    starflight.presence.status !== "online"
+                ) {
                     const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
                     const match = message.content.match(regex);
                     if (!match) {
-                        console.warn("[WARN] [readMessages] Couldn't find number of cards dropped");
+                        console.warn(
+                            "[WARN] [readMessages] Couldn't find number of cards dropped"
+                        );
                         return;
                     }
                     const numCards = parseInt(match[1], 10);
 
                     // Server drop ping
-                    if (message.content.includes("cards since this server is currently active")) {
+                    if (
+                        message.content.includes(
+                            "cards since this server is currently active"
+                        )
+                    ) {
                         console.log("[INFO] [readMessages] Server drop ping");
                         await message.reply(
-                            `<@&${config.serverDropRole}> ${numCards} cards are dropping!`
+                            `<@&${config.roleID.serverDrop}> ${numCards} cards are dropping!`
                         );
                     }
                 }
@@ -91,10 +102,11 @@ module.exports = {
         }
 
         if (
-            (message.author.bot && message.author.id === config.karutaID) ||
-            message.author.id === config.sofiID ||
-            message.author.id === config.tofuID ||
-            message.author.id === config.gachaponID
+            message.author.bot &&
+            (message.author.id === config.botID.karuta ||
+                message.author.id === config.botID.sofi ||
+                message.author.id === config.botID.tofu ||
+                message.author.id === config.botID.gachapon)
         ) {
             // User dropped cards
             if (
@@ -103,7 +115,9 @@ module.exports = {
             ) {
                 const user = message.mentions.users.first();
                 if (!user) {
-                    return console.warn("[WARN] [readMessages] Couldn't find user that dropped cards");
+                    return console.warn(
+                        "[WARN] [readMessages] Couldn't find user that dropped cards"
+                    );
                 }
                 if (user.bot) {
                     return;
@@ -129,14 +143,16 @@ module.exports = {
                     if (currentUnixTime >= uim.lastUnixTime + 30 * 60) {
                         uim.tokenCounter++;
                         uim.lastUnixTime = currentUnixTime;
-                        console.log(`[INFO] [inventory] Token counter ${uim.tokenCounter}: ${user.tag}`);
+                        console.log(
+                            `[INFO] [inventory] Token counter ${uim.tokenCounter}: ${user.tag}`
+                        );
 
                         if (uim.tokenCounter === 5) {
                             console.log(`[INFO] [inventory] Token received: ${user.tag}`);
                             uim.tokenCounter = 0;
                             uim.numTokens++;
                             await message.channel.send(
-                                `<@${userID}>, you received a ${config.emojiToken} **Token**!`
+                                `<@${userID}>, you received a ${config.emoji.token} **Token**!`
                             );
                         }
 
