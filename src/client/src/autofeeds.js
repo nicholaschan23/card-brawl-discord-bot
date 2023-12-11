@@ -1,4 +1,5 @@
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 const cron = require("node-cron");
 
 function autofeedInit() {

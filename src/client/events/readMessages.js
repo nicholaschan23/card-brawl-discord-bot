@@ -1,6 +1,7 @@
 const { Events } = require("discord.js");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 module.exports = {
     name: Events.MessageCreate,

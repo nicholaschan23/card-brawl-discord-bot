@@ -5,11 +5,12 @@ const {
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
+const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const getEnterEmbed = require("../../../brawl/embeds/brawlEnter");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const formatTitle = require("../../../brawl/src/formatTitle");
-const { client, config } = require("../../../index");
-const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const client = require("../../../index");
+const config = require("../../../../config.json")
 
 module.exports = {
     category: "public/brawl",

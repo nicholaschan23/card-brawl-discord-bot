@@ -7,7 +7,8 @@ const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const getConclusionEmbed = require("../../../brawl/embeds/brawlConclusion");
 const getIntroductionEmbed = require("../../../brawl/embeds/brawlIntroduction");
 const formatTitle = require("../../../brawl/src/formatTitle");
-const { client, config } = require("../../../index");
+const client = require("../../../index");
+const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/brawl",
@@ -110,7 +111,9 @@ module.exports = {
 
             // Introduction
             const message = await judgesChannel.send({
-                content: `We'll be starting in \`${config.brawl.startTime / 60} minutes\`. <@&${config.roleID.brawlJudge}>`,
+                content: `We'll be starting in \`${
+                    config.brawl.startTime / 60
+                } minutes\`. <@&${config.roleID.brawlJudge}>`,
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");

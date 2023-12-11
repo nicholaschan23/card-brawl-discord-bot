@@ -8,7 +8,7 @@ const {
 } = require("discord.js");
 const getBrawlHelpEmbed = require("../../brawl/embeds/brawlHelp");
 const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
-const { config } = require("../../index");
+const config = require("../../../config.json");
 
 const helpSelect = [
     {

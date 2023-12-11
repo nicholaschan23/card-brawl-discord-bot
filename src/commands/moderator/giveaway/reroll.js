@@ -1,8 +1,9 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
+const GiveawayModel = require("../../../giveaway/schemas/giveawaySchema");
 const getWinnerEmbed = require("../../../giveaway/embeds/giveawayWinner");
 const rollWinner = require("../../../giveaway/src/rollWinner");
-const { client, config } = require("../../../index");
-const GiveawayModel = require("../../../giveaway/schemas/giveawaySchema");
+const client = require("../../../index");
+const config = require("../../../../config.json");
 
 module.exports = {
     category: "moderator/giveaway",

@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { config } = require("../../index");
+const config = require("../../../config.json");
 
 function getEnterEmbed(setupModel) {
     const theme = setupModel.theme;

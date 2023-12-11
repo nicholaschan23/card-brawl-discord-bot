@@ -10,7 +10,8 @@ const delay = require("../src/delay");
 const getWinnerEmbed = require("../embeds/brawlWinner");
 const mergeImages = require("../src/meregeImages");
 const shuffleArray = require("../src/shuffleArray");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 class Match {
     /**

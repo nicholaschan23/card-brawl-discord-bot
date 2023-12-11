@@ -10,7 +10,8 @@ const {
 } = require("discord.js");
 const UserInventoryModel = require("../../../inventory/schemas/userInventorySchema");
 const getPreviewEmbed = require("../../../color/embeds/colorPreview");
-const { client, config } = require("../../../index");
+const client = require("../../../index");
+const config = require("../../../../config.json")
 
 const colors = [
     "Red",

@@ -1,5 +1,6 @@
 const ScheduleModel = require("../../schedule/schemas/scheduleSchema");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 async function reminder(data) {
     const channel = client.channels.cache.get(config.channelID.judges);

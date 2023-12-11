@@ -9,7 +9,8 @@ const ScheduleModel = require("../../../schedule/schemas/scheduleSchema");
 const endGiveaway = require("../../../giveaway/tasks/endGiveaway");
 const getGiveawayEmbed = require("../../../giveaway/embeds/giveawayAnnouncement");
 const { unixTimeToCron } = require("../../../schedule/src/schedule");
-const { client, config } = require("../../../index");
+const client = require("../../../index");
+const config = require("../../../../config.json");
 const cron = require("node-cron");
 
 module.exports = {

@@ -1,7 +1,8 @@
 const { Events, Collection } = require("discord.js");
 const enterGiveaway = require("../../giveaway/src/enterGiveaway");
 const viewParticipants = require("../../giveaway/src/viewParticipants");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -9,7 +10,9 @@ module.exports = {
         if (interaction.isChatInputCommand()) {
             const command = interaction.client.commands.get(interaction.commandName);
             if (!command) {
-                console.error(`[ERROR] [slashCommands] No command matching ${interaction.commandName} was found`);
+                console.error(
+                    `[ERROR] [slashCommands] No command matching ${interaction.commandName} was found`
+                );
                 return;
             }
 
@@ -25,7 +28,8 @@ module.exports = {
             const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
 
             if (timestamps.has(interaction.user.id)) {
-                const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+                const expirationTime =
+                    timestamps.get(interaction.user.id) + cooldownAmount;
 
                 if (now < expirationTime) {
                     const secondsLeft = Math.ceil((expirationTime - now) / 1000);
@@ -48,7 +52,10 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch (error) {
-                console.error(`[ERROR] [slashCommands] Error executing command ${command.data.name}:`, error);
+                console.error(
+                    `[ERROR] [slashCommands] Error executing command ${command.data.name}:`,
+                    error
+                );
                 if (interaction.replied || interaction.deferred) {
                     await interaction.followUp({
                         content: "Error while executing this command!",
@@ -74,7 +81,8 @@ module.exports = {
                 await command.autocomplete(interaction);
             } catch (error) {
                 console.error(
-                    `[ERROR] [slashCommands] Error autocompleting command ${command.data.name}:`, error
+                    `[ERROR] [slashCommands] Error autocompleting command ${command.data.name}:`,
+                    error
                 );
             }
         } else if (interaction.isButton()) {

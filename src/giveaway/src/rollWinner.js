@@ -1,4 +1,4 @@
-const { client } = require("../../index");
+const client = require("../../index");
 
 async function rollWinner(giveawayModel, numWinners) {
     const entries = new Map(giveawayModel.entries);

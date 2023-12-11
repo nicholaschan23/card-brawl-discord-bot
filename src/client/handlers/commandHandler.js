@@ -1,5 +1,6 @@
 const loadFiles = require("../src/fileLoader");
-const { client } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 async function loadCommands() {
     console.time("[COMMAND HANDLER] Commands loaded");

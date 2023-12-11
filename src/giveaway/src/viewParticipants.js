@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const GiveawayModel = require("../schemas/giveawaySchema");
 const buttonPages = require("../../support/src/pagination");
-const { config } = require("../../index");
+const config = require("../../../config.json");
 
 async function viewParticipants(interaction) {
     const messageID = interaction.message.id;

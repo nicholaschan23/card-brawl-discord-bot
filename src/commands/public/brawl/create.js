@@ -8,7 +8,8 @@ const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const formatTitle = require("../../../brawl/src/formatTitle");
 const { getNextSaturday, createGuildEvent } = require("../../../schedule/src/schedule");
-const { client, config } = require("../../../index");
+const client = require("../../../index");
+const config = require("../../../../config.json")
 
 module.exports = {
     category: "public/brawl",
@@ -131,7 +132,9 @@ module.exports = {
                 }
                 case "confirmCreate": {
                     // Announce brawl bracket creation for contestants to join
-                    const channel = client.channels.cache.get(config.channelID.competitors);
+                    const channel = client.channels.cache.get(
+                        config.channelID.competitors
+                    );
                     const message = await channel.send({
                         content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                         embeds: [setupBrawlEmbed],

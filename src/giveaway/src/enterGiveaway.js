@@ -11,7 +11,8 @@ const {
 const GiveawayModel = require("../schemas/giveawaySchema");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
 const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 // Config variables
 const everyoneCap = config.giveaway.everyoneCap;

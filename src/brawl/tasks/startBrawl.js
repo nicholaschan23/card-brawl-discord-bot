@@ -6,7 +6,8 @@ const delay = require("../src/delay");
 const getAnnouncementEmbed = require("../embeds/brawlAnnouncement");
 const getIntroductionEmbed = require("../embeds/brawlIntroduction");
 const getConclusionEmbed = require("../embeds/brawlConclusion");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 
 async function startBrawl(data) {
     const name = data.name;
@@ -20,7 +21,9 @@ async function startBrawl(data) {
             setupModel.open = false;
             await setupModel.save();
 
-            const competitorsChannel = client.channels.cache.get(config.channelID.competitors);
+            const competitorsChannel = client.channels.cache.get(
+                config.channelID.competitors
+            );
             competitorsChannel.messages.fetch(setupModel.messageID).then((message) => {
                 const updatedEmbed = getAnnouncementEmbed(setupModel);
                 updatedEmbed.setColor(config.embed.red);

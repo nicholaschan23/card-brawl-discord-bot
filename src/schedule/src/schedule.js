@@ -5,7 +5,8 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 const ScheduleModel = require("../schemas/scheduleSchema");
-const { client, config } = require("../../index");
+const client = require("../../index");
+const config = require("../../../config.json");
 const cron = require("node-cron");
 
 // Unix timestamp must be in milliseconds

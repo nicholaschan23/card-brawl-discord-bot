@@ -1,5 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const { config } = require("../../../../index");
+const config = require("../../../../../config.json");
 
 const ranks = [
     "Copper V",

@@ -4,8 +4,8 @@ const ScheduleModel = require("../../schedule/schemas/scheduleSchema");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
 const getWinnerEmbed = require("../../giveaway/embeds/giveawayWinner");
 const rollWinner = require("../src/rollWinner");
-const { client, config } = require("../../index");
-
+const client = require("../../index");
+const config = require("../../../config.json");
 
 async function endGiveaway(data) {
     const messageID = data.messageID;
