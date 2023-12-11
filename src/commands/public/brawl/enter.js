@@ -10,7 +10,7 @@ const getEnterEmbed = require("../../../brawl/embeds/brawlEnter");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const formatTitle = require("../../../brawl/src/formatTitle");
 const client = require("../../../index");
-const config = require("../../../../config.json")
+const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/brawl",
@@ -25,7 +25,7 @@ module.exports = {
         ),
     async execute(interaction) {
         const name = formatTitle(interaction.options.getString("name"));
-        const channel = client.channels.cache.get(interaction.channel.id);
+        const channel = await client.channels.fetch(interaction.channel.id);
         const userID = interaction.user.id;
 
         // Find brawl setup in database
@@ -352,7 +352,7 @@ module.exports = {
 
                     // Update announcement embed
                     const updatedEmbed = getAnnouncementEmbed(recentSetupModel);
-                    const competitorsChannel = client.channels.cache.get(
+                    const competitorsChannel = await client.channels.fetch(
                         config.channelID.competitors
                     );
                     competitorsChannel.messages

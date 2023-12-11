@@ -2,9 +2,9 @@ const client = require("../../index");
 const config = require("../../../config.json");
 const cron = require("node-cron");
 
-function autofeedInit() {
+async function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
-    const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
+    const karutaDrop = await client.channels.fetch(config.channelID.karutaDrop);
 
     // Karuta drop roles
     cron.schedule("0 * * * *", () => {

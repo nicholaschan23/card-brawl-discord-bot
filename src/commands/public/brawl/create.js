@@ -9,7 +9,7 @@ const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const formatTitle = require("../../../brawl/src/formatTitle");
 const { getNextSaturday, createGuildEvent } = require("../../../schedule/src/schedule");
 const client = require("../../../index");
-const config = require("../../../../config.json")
+const config = require("../../../../config.json");
 
 module.exports = {
     category: "public/brawl",
@@ -132,7 +132,7 @@ module.exports = {
                 }
                 case "confirmCreate": {
                     // Announce brawl bracket creation for contestants to join
-                    const channel = client.channels.cache.get(
+                    const channel = await client.channels.fetch(
                         config.channelID.competitors
                     );
                     const message = await channel.send({

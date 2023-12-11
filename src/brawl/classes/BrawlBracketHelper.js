@@ -285,7 +285,6 @@ class BrawlBracketHelper {
         this.setupModel = setupModel;
 
         this.idealSize = Math.pow(2, Math.ceil(Math.log2(this.setupModel.cards.size)));
-        this.channel = client.channels.cache.get(config.channelID.judges);
         this.myUserStat = new UserStatHelper();
     }
 
@@ -337,6 +336,7 @@ class BrawlBracketHelper {
 
     // Conduct the tournament
     async conductTournament() {
+        const channel = await client.channels.fetch(config.channelID.judges);
         const totalRounds = Math.log2(this.idealSize);
 
         while (this.bracketModel.completedMatches.length !== this.idealSize - 1) {
@@ -351,15 +351,15 @@ class BrawlBracketHelper {
             if (this.bracketModel.currentMatch === 1) {
                 switch (this.bracketModel.currentRound) {
                     case totalRounds - 2: {
-                        await this.channel.send("## Quarter-finals");
+                        await channel.send("## Quarter-finals");
                         break;
                     }
                     case totalRounds - 1: {
-                        await this.channel.send("## Semi-finals");
+                        await channel.send("## Semi-finals");
                         break;
                     }
                     case totalRounds: {
-                        await this.channel.send("## Finals");
+                        await channel.send("## Finals");
                         break;
                     }
                 }
@@ -368,7 +368,7 @@ class BrawlBracketHelper {
             // Determine the winner of the match
             const currentMatch = new Match(this.bracketModel.matches.shift());
             const completedMatchSchema = await currentMatch.conductMatch(
-                this.channel,
+                channel,
                 this.bracketModel,
                 this.setupModel,
                 this.myUserStat
@@ -386,8 +386,8 @@ class BrawlBracketHelper {
         }
 
         // Card Brawl finished
-        await this.announceMentions();
-        await this.announceWinner();
+        await this.announceMentions(channel);
+        await this.announceWinner(channel);
 
         // Update user stats completed Card Brawl
         const userIDs = [];
@@ -423,8 +423,8 @@ class BrawlBracketHelper {
     }
 
     // Honorable mentions
-    async announceMentions() {
-        await this.channel.send("# Honorable Mentions");
+    async announceMentions(channel) {
+        await channel.send("# Honorable Mentions");
         await delay(2);
 
         // Least votes embed
@@ -437,7 +437,7 @@ class BrawlBracketHelper {
                 `Votes: **${leastVotes.count}**\nCard: \`${leastVotes.card}\` by <@${leastID}>`
             )
             .setImage(leastImage);
-        await this.channel.send({
+        await channel.send({
             embeds: [leastEmbed],
         });
         this.myUserStat.updateMentions(leastID);
@@ -453,14 +453,14 @@ class BrawlBracketHelper {
                 `Votes: **${mostVotes.count}**\nCard: \`${mostVotes.card}\` by <@${mostID}>`
             )
             .setImage(mostImage);
-        await this.channel.send({
+        await channel.send({
             embeds: [mostEmbed],
         });
         this.myUserStat.updateMentions(mostID);
         await delay(2);
     }
 
-    async announceWinner() {
+    async announceWinner(channel) {
         const finalsMatch =
             this.bracketModel.completedMatches[
                 this.bracketModel.completedMatches.length - 1
@@ -492,7 +492,7 @@ class BrawlBracketHelper {
             .setTitle("Third Place")
             .setDescription(`Card: \`${thirdCard}\` by <@${thirdID}>`)
             .setImage(thirdImage);
-        await this.channel.send({
+        await channel.send({
             embeds: [thirdEmbed],
         });
         await delay(2);
@@ -503,7 +503,7 @@ class BrawlBracketHelper {
             .setTitle("Second Place")
             .setDescription(`\nCard: \`${secondCard}\` by <@${secondID}>`)
             .setImage(secondImage);
-        await this.channel.send({
+        await channel.send({
             embeds: [secondEmbed],
         });
         await delay(2);
@@ -512,14 +512,14 @@ class BrawlBracketHelper {
         this.myUserStat.updateWin(winnerID);
 
         // Send winner embed
-        await this.channel.send({
+        await channel.send({
             content: `# Winner! 🎉\nCongratulations, <@${winnerID}> is the <@&${config.roleID.brawlChampion}>!`,
             embeds: [getWinnerEmbed(this.bracketModel, this.setupModel)],
             allowedMentions: { parse: [] },
         });
 
         // Edit announcement message with image of winning card
-        const competitorsChannel = client.channels.cache.get(
+        const competitorsChannel = await client.channels.fetch(
             config.channelID.competitors
         );
         competitorsChannel.messages.fetch(this.setupModel.messageID).then((message) => {
