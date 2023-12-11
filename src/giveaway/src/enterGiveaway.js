@@ -25,10 +25,11 @@ const blue = config.embed.blue;
 const token = config.emoji.token;
 
 const getUserRoleValue = (member) => {
+    // Order matters, higher cap role first
     const bonusRoles = {
-        "Server Booster": serverBoosterCap,
-        "Active Booster": activeBoosterCap,
         "Server Subscriber": serverSubscriberCap,
+        "Active Booster": activeBoosterCap,
+        "Server Booster": serverBoosterCap,
     };
     const userRoles = member.roles.cache;
 
