@@ -31,7 +31,7 @@ function getEnterEmbed(setupModel) {
         `${series ? "\n🏷️ Match series" : ""}\n` +
         `🖼️ Framed\n` +
         `🎨 Morphed` +
-        `${sketch === "prohibited" ? sketchText : ""}\n\n` +
+        `${sketch === "prohibited" ? "\n" + sketchText : ""}\n\n` +
         `**Optional**:\n` +
         `💧 Dyed\n` +
         `✂️ Trimmed` +

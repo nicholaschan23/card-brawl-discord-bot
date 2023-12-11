@@ -78,7 +78,7 @@ async function createGuildEvent(setupModel) {
     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
     const karutaUpdate = client.channels.cache.get(config.channelID.karuta);
     const brawlAnnounce = client.channels.cache.get(config.channelID.brawlAnnouncement);
-    const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.competitors}> to learn more! Click the button below to show pthers you're interested!`;
+    const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.competitors}> to learn more. Click the button below to show pthers you're interested.`;
     karutaUpdate.send({
         content: content,
         allowedMentions: { parse: [] },

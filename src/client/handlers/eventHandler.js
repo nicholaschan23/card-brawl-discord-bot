@@ -6,7 +6,6 @@ async function loadEvents(client) {
     const tableArray = new Array();
     const eventFiles = [
         ...(await loadFiles("src/client/events")),
-        ...(await loadFiles("src/inventory/events")),
     ];
     for (const file of eventFiles) {
         try {

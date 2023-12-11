@@ -1,5 +1,5 @@
 const { Events } = require("discord.js");
-const UserInventoryModel = require("../schemas/userInventorySchema");
+const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
 const { client, config } = require("../../index");
 
 module.exports = {
@@ -70,7 +70,7 @@ module.exports = {
                 }
 
                 const guild = client.guilds.cache.get(config.guildID);
-                const starflight = await guild.members.fetch("816328822051045436");
+                const starflight = await guild.members.fetch(config.botID.starflight);
                 // Only server drop pin if other bot is offline
                 if (
                     starflight.presence === null ||
@@ -99,6 +99,10 @@ module.exports = {
                     }
                 }
             }
+        }
+
+        // Gachapon
+        if (message.author.bot && message.author.id === config.botID.gachapon) {
         }
 
         if (

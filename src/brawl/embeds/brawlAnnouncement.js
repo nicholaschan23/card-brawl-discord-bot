@@ -32,14 +32,14 @@ function getAnnouncementEmbed(setupModel) {
         `${series ? "\n🏷️ Match series" : ""}\n` +
         `🖼️ Framed\n` +
         `🎨 Morphed` +
-        `${sketch === "prohibited" ? sketchText : ""}\n\n` +
+        `${sketch === "prohibited" ? "\n" + sketchText : ""}\n\n` +
         `**Optional**:\n` +
         `💧 Dyed\n` +
         `✂️ Trimmed` +
         `${sketch === "optional" ? "\n" + sketchText : ""}`;
     const bonuses =
         `**Entries**:\n` +
-        `@everyone **1** entry` +
+        `@everyone **1** entry\n` +
         `<@&${config.roleID.serverSubscriber}> **${config.brawl.serverSubscriberEntry}** entries\n\n` +
         `**Bonus Votes**: *(Does not stack)*\n` +
         `<@&${config.roleID.activeBooster}> **+${config.brawl.activeBoosterBonus}** vote\n` +
