@@ -62,14 +62,14 @@ async function createGuildEvent(setupModel) {
             `Prize: <@&${config.roleID.brawlChampion}>\n` +
             `Date: <t:${unixStartTime / 1000}:F>\n\n` +
             `**How to Participate**:\n` +
-            `Be a competitor! See the <#${config.channelID.brawCompetitors}> channel.\n` +
-            `Be a judge! See the <#${config.channelID.brawJudges}> channel at the event start time.\n\n` +
+            `Be a competitor! See the <#${config.channelID.brawlCompetitors}> channel.\n` +
+            `Be a judge! See the <#${config.channelID.brawlJudges}> channel at the event start time.\n\n` +
             `**Notifications**:\n` +
             `Get the below roles in <id:customize> for reminders on Card Brawl events!\n` +
             `<@&${config.roleID.brawlCompetitor}>: Get notified to submit cards to compete.\n` +
             `<@&${config.roleID.brawlJudge}>: Get notified when the event goes live to vote.\n\n` +
             `See you at the Card Brawl! 🥊`,
-        entityMetadata: { location: `<#${config.channelID.brawJudges}>` },
+        entityMetadata: { location: `<#${config.channelID.brawlJudges}>` },
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",
     });
@@ -79,7 +79,7 @@ async function createGuildEvent(setupModel) {
     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
     const karutaUpdate = client.channels.cache.get(config.channelID.karutaUpdates);
     const brawlAnnounce = client.channels.cache.get(config.channelID.brawlUpdates);
-    const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.brawCompetitors}> to learn more. Click the button below to show pthers you're interested.`;
+    const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.brawlCompetitors}> to learn more. Click the button below to show pthers you're interested.`;
     karutaUpdate.send({
         content: content,
         allowedMentions: { parse: [] },

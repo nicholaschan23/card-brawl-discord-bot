@@ -54,7 +54,7 @@ module.exports = {
                 await setupModel.save();
 
                 const competitorsChannel = client.channels.cache.get(
-                    config.channelID.brawCompetitors
+                    config.channelID.brawlCompetitors
                 );
                 competitorsChannel.messages
                     .fetch(setupModel.messageID)
@@ -92,7 +92,7 @@ module.exports = {
         }
 
         // Get competitors and create brawl bracket
-        const judgesChannel = client.channels.cache.get(config.channelID.brawJudges);
+        const judgesChannel = client.channels.cache.get(config.channelID.brawlJudges);
         const myBrawlBracket = new BrawlBracketHelper(bracketModel, setupModel);
 
         // Check if in progress, finished, etc.

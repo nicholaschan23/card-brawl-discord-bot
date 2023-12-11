@@ -133,7 +133,7 @@ module.exports = {
                 case "confirmCreate": {
                     // Announce brawl bracket creation for contestants to join
                     const channel = client.channels.cache.get(
-                        config.channelID.brawCompetitors
+                        config.channelID.brawlCompetitors
                     );
                     const message = await channel.send({
                         content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,

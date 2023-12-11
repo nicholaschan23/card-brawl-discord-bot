@@ -353,7 +353,7 @@ module.exports = {
                     // Update announcement embed
                     const updatedEmbed = getAnnouncementEmbed(recentSetupModel);
                     const competitorsChannel = client.channels.cache.get(
-                        config.channelID.brawCompetitors
+                        config.channelID.brawlCompetitors
                     );
                     competitorsChannel.messages
                         .fetch(recentSetupModel.messageID)
