@@ -6,6 +6,8 @@ const config = require("../../../config.json");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
+        gachaponDrop(message);
+
         // Karuta bot message
         if (message.author.bot && message.author.id === config.botID.karuta) {
             // Wishlist drop ping
@@ -102,10 +104,6 @@ module.exports = {
             }
         }
 
-        // Gachapon
-        if (message.author.bot && message.author.id === config.botID.gachapon) {
-        }
-
         if (
             message.author.bot &&
             (message.author.id === config.botID.karuta ||
@@ -173,3 +171,24 @@ module.exports = {
         }
     },
 };
+
+function gachaponDrop(message) {
+    if (message.author.bot && message.author.id === config.botID.gachapon) {
+        if (message.content.includes(`<@${config.botID.gachapon}> is dropping`)) {
+            const regex = /dropping (\d+) cards/;
+            const match = message.content.match(regex);
+            if (!match) {
+                console.warn(
+                    "[WARN] [readMessages] Couldn't find number of cards dropped"
+                );
+                return;
+            }
+            const numCards = parseInt(match[1], 10);
+
+            console.log("[INFO] [readMessages] Gachapon drop ping");
+            message.reply(
+                `<@&${config.roleID.gachaponDrop}> ${numCards} cards are dropping!`
+            );
+        }
+    }
+}
