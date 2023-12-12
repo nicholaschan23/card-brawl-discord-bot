@@ -5,6 +5,8 @@ const cron = require("node-cron");
 function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
     const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
+    const sofiDrop = client.channels.cache.get(config.channelID.sofiDrop);
+    const tofuSummon = client.channels.cache.get(config.channelID.tofuSummon);
     const gachaponDrop = client.channels.cache.get(config.channelID.gachaponDrop);
 
     // Card bot roles

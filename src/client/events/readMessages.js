@@ -7,12 +7,12 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         if (message.author.bot && message.author.id === config.botID.karuta) {
-                            // Karuta wishlist
+            // Karuta wishlist
             if (
                 message.content.includes("A card from your wishlist is dropping") ||
                 message.content.includes("A wishlisted card is dropping")
             ) {
-                console.log("[INFO] [readMessages] Wishlist card dropped");
+                console.log("[INFO] [readMessages] Karuta wishlist card dropped");
                 message.channel.send(
                     `<@&${config.roleID.karutaWishlist}> A wishlisted card is dropping!`
                 );

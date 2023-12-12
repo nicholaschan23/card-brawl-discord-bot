@@ -228,7 +228,7 @@ module.exports = {
                 });
 
                 // Determine price
-                const cost = colors.includes(addRole.name) ? color.cost : color.neonCost;
+                const cost = colors.includes(addRole.name) ? config.color.cost : config.color.neonCost;
 
                 // Purchase confirmation embed
                 let description =
