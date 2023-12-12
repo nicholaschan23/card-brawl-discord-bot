@@ -106,7 +106,7 @@ async function enterGiveaway(interaction) {
 
         // Can enter multiple entries
         const modal = new ModalBuilder()
-            .setCustomId("giveawayEnterlModal")
+            .setCustomId("giveawayEnterModal")
             .setTitle("Giveaway Entry");
 
         // Create the text input components
@@ -131,7 +131,7 @@ async function enterGiveaway(interaction) {
         // Collect a modal submit interaction
         await interaction
             .awaitModalSubmit({
-                filter: (i) => i.customId === "giveawayEnterlModal",
+                filter: (i) => i.customId === "giveawayEnterModal",
                 time: 60_000,
             })
             .then(async (i) => {
