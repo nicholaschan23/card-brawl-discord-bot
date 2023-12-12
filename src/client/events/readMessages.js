@@ -8,6 +8,20 @@ module.exports = {
     async execute(message) {
         if (message.author.bot && message.author.id === config.botID.gachapon) {
             try {
+                // Gachapon wishlist
+                if (
+                    message.content.includes(
+                        "A card from your wish list is being dropped!"
+                    )
+                ) {
+                    console.log("[INFO] [readMessages] Gachapon wishlist card dropped");
+                    message.channel.send(
+                        `<@&${config.roleID.gachaponWishlist}> A wishlisted card is dropping!`
+                    );
+                    return;
+                }
+
+                // Gachapon drop
                 if (
                     message.content.includes(`is dropping`) &&
                     message.mentions.users.first().id === config.botID.gachapon
@@ -21,7 +35,7 @@ module.exports = {
                         return;
                     }
                     const numCards = parseInt(match[1], 10);
-    
+
                     console.log("[INFO] [readMessages] Gachapon drop ping");
                     message.reply(
                         `<@&${config.roleID.gachaponDrop}> ${numCards} cards are dropping!`
@@ -43,7 +57,7 @@ module.exports = {
             ) {
                 console.log("[INFO] [readMessages] Wishlist card dropped");
                 message.channel.send(
-                    `<@&${config.roleID.wishlistDrop}> A wishlisted card is dropping!`
+                    `<@&${config.roleID.karutaWishlist}> A wishlisted card is dropping!`
                 );
                 return;
             }
@@ -80,7 +94,7 @@ module.exports = {
                     // Event drop ping
                     collector.on("collect", (reaction) => {
                         message.reply(
-                            `<@&${config.roleID.eventDrop}> A ${reaction.emoji.name} has dropped!`
+                            `<@&${config.roleID.karutaEvent}> A ${reaction.emoji.name} has dropped!`
                         );
                     });
 
@@ -123,7 +137,7 @@ module.exports = {
 
                         console.log("[INFO] [readMessages] Karuta drop ping");
                         message.reply(
-                            `<@&${config.roleID.serverDrop}> ${numCards} cards are dropping!`
+                            `<@&${config.roleID.karutaDrop}> ${numCards} cards are dropping!`
                         );
                         return;
                     }

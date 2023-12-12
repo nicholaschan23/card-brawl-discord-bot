@@ -1,5 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const client = require("../../../../index")
+const client = require("../../../../index");
 const config = require("../../../../../config.json");
 
 module.exports = {
@@ -12,9 +12,11 @@ module.exports = {
                 .setName("role")
                 .setDescription("Role you want to remove.")
                 .addChoices(
-                    { name: "Server Drop", value: "Server Drop" },
-                    { name: "Wishlist Drop", value: "Wishlist Drop" },
-                    { name: "Event Drop", value: "Event Drop" }
+                    { name: "Karuta Drop", value: "Karuta Drop" },
+                    { name: "Karuta Wishlist", value: "Karuta Wishlist" },
+                    { name: "Karuta Event", value: "Karuta Event" },
+                    { name: "Gachapon Drop", value: "Gachapon Drop" },
+                    { name: "Gachapon Wishlist", value: "Gachapon Wishlist" }
                 )
                 .setRequired(true)
         ),
