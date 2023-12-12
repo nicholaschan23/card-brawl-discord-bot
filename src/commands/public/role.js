@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const add = require("./role/drop/add");
-const remove = require("./role/drop/remove");
+const add = require("./role/bot/add");
+const remove = require("./role/bot/remove");
 const color = require("./role/color");
 
 module.exports = {
@@ -10,8 +10,8 @@ module.exports = {
         .setDescription("Role main command.")
         .addSubcommandGroup((group) =>
             group
-                .setName("drop")
-                .setDescription("Manage Karuta drop pings.")
+                .setName("bot")
+                .setDescription("Manage card bot pings.")
                 .addSubcommand(add.data)
                 .addSubcommand(remove.data)
         )

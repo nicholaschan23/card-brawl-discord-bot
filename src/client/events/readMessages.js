@@ -6,6 +6,100 @@ const config = require("../../../config.json");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
+        if (message.author.bot && message.author.id === config.botID.karuta) {
+                            // Karuta wishlist
+            if (
+                message.content.includes("A card from your wishlist is dropping") ||
+                message.content.includes("A wishlisted card is dropping")
+            ) {
+                console.log("[INFO] [readMessages] Wishlist card dropped");
+                message.channel.send(
+                    `<@&${config.roleID.karutaWishlist}> A wishlisted card is dropping!`
+                );
+                return;
+            }
+
+            // Check for Karuta event drops on server and user drops
+            if (
+                message.content.includes("I'm dropping") ||
+                message.content.includes("is dropping")
+            ) {
+                // Emoji filter
+                const filter = (reaction, reactingUser) => {
+                    return (
+                        reactingUser.id === config.botID.karuta &&
+                        (reaction.emoji.name === "🍬" ||
+                            reaction.emoji.name === "🍫" ||
+                            reaction.emoji.name === "🎀" ||
+                            reaction.emoji.name === "🥀" ||
+                            reaction.emoji.name === "🌻" ||
+                            reaction.emoji.name === "🌹" ||
+                            reaction.emoji.name === "🌼" ||
+                            reaction.emoji.name === "🌷" ||
+                            reaction.emoji.name === "💐")
+                    );
+                };
+
+                // Wait for reaction
+                try {
+                    const collector = message.createReactionCollector({
+                        filter,
+                        max: 1,
+                        time: 6 * 1000,
+                    });
+
+                    collector.on("collect", (reaction) => {
+                        message.reply(
+                            `<@&${config.roleID.karutaEvent}> A ${reaction.emoji.name} has dropped!`
+                        );
+                    });
+
+                    collector.on("end", (collected) => {
+                        if (collected.size > 0) {
+                            console.log(
+                                `[INFO] [readMessages] Karuta drop reaction collected`
+                            );
+                        }
+                    });
+                } catch (error) {
+                    console.error(
+                        "[ERROR] [readMessages] Something went wrong with the Karuta drop. Couldn't find reactions",
+                        error
+                    );
+                }
+
+                const guild = client.guilds.cache.get(config.guildID);
+                const starflight = await guild.members.fetch(config.botID.starflight);
+                // Only server drop ping if other bot is offline
+                if (
+                    starflight.presence === null ||
+                    starflight.presence.status !== "online"
+                ) {
+                    if (
+                        message.content.includes(
+                            "cards since this server is currently active"
+                        )
+                    ) {
+                        const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
+                        const match = message.content.match(regex);
+                        if (!match) {
+                            console.warn(
+                                "[WARN] [readMessages] Couldn't find number of cards dropped"
+                            );
+                            return;
+                        }
+                        const numCards = parseInt(match[1], 10);
+
+                        console.log("[INFO] [readMessages] Karuta drop ping");
+                        message.reply(
+                            `<@&${config.roleID.karutaDrop}> ${numCards} cards are dropping!`
+                        );
+                        return;
+                    }
+                }
+            }
+        }
+
         if (message.author.bot && message.author.id === config.botID.gachapon) {
             try {
                 // Gachapon wishlist
@@ -46,102 +140,6 @@ module.exports = {
                     "[ERROR] [readMessages] Failed to send Gachapon drop ping",
                     error
                 );
-            }
-        }
-
-        if (message.author.bot && message.author.id === config.botID.karuta) {
-            // Wishlist drop ping
-            if (
-                message.content.includes("A card from your wishlist is dropping") ||
-                message.content.includes("A wishlisted card is dropping")
-            ) {
-                console.log("[INFO] [readMessages] Wishlist card dropped");
-                message.channel.send(
-                    `<@&${config.roleID.karutaWishlist}> A wishlisted card is dropping!`
-                );
-                return;
-            }
-
-            // Check for event drops on server and user drops
-            if (
-                message.content.includes("I'm dropping") ||
-                message.content.includes("is dropping")
-            ) {
-                // Emoji filter
-                const filter = (reaction, reactingUser) => {
-                    return (
-                        reactingUser.id === config.botID.karuta &&
-                        (reaction.emoji.name === "🍬" ||
-                            reaction.emoji.name === "🍫" ||
-                            reaction.emoji.name === "🎀" ||
-                            reaction.emoji.name === "🥀" ||
-                            reaction.emoji.name === "🌻" ||
-                            reaction.emoji.name === "🌹" ||
-                            reaction.emoji.name === "🌼" ||
-                            reaction.emoji.name === "🌷" ||
-                            reaction.emoji.name === "💐")
-                    );
-                };
-
-                // Wait for reaction
-                try {
-                    const collector = message.createReactionCollector({
-                        filter,
-                        max: 1,
-                        time: 6 * 1000,
-                    });
-
-                    // Event drop ping
-                    collector.on("collect", (reaction) => {
-                        message.reply(
-                            `<@&${config.roleID.karutaEvent}> A ${reaction.emoji.name} has dropped!`
-                        );
-                    });
-
-                    collector.on("end", (collected) => {
-                        if (collected.size > 0) {
-                            console.log(
-                                `[INFO] [readMessages] Karuta drop reaction collected`
-                            );
-                        }
-                    });
-                } catch (error) {
-                    console.error(
-                        "[ERROR] [readMessages] Something went wrong with the Karuta drop. Couldn't find reactions",
-                        error
-                    );
-                }
-
-                const guild = client.guilds.cache.get(config.guildID);
-                const starflight = await guild.members.fetch(config.botID.starflight);
-                // Only server drop ping if other bot is offline
-                if (
-                    starflight.presence === null ||
-                    starflight.presence.status !== "online"
-                ) {
-                    // Server drop ping
-                    if (
-                        message.content.includes(
-                            "cards since this server is currently active"
-                        )
-                    ) {
-                        const regex = /dropping (\d+) cards/; // This regex captures the number after "dropping" and before "cards"
-                        const match = message.content.match(regex);
-                        if (!match) {
-                            console.warn(
-                                "[WARN] [readMessages] Couldn't find number of cards dropped"
-                            );
-                            return;
-                        }
-                        const numCards = parseInt(match[1], 10);
-
-                        console.log("[INFO] [readMessages] Karuta drop ping");
-                        message.reply(
-                            `<@&${config.roleID.karutaDrop}> ${numCards} cards are dropping!`
-                        );
-                        return;
-                    }
-                }
             }
         }
 
