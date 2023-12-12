@@ -5,18 +5,23 @@ const cron = require("node-cron");
 function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
     const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
+    const gachaponDrop = client.channels.cache.get(config.channelID.gachaponDrop);
 
-    // Karuta drop roles
+    // Card bot roles
     cron.schedule("0 * * * *", () => {
         try {
             karutaDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role drop\`!`,
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
             });
-            console.log("[INFO] [autofeed] Sent 'Karuta drop roles' reminder");
+            gachaponDrop.send({
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.gachaponDrop}> or <@&${config.roleID.gachaponWishlist}>? Use command \`/role bot\`!`,
+                allowedMentions: { parse: [] },
+            });
+            console.log("[INFO] [autofeed] Sent 'Card drop roles' reminder");
         } catch (error) {
             console.error(
-                "[ERROR] [autofeed] Error sending 'Karuta drop roles' reminder:",
+                "[ERROR] [autofeed] Error sending 'Card drop roles' reminder:",
                 error
             );
         }
