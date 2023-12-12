@@ -1,5 +1,6 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
-const client = require("../../../../../config.json");
+const client = require("../../../../index")
+const config = require("../../../../../config.json");
 
 module.exports = {
     category: "public/role",
