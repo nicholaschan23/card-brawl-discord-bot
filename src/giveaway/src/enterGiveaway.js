@@ -129,6 +129,7 @@ async function enterGiveaway(interaction) {
             console.log("[INFO] [enterGiveaway] Successfully sent modal to:", userTag);
         } catch (error) {
             console.error("[ERROR] [enterGiveaway] Failed to send modal to:", userTag)
+            return;
         }
 
         // Collect a modal submit interaction
