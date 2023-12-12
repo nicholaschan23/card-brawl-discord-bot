@@ -102,8 +102,6 @@ async function enterGiveaway(interaction) {
     };
 
     if (balance > 0 && currentEntries < maxEntries && userID !== giveaway.sponsor) {
-        console.log("[INFO] [enterGiveaway] modal sent to:", userTag);
-
         // Can enter multiple entries
         const modal = new ModalBuilder()
             .setCustomId("giveawayEnterModal")
@@ -126,7 +124,12 @@ async function enterGiveaway(interaction) {
 
         // Add inputs to the modal
         modal.addComponents(actionRow);
-        await interaction.showModal(modal);
+        try {
+            await interaction.showModal(modal);
+            console.log("[INFO] [enterGiveaway] Successfully sent modal to:", userTag);
+        } catch (error) {
+            console.error("[ERROR] [enterGiveaway] Failed to send modal to:", userTag)
+        }
 
         // Collect a modal submit interaction
         await interaction
