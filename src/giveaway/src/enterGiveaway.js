@@ -260,7 +260,10 @@ async function enterGiveaway(interaction) {
                             }
                         }
                     });
-                } catch (error) {}
+                } catch (error) {
+                    console.error("[ERROR] [enterGiveaway]", error);
+                    return;
+                }
             })
             .catch(console.error);
     } else {
