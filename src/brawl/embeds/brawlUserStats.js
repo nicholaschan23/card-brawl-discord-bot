@@ -24,13 +24,11 @@ function getUserStatEmbed(userStatModel) {
 
     // Judge stats
     const judgeStats = [
-        `${userStatModel.matchesJudged}`,
         `${userStatModel.votesGiven}`,
         `${userStatModel.votesReceived}`,
         `${userStatModel.votesHighest}`,
     ];
     const judgeSuffix = [
-        "Matches judged",
         "Votes given",
         "Votes received",
         "Highest votes",

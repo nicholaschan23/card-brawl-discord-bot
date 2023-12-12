@@ -48,7 +48,7 @@ class Match {
             }
             totalCount += bonus;
 
-            myUserStat.updateVotesGiven(reactedUser, 1);
+            myUserStat.updateVotesGiven(reactedUser);
         }
 
         return totalCount;

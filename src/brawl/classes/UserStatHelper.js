@@ -93,14 +93,12 @@ class UserStatHelper {
         client.userStatQueue.enqueue(task);
     }
 
-    // matchesJudged
     // votesGiven
-    updateVotesGiven(userID, votes) {
+    updateVotesGiven(userID) {
         const task = async () => {
             const statModel = await this.getUserStatModel(userID);
             if (statModel) {
-                statModel.matchesJudged++;
-                statModel.votesGiven += votes;
+                statModel.votesGiven++;
             } else {
                 console.error("Failed to update votes given");
             }

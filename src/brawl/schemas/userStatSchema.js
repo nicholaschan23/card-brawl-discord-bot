@@ -35,10 +35,6 @@ const statsSchema = new mongoose.Schema({
     },
 
     // Votes
-    matchesJudged: {
-        type: Number,
-        default: 0,
-    },
     votesGiven: {
         type: Number,
         default: 0,
