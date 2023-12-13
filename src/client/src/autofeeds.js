@@ -20,10 +20,10 @@ function autofeedInit() {
                 content: `:shinto_shrine: Want to get notified for <@&${config.roleID.gachaponDrop}> or <@&${config.roleID.gachaponWishlist}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
             });
-            console.log("[INFO] [autofeed] Sent 'Card drop roles' reminder");
+            console.log("[INFO] [autofeed] Sent 'card bot roles' reminder");
         } catch (error) {
             console.error(
-                "[ERROR] [autofeed] Error sending 'Card drop roles' reminder:",
+                "[ERROR] [autofeed] Failed to send 'card bot roles' reminder:",
                 error
             );
         }
@@ -38,7 +38,7 @@ function autofeedInit() {
             console.log("[INFO] [autofeed] Sent 'color roles' reminder");
         } catch (error) {
             console.error(
-                "[ERROR] [autofeed] Error sending 'color roles' reminder:",
+                "[ERROR] [autofeed] Failed to send 'color roles' reminder:",
                 error
             );
         }
@@ -61,7 +61,7 @@ function autofeedInit() {
             });
         } catch (error) {
             console.error(
-                "[ERROR] [autofeed] Error sending 'Card Brawl promotion' reminder:",
+                "[ERROR] [autofeed] Failed to send 'Card Brawl promotion' reminder:",
                 error
             );
         }
@@ -76,7 +76,7 @@ function autofeedInit() {
             console.log("[INFO] [autofeed] Sent 'Karuta help' reminder");
         } catch (error) {
             console.error(
-                "[ERROR] [autofeed] Error sending 'Karuta help' reminder:",
+                "[ERROR] [autofeed] Failed to send 'Karuta help' reminder:",
                 error
             );
         }
@@ -91,7 +91,7 @@ function autofeedInit() {
             console.log("[INFO] [autofeed] Sent 'Karuta wishlist' reminder");
         } catch (error) {
             console.error(
-                "[ERROR] [autofeed] Error sending 'Karuta wishlist' reminder:",
+                "[ERROR] [autofeed] Failed to send 'Karuta wishlist' reminder:",
                 error
             );
         }

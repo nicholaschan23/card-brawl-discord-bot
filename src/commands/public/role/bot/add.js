@@ -29,7 +29,7 @@ const ranks = [
 ];
 
 module.exports = {
-    category: "public/role",
+    category: "public/role/bot",
     data: new SlashCommandSubcommandBuilder()
         .setName("add")
         .setDescription("Add a role to get notified of drop events.")
@@ -47,9 +47,11 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
+        await interaction.deferReply();
         const guild = client.guilds.cache.get(config.guildID);
         const member = await guild.members.fetch(interaction.user.id);
-        const role = interaction.options.getString("role");
+        const roleName = interaction.options.getString("role");
+        const role = guild.roles.cache.find((r) => r.name === roleName);
 
         // Eligible if user is ranked
         const eligible = ranks.some((roleName) => {
@@ -57,16 +59,15 @@ module.exports = {
             return !!role;
         });
 
-        const temp = guild.roles.cache.find((r) => r.name === role);
         if (eligible) {
-            member.roles.add(temp);
-            await interaction.reply({
-                content: `You have successfully added the <@&${temp.id}> role!`,
+            member.roles.add(role);
+            interaction.editReply({
+                content: `You have successfully added the <@&${role.id}> role!`,
                 allowedMentions: { parse: [] },
             });
         } else {
-            await interaction.reply({
-                content: `You must be **Level 5** (<@&789659437919895593>) or higher to add the <@&${temp.id}> role. Chat to increase your server activity rank. See the <#776705377226981387> channel to learn more.`,
+            interaction.editReply({
+                content: `You must be **Level 5** (<@&789659437919895593>) or higher to add the <@&${role.id}> role. Chat to increase your server activity rank. See the <#776705377226981387> channel to learn more.`,
                 allowedMentions: { parse: [] },
             });
         }

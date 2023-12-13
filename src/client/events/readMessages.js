@@ -57,7 +57,7 @@ module.exports = {
                     collector.on("end", (collected) => {
                         if (collected.size > 0) {
                             console.log(
-                                `[INFO] [readMessages] Karuta drop reaction collected`
+                                `[INFO] [readMessages] Karuta event reaction collected`
                             );
                         }
                     });

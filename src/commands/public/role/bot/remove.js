@@ -3,7 +3,7 @@ const client = require("../../../../index");
 const config = require("../../../../../config.json");
 
 module.exports = {
-    category: "public/role",
+    category: "public/role/bot",
     data: new SlashCommandSubcommandBuilder()
         .setName("remove")
         .setDescription("Remove a drop role from yourself.")
@@ -21,27 +21,26 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
+        interaction.deferReply({ ephemeral: true });
         const guild = client.guilds.cache.get(config.guildID);
         const member = await guild.members.fetch(interaction.user.id);
-        const role = interaction.options.getString("role");
+        const roleName = interaction.options.getString("role");
+        const role = guild.roles.cache.find((r) => r.name === roleName);
 
         const hasRole = interaction.member.roles.cache.some(
-            (roleName) => roleName.name === role
+            (roleName) => roleName.name === roleName
         );
 
-        const temp = guild.roles.cache.find((r) => r.name === role);
         if (hasRole) {
-            member.roles.remove(temp);
-            await interaction.reply({
-                content: `You have successfully removed the <@&${temp.id}> role!`,
+            member.roles.remove(role);
+            interaction.editReply({
+                content: `You have successfully removed the <@&${role.id}> role!`,
                 allowedMentions: { parse: [] },
-                ephemeral: true,
             });
         } else {
-            await interaction.reply({
-                content: `You do not have the <@&${temp.id}> role.`,
+            interaction.editReply({
+                content: `You do not have the <@&${role.id}> role.`,
                 allowedMentions: { parse: [] },
-                ephemeral: true,
             });
         }
     },
