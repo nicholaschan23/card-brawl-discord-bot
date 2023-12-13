@@ -21,7 +21,7 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const guild = client.guilds.cache.get(config.guildID);
         const member = await guild.members.fetch(interaction.user.id);
         const roleName = interaction.options.getString("role");
