@@ -1,5 +1,6 @@
 const { Events } = require("discord.js");
 const autofeedInit = require("../src/autofeeds");
+const removeInactive = require("../../inactive/src/removeInactive")
 const loadCommands = require("../handlers/commandHandler");
 const loadSchedules = require("../../schedule/src/loadSchedules");
 const client = require("../../index");
@@ -14,5 +15,6 @@ module.exports = {
         loadCommands();
         loadSchedules();
         autofeedInit();
+        removeInactive();
     },
 };

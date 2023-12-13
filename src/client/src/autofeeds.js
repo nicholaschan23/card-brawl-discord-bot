@@ -4,6 +4,7 @@ const cron = require("node-cron");
 
 function autofeedInit() {
     const guild = client.guilds.cache.get(config.guildID);
+    const karutaMain = client.channels.cache.get(config.channelID.karutaMain);
     const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
     const sofiDrop = client.channels.cache.get(config.channelID.sofiDrop);
     const tofuSummon = client.channels.cache.get(config.channelID.tofuSummon);
@@ -12,6 +13,10 @@ function autofeedInit() {
     // Card bot roles
     cron.schedule("0 * * * *", () => {
         try {
+            karutaMain.send({
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\`!`,
+                allowedMentions: { parse: [] },
+            });
             karutaDrop.send({
                 content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
@@ -32,7 +37,19 @@ function autofeedInit() {
     // Color roles
     cron.schedule("10 * * * *", () => {
         try {
+            karutaMain.send({
+                content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
+            });
             karutaDrop.send({
+                content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
+            });
+            sofiDrop.send({
+                content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
+            });
+            tofuSummon.send({
+                content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
+            });
+            gachaponDrop.send({
                 content: `:shinto_shrine: **Looking to add a splash of color to your name?** Use command \`/role color\`!`,
             });
             console.log("[INFO] [autofeed] Sent 'color roles' reminder");
@@ -52,6 +69,9 @@ function autofeedInit() {
             events.forEach((event) => {
                 if (event.name.includes("Card Brawl")) {
                     const link = `https://discord.com/events/${config.guildID}/${event.id}`;
+                    karutaMain.send({
+                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit <#${config.channelID.brawlCompetitors}> to learn more. Click the button below to show you're interested.`,
+                    });
                     karutaDrop.send({
                         content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit <#${config.channelID.brawlCompetitors}> to learn more. Click the button below to show you're interested.`,
                     });
@@ -70,8 +90,20 @@ function autofeedInit() {
     // Karuta help
     cron.schedule("30 * * * *", () => {
         try {
+            karutaMain.send(
+                `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
+            );
             karutaDrop.send(
                 `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
+            );
+            sofiDrop.send(
+                `:shinto_shrine: **Need help with Sofi?** Ask in the <#1023740163857338478> channel!`
+            );
+            tofuSummon.send(
+                `:shinto_shrine: **Need help with Tofu?** Ask in the <#1023740163857338478> channel!`
+            );
+            gachaponDrop.send(
+                `:shinto_shrine: **Need help with Gachapon?** Ask in the <#1023740163857338478> channel!`
             );
             console.log("[INFO] [autofeed] Sent 'Karuta help' reminder");
         } catch (error) {
@@ -85,8 +117,11 @@ function autofeedInit() {
     // Karuta wishlist
     cron.schedule("45 * * * *", () => {
         try {
+            karutaMain.send(
+                `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`.`
+            );
             karutaDrop.send(
-                `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`!`
+                `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`.`
             );
             console.log("[INFO] [autofeed] Sent 'Karuta wishlist' reminder");
         } catch (error) {

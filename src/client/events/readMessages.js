@@ -192,10 +192,27 @@ module.exports = {
                         if (uim.tokenCounter === 5) {
                             console.log(`[INFO] [inventory] Token received: ${user.tag}`);
                             uim.tokenCounter = 0;
-                            uim.numTokens++;
-                            message.channel.send(
-                                `<@${userID}>, you received a ${config.emoji.token} **Token**!`
+
+                            // Give Active Player role
+                            const guild = client.guilds.cache.get(config.guildID);
+                            const member = await guild.members.fetch(userID);
+                            const hasRole = member.roles.cache.some(
+                                (role) => role.name === "Active Player"
                             );
+                            if (!hasRole) {
+                                const activePlayer = guild.roles.cache.get(config.roleID.activePlayer);
+                                member.roles.add(activePlayer);
+                                message.channel.send(
+                                    `<@${userID}>, you received a ${config.emoji.token} **Token** and spent it to gain access to <#${config.channelID.karutaMain}>!`
+                                );
+                                console.log(`[INFO] [inventory] Granted access to 'Karuta main': ${user.tag}`);
+                            }
+                            else {
+                                uim.numTokens++;
+                                message.channel.send(
+                                    `<@${userID}>, you received a ${config.emoji.token} **Token**!`
+                                );
+                            }
                         }
 
                         const task = async () => {
