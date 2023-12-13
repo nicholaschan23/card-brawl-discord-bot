@@ -28,7 +28,7 @@ module.exports = {
         const role = guild.roles.cache.find((r) => r.name === roleName);
 
         const hasRole = interaction.member.roles.cache.some(
-            (roleName) => roleName.name === roleName
+            (role) => role.name === roleName
         );
 
         if (hasRole) {
