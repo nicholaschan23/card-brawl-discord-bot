@@ -10,7 +10,7 @@ const QA = [
         question: `How do you earn tokens?`,
         answer:
             `There are various ways to earn tokens through community engagement.\n` +
-            ` 1. Every 5 drops rewards you a ${config.emoji.token}! Drops count every 30 minutes and can be from any of the bots below. See <#1144103186974646402> for details.\n` +
+            ` 1. Every 5 drops rewards you a ${config.emoji.token}! Drops count every 30 minutes between any of the bots below. See <#1144103186974646402> for details.\n` +
             ` - <@${config.botID.karuta}>\n` +
             ` - <@${config.botID.sofi}>\n` +
             ` - <@${config.botID.tofu}>\n` +
