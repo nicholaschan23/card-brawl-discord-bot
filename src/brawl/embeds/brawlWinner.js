@@ -8,7 +8,9 @@ function getWinnerEmbed(bracketModel, setupModel) {
     const embed = new EmbedBuilder()
         .setTitle(`${setupModel.name} Winner`)
         .setDescription(
-            `Size: **${setupModel.cards.size}** cards\nTheme: **${setupModel.theme}**\nCard: \`${winner}\` by <@${winnerUserID}>`
+            `Size: **${setupModel.cards.size}** cards\n` +
+                `Theme: **${setupModel.theme}**\n` +
+                `Card: \`${winner}\` by <@${winnerUserID}>`
         )
         .setImage(setupModel.cards.get(winner).imageLink);
     return embed;

@@ -17,7 +17,6 @@ module.exports = {
         )
         .addSubcommand(color.data),
     async execute(interaction) {
-        // const subcommandGroup = interaction.options.getSubcommandGroup();
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
             case "add": {
