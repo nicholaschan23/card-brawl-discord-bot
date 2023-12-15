@@ -6,7 +6,7 @@ const {
     ComponentType,
     EmbedBuilder,
 } = require("discord.js");
-const getBrawlHelpEmbed = require("../../brawl/embeds/brawlHelp");
+const getBrawlHelpEmbed = require("../../help/embeds/brawlHelp");
 const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
 const config = require("../../../config.json");
 
