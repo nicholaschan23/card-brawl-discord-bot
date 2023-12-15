@@ -233,7 +233,7 @@ module.exports = {
                 // Purchase confirmation embed
                 let description =
                     currentRole !== null
-                        ? `You already have the color ${currentRole}.\n`
+                        ? `You'll lose the color ${currentRole} and have to repay if you want to swap back.\n`
                         : "";
                 description += `Would you like to exchange **${cost} ${config.emoji.token} Tokens** for the color ${addRole}?`;
                 const purchaseEmbed = new EmbedBuilder().setDescription(description);

@@ -34,6 +34,21 @@ function autofeedInit() {
         }
     });
 
+    // Karuta main
+    cron.schedule("5 * * * *", () => {
+        try {
+            karutaDrop.send({
+                content: `:shinto_shrine: **Looking to gain access to ${karutaMain}?** Earn your first ${config.emoji.token}! See \`/help\` for more info.`,
+            });
+            console.log("[INFO] [autofeed] Sent 'Karuta main' reminder");
+        } catch (error) {
+            console.error(
+                "[ERROR] [autofeed] Failed to send 'Karuta main' reminder:",
+                error
+            );
+        }
+    });
+
     // Color roles
     cron.schedule("10 * * * *", () => {
         try {
