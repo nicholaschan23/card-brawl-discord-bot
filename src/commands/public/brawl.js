@@ -1,10 +1,10 @@
 const { SlashCommandBuilder } = require("discord.js");
 const BrawlBracketModel = require("../../brawl/schemas/brawlBracketSchema");
+const BrawlSetupModel = require("../../brawl/schemas/brawlSetupSchema");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");
 const start = require("./brawl/start");
 const stats = require("./brawl/stats");
-const winner = require("./brawl/winner");
 const view = require("./brawl/view");
 
 module.exports = {
@@ -16,7 +16,6 @@ module.exports = {
         .addSubcommand(enter.data)
         .addSubcommand(start.data)
         .addSubcommand(stats.data)
-        .addSubcommand(winner.data)
         .addSubcommand(view.data),
     async autocomplete(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -24,14 +23,15 @@ module.exports = {
         // Populate choices
         let choices;
         switch (subcommand) {
-            case "winner": {
-                const brackets = await BrawlBracketModel.find();
-                choices = [...brackets.map((schedule) => schedule.name)];
+            case "enter":
+            case "view": {
+                const setup = await BrawlSetupModel.find();
+                choices = [...setup.map((model) => model.name)];
                 break;
             }
             default: {
                 console.error(
-                    `[BRAWL] There was no autocomplete case for the "${subcommand}" subcommand`
+                    `[ERROR] [BRAWL] There was no autocomplete case for the "${subcommand}" subcommand`
                 );
             }
         }

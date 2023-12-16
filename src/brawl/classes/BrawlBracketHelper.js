@@ -388,6 +388,7 @@ class BrawlBracketHelper {
         // Card Brawl finished
         await this.announceMentions(channel);
         await this.announceWinner(channel);
+        postHallOfFame(this.bracketModel, this.setupModel);
 
         // Update user stats completed Card Brawl
         const userIDs = [];
@@ -550,6 +551,26 @@ class BrawlBracketHelper {
         } catch (error) {
             console.error("[BRAWL BRACKET] Error giving Brawl Champion role:", error);
         }
+    }
+
+    postHallOfFame(bracketModel, setupModel) {
+        const guild = client.guilds.cache.get(config.guildID);
+        const mediaChannel = guild.channels.cache.get(config.channelID.brawlHallOfFame);
+        mediaChannel.threads
+            .create({
+                name: `${setupModel.name}`,
+                autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+                message: {
+                    content: winnerImage,
+                },
+                reason: `Added ${setupModel.name} winner to the hall of fame.`,
+            })
+            .then((threadChannel) =>
+                threadChannel.send({
+                    embeds: [getWinnerEmbed(bracketModel, setupModel)],
+                })
+            )
+            .catch(console.error);
     }
 
     // Save the tournament progress to database
