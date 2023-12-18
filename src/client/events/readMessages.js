@@ -7,8 +7,8 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         if (
-            message.channel.id === config.channelID.karutaMain &&
-            message.channel.id === config.channelID.karutaDrop &&
+            (message.channel.id === config.channelID.karutaMain ||
+                message.channel.id === config.channelID.karutaDrop) &&
             message.author.bot &&
             message.author.id === config.botID.karuta
         ) {
@@ -134,7 +134,11 @@ module.exports = {
         ) {
             try {
                 // Tofu wishlist
-                if (message.content.includes("A card from your summon list is being summoned")) {
+                if (
+                    message.content.includes(
+                        "A card from your summon list is being summoned"
+                    )
+                ) {
                     console.log("[INFO] [readMessages] Tofu wishlist card dropped");
                     message.channel.send(
                         `<@&${config.roleID.tofuWishlist}> A wishlisted card is dropping!`
