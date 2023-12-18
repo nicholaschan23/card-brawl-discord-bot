@@ -26,7 +26,7 @@ function autofeedInit() {
                 allowedMentions: { parse: [] },
             });
             tofuSummon.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.tofuSummon}> or <@&${config.roleID.tofuWishlist}>? Use command \`/role bot\`!`,
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.tofuDrop}> or <@&${config.roleID.tofuWishlist}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
             });
             gachaponDrop.send({
