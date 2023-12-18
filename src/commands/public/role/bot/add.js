@@ -42,6 +42,8 @@ module.exports = {
                     { name: "Karuta Wishlist", value: "Karuta Wishlist" },
                     { name: "Karuta Event", value: "Karuta Event" },
                     { name: "Sofi Wishlist", value: "Sofi Wishlist" },
+                    { name: "Tofu Drop", value: "Tofu Drop" },
+                    { name: "Tofu Wishlist", value: "Tofu Wishlist" },
                     { name: "Gachapon Drop", value: "Gachapon Drop" },
                     { name: "Gachapon Wishlist", value: "Gachapon Wishlist" }
                 )

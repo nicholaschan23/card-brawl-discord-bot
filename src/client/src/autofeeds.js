@@ -21,6 +21,14 @@ function autofeedInit() {
                 content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
             });
+            sofiDrop.send({
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.sofiWishlist}>? Use command \`/role bot\`!`,
+                allowedMentions: { parse: [] },
+            });
+            tofuSummon.send({
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.tofuSummon}> or <@&${config.roleID.tofuWishlist}>? Use command \`/role bot\`!`,
+                allowedMentions: { parse: [] },
+            });
             gachaponDrop.send({
                 content: `:shinto_shrine: Want to get notified for <@&${config.roleID.gachaponDrop}> or <@&${config.roleID.gachaponWishlist}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
