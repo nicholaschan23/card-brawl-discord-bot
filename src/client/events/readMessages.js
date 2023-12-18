@@ -143,6 +143,28 @@ module.exports = {
             }
         }
 
+        if (message.author.bot && message.author.id === config.botID.sofi) {
+            try {
+                // Sofi wishlist
+                if (
+                    message.content.includes(
+                        "A card from your wishlist is dropping"
+                    )
+                ) {
+                    console.log("[INFO] [readMessages] Sofi wishlist card dropped");
+                    message.channel.send(
+                        `<@&${config.roleID.sofiWishlist}> A wishlisted card is dropping!`
+                    );
+                    return;
+                }
+            } catch (error) {
+                console.error(
+                    "[ERROR] [readMessages] Failed to send Sofi drop ping",
+                    error
+                );
+            }
+        }
+
         if (
             message.author.bot &&
             (message.author.id === config.botID.karuta ||
@@ -152,8 +174,9 @@ module.exports = {
         ) {
             // User dropped cards
             if (
-                message.content.includes("is dropping") ||
-                message.content.includes("is summoning")
+                (message.content.includes("is dropping") ||
+                    message.content.includes("is summoning")) &&
+                !message.content.includes("wishlist")
             ) {
                 const user = message.mentions.users.first();
                 if (!user) {
