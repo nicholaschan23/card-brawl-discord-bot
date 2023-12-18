@@ -101,12 +101,8 @@ async function enterGiveaway(interaction) {
         await giveawayModel.save();
     };
 
+    // Check if user can enter multiple entries
     if (balance > 0 && currentEntries < maxEntries && userID !== giveaway.sponsor) {
-        // Can enter multiple entries
-        const modal = new ModalBuilder()
-            .setCustomId("giveawayEnterModal")
-            .setTitle("Giveaway Entry");
-
         // Create the text input components
         const maxIn = maxEntries - currentEntries;
         const entryAmount = new TextInputBuilder()
@@ -123,12 +119,15 @@ async function enterGiveaway(interaction) {
         const actionRow = new ActionRowBuilder().addComponents(entryAmount);
 
         // Add inputs to the modal
+        const modal = new ModalBuilder()
+            .setCustomId("giveawayEnterModal")
+            .setTitle("Giveaway Entry");
         modal.addComponents(actionRow);
+
         try {
             await interaction.showModal(modal);
-            console.log("[INFO] [enterGiveaway] Successfully sent modal to:", userTag);
         } catch (error) {
-            console.error("[ERROR] [enterGiveaway] Failed to send modal to:", userTag)
+            console.error("[ERROR] [enterGiveaway] Failed to send modal to:", userTag);
             return;
         }
 
@@ -267,86 +266,91 @@ async function enterGiveaway(interaction) {
             })
             .catch(console.error);
     } else {
-        await interaction.deferReply({ ephemeral: true });
+        try {
+            await interaction.deferReply({ ephemeral: true });
 
-        // Sponsor cannot enter their own giveaway
-        if (userID === giveaway.sponsor) {
-            await interaction.editReply({
-                content: "You cannot enter your own giveaway.",
-                ephemeral: true,
-            });
-            console.log(
-                `[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`,
-                userTag
-            );
-            return;
-        }
-
-        // No tokens
-        if (balance === 0) {
-            await interaction.editReply({
-                content: `You need **1 ${token} Token** to enter this giveaway!`,
-                embeds: [getTokenHelpEmbed()],
-                ephemeral: true,
-            });
-            console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userTag);
-            return;
-        }
-
-        // If already have max entries, display how to get more
-        if (currentEntries === maxEntries) {
-            let entries = `You have **${currentEntries} entries** in this giveaway.`;
-            if (maxEntries === 1) {
-                entries = `You have **1 entry** in this giveaway.`;
-            }
-
-            let upgrade = `Become a <@&${config.roleID.activeBooster}> or <@&${config.roleID.serverSubscriber}> to have more entries!`;
-            if (maxEntries === activeBoosterCap) {
-                upgrade = `Become a <@&${config.roleID.serverSubscriber}> to have more entries!`;
-            } else if (maxEntries === serverSubscriberCap) {
-                upgrade = "You have the max amount of entries.";
-            }
-
-            const embed = new EmbedBuilder()
-                .setTitle("Giveaway")
-                .setDescription(entries + " " + upgrade)
-                .setColor(blue);
-
-            await interaction.editReply({
-                embeds: [embed],
-                ephemeral: true,
-            });
-            console.log(`[INFO] [enterGiveaway] Already have max entries:`, userTag);
-            return;
-        }
-
-        // If not entered yet, user has available balance, and only allowed 1 entry -> automatically enter
-        if (currentEntries === 0 && maxEntries === 1) {
-            amount = 1;
-            try {
-                await client.inventoryQueue.enqueue(inventoryTask);
-                await client.giveawayQueue.enqueue(giveawayTask);
-            } catch (error) {
-                console.error(error);
+            // Sponsor cannot enter their own giveaway
+            if (userID === giveaway.sponsor) {
                 await interaction.editReply({
-                    content: error.message,
+                    content: "You cannot enter your own giveaway.",
                     ephemeral: true,
                 });
+                console.log(
+                    `[INFO] [enterGiveaway] Sponsor cannot enter their own giveaway:`,
+                    userTag
+                );
                 return;
             }
 
-            const embed = new EmbedBuilder()
-                .setTitle("Giveaway")
-                .setDescription(
-                    `Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
-                )
-                .setColor(green);
+            // No tokens
+            if (balance === 0) {
+                await interaction.editReply({
+                    content: `You need **1 ${token} Token** to enter this giveaway!`,
+                    embeds: [getTokenHelpEmbed()],
+                    ephemeral: true,
+                });
+                console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userTag);
+                return;
+            }
 
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
-            console.log(
-                `[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`,
-                userTag
-            );
+            // If already have max entries, display how to get more
+            if (currentEntries === maxEntries) {
+                let entries = `You have **${currentEntries} entries** in this giveaway.`;
+                if (maxEntries === 1) {
+                    entries = `You have **1 entry** in this giveaway.`;
+                }
+
+                let upgrade = `Become a <@&${config.roleID.activeBooster}> or <@&${config.roleID.serverSubscriber}> to have more entries!`;
+                if (maxEntries === activeBoosterCap) {
+                    upgrade = `Become a <@&${config.roleID.serverSubscriber}> to have more entries!`;
+                } else if (maxEntries === serverSubscriberCap) {
+                    upgrade = "You have the max amount of entries.";
+                }
+
+                const embed = new EmbedBuilder()
+                    .setTitle("Giveaway")
+                    .setDescription(entries + " " + upgrade)
+                    .setColor(blue);
+
+                await interaction.editReply({
+                    embeds: [embed],
+                    ephemeral: true,
+                });
+                console.log(`[INFO] [enterGiveaway] Already have max entries:`, userTag);
+                return;
+            }
+
+            // If not entered yet, user has available balance, and only allowed 1 entry -> automatically enter
+            if (currentEntries === 0 && maxEntries === 1) {
+                amount = 1;
+                try {
+                    await client.inventoryQueue.enqueue(inventoryTask);
+                    await client.giveawayQueue.enqueue(giveawayTask);
+                } catch (error) {
+                    console.error(error);
+                    await interaction.editReply({
+                        content: error.message,
+                        ephemeral: true,
+                    });
+                    return;
+                }
+
+                const embed = new EmbedBuilder()
+                    .setTitle("Giveaway")
+                    .setDescription(
+                        `Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
+                    )
+                    .setColor(green);
+
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                console.log(
+                    `[INFO] [enterGiveaway] Successfully entered giveaway (${amount}):`,
+                    userTag
+                );
+                return;
+            }
+        } catch (error) {
+            console.error("[ERROR] [enterGiveaway]", error);
             return;
         }
     }
