@@ -6,7 +6,12 @@ const config = require("../../../config.json");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
-        if (message.author.bot && message.author.id === config.botID.karuta) {
+        if (
+            message.channel.id === config.channelID.karutaMain &&
+            message.channel.id === config.channelID.karutaDrop &&
+            message.author.bot &&
+            message.author.id === config.botID.karuta
+        ) {
             // Karuta wishlist
             if (
                 message.content.includes("A card from your wishlist is dropping") ||
@@ -100,7 +105,69 @@ module.exports = {
             }
         }
 
-        if (message.author.bot && message.author.id === config.botID.gachapon) {
+        if (
+            message.channel.id === config.channelID.sofiDrop &&
+            message.author.bot &&
+            message.author.id === config.botID.sofi
+        ) {
+            try {
+                // Sofi wishlist
+                if (message.content.includes("A card from your wishlist is dropping")) {
+                    console.log("[INFO] [readMessages] Sofi wishlist card dropped");
+                    message.channel.send(
+                        `<@&${config.roleID.sofiWishlist}> A wishlisted card is dropping!`
+                    );
+                    return;
+                }
+            } catch (error) {
+                console.error(
+                    "[ERROR] [readMessages] Failed to send Sofi drop ping",
+                    error
+                );
+            }
+        }
+
+        if (
+            message.channel.id === config.channelID.tofuSummon &&
+            message.author.bot &&
+            message.author.id === config.botID.tofu
+        ) {
+            try {
+                // Tofu wishlist
+                if (message.content.includes("A card from your summon list is being summoned")) {
+                    console.log("[INFO] [readMessages] Tofu wishlist card dropped");
+                    message.channel.send(
+                        `<@&${config.roleID.tofuWishlist}> A wishlisted card is dropping!`
+                    );
+                    return;
+                }
+
+                // Tofu drop
+                if (message.content.includes(`Server activity has summoned`)) {
+                    const regex = /summoned (\d+) cards/;
+                    const match = message.content.match(regex);
+                    if (match) {
+                        const numCards = parseInt(match[1], 10);
+
+                        console.log("[INFO] [readMessages] Tofu drop ping");
+                        message.reply(
+                            `<@&${config.roleID.tofuDrop}> ${numCards} cards are dropping!`
+                        );
+                    }
+                }
+            } catch (error) {
+                console.error(
+                    "[ERROR] [readMessages] Failed to send Sofi drop ping",
+                    error
+                );
+            }
+        }
+
+        if (
+            message.channel.id === config.channelID.gachaponDrop &&
+            message.author.bot &&
+            message.author.id === config.botID.gachapon
+        ) {
             try {
                 // Gachapon wishlist
                 if (
@@ -138,28 +205,6 @@ module.exports = {
             } catch (error) {
                 console.error(
                     "[ERROR] [readMessages] Failed to send Gachapon drop ping",
-                    error
-                );
-            }
-        }
-
-        if (message.author.bot && message.author.id === config.botID.sofi) {
-            try {
-                // Sofi wishlist
-                if (
-                    message.content.includes(
-                        "A card from your wishlist is dropping"
-                    )
-                ) {
-                    console.log("[INFO] [readMessages] Sofi wishlist card dropped");
-                    message.channel.send(
-                        `<@&${config.roleID.sofiWishlist}> A wishlisted card is dropping!`
-                    );
-                    return;
-                }
-            } catch (error) {
-                console.error(
-                    "[ERROR] [readMessages] Failed to send Sofi drop ping",
                     error
                 );
             }
@@ -223,14 +268,17 @@ module.exports = {
                                 (role) => role.name === "Active Player"
                             );
                             if (!hasRole) {
-                                const activePlayer = guild.roles.cache.get(config.roleID.activePlayer);
+                                const activePlayer = guild.roles.cache.get(
+                                    config.roleID.activePlayer
+                                );
                                 member.roles.add(activePlayer);
                                 message.channel.send(
                                     `<@${userID}>, you received a ${config.emoji.token} **Token** and spent it to gain access to <#${config.channelID.karutaMain}>!`
                                 );
-                                console.log(`[INFO] [inventory] Granted access to 'Karuta main': ${user.tag}`);
-                            }
-                            else {
+                                console.log(
+                                    `[INFO] [inventory] Granted access to 'Karuta main': ${user.tag}`
+                                );
+                            } else {
                                 uim.numTokens++;
                                 message.channel.send(
                                     `<@${userID}>, you received a ${config.emoji.token} **Token**!`
