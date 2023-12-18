@@ -388,8 +388,7 @@ class BrawlBracketHelper {
         // Card Brawl finished
         await this.announceMentions(channel);
         await this.announceWinner(channel);
-        postHallOfFame(this.bracketModel, this.setupModel);
-
+        
         // Update user stats completed Card Brawl
         const userIDs = [];
         this.setupModel.cards.forEach((card) => {
@@ -397,6 +396,8 @@ class BrawlBracketHelper {
         });
         this.myUserStat.updateCardsEntered(userIDs);
         await this.myUserStat.saveProgress();
+        
+        this.postHallOfFame(this.bracketModel, this.setupModel);
     }
 
     // Generate matches for the next round based on the winners of the current round
