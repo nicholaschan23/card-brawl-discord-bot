@@ -4,6 +4,7 @@ const {
     ButtonStyle,
     ActionRowBuilder,
     ComponentType,
+    ThreadAutoArchiveDuration,
 } = require("discord.js");
 const UserStatHelper = require("./UserStatHelper");
 const delay = require("../src/delay");
@@ -388,7 +389,7 @@ class BrawlBracketHelper {
         // Card Brawl finished
         await this.announceMentions(channel);
         await this.announceWinner(channel);
-        
+
         // Update user stats completed Card Brawl
         const userIDs = [];
         this.setupModel.cards.forEach((card) => {
@@ -396,7 +397,7 @@ class BrawlBracketHelper {
         });
         this.myUserStat.updateCardsEntered(userIDs);
         await this.myUserStat.saveProgress();
-        
+
         this.postHallOfFame(this.bracketModel, this.setupModel);
     }
 
@@ -555,6 +556,11 @@ class BrawlBracketHelper {
     }
 
     postHallOfFame(bracketModel, setupModel) {
+        const finalsMatch =
+            bracketModel.completedMatches[bracketModel.completedMatches.length - 1];
+        const winnerCard = finalsMatch.winner;
+        const winnerImage = setupModel.cards.get(winnerCard).imageLink;
+
         const guild = client.guilds.cache.get(config.guildID);
         const mediaChannel = guild.channels.cache.get(config.channelID.brawlHallOfFame);
         mediaChannel.threads
