@@ -8,7 +8,7 @@ function getUserStatEmbed(userStatModel) {
         `${userStatModel.matchesWon}`,
         `${userStatModel.tiesLost}`,
         `${userStatModel.tiesWon}`,
-        `${userStatModel.honorableMentions}`
+        // `${userStatModel.honorableMentions}`
         `${userStatModel.wins}`,
     ];
     const compeititorSuffix = [
@@ -17,7 +17,7 @@ function getUserStatEmbed(userStatModel) {
         "Matches won",
         "Ties lost",
         "Ties won",
-        "Honorable mentions",
+        // "Honorable mentions",
         "Tournament Wins",
     ];
     const competitorContent = alignTextToLongest(competitorStats, compeititorSuffix).join(

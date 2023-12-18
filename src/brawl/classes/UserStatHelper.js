@@ -30,8 +30,8 @@ class UserStatHelper {
 
     // cardsEntered
     updateCardsEntered(userIDs) {
-        const task = async () => {
-            userIDs.forEach(async (userID) => {
+        const task = async () => {        
+            const promises = userIDs.map(async (userID) => {
                 const statModel = await this.getUserStatModel(userID);
                 if (statModel) {
                     statModel.cardsEntered++;
@@ -39,6 +39,8 @@ class UserStatHelper {
                     console.error("Failed to update cards entered");
                 }
             });
+    
+            await Promise.all(promises);
         };
         client.userStatQueue.enqueue(task);
     }
