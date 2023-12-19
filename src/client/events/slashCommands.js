@@ -1,5 +1,7 @@
 const { Events, Collection } = require("discord.js");
 const enterGiveaway = require("../../giveaway/src/enterGiveaway");
+const toggleRole = require("../../role/src/toggleRole");
+const toggleBotRole = require("../../role/src/toggleBotRole");
 const viewParticipants = require("../../giveaway/src/viewParticipants");
 const client = require("../../index");
 const config = require("../../../config.json");
@@ -88,9 +90,20 @@ module.exports = {
         } else if (interaction.isButton()) {
             if (interaction.customId === "enterGiveaway") {
                 enterGiveaway(interaction);
-            }
-            if (interaction.customId === "viewParticipants") {
+            } else if (interaction.customId === "viewParticipants") {
                 viewParticipants(interaction);
+            } else if (interaction.customId === "viewUserStats") {
+                viewBrawlStats(interaction);
+            } else if (interaction.customId === "toggleBrawlCompetitor") {
+                toggleRole(interaction, config.roleID.brawlCompetitor);
+            } else if (interaction.customId === "toggleBrawlJudge") {
+                toggleRole(interaction, config.roleID.brawlJudge);
+            } else if (interaction.customId === "toggleKarutaDrop") {
+                toggleBotRole(interaction, config.roleID.karutaDrop);
+            } else if (interaction.customId === "toggleKarutaWishlist") {
+                toggleBotRole(interaction, config.roleID.karutaWishlist);
+            } else if (interaction.customId === "toggleKarutaEvent") {
+                toggleBotRole(interaction, config.roleID.karutaEvent);
             }
         }
     },

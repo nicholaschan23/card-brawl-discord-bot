@@ -9,7 +9,7 @@ const {
     EmbedBuilder,
 } = require("discord.js");
 const UserInventoryModel = require("../../../inventory/schemas/userInventorySchema");
-const getPreviewEmbed = require("../../../color/embeds/colorPreview");
+const getPreviewEmbed = require("../../../role/embeds/colorPreview");
 const client = require("../../../index");
 const config = require("../../../../config.json")
 

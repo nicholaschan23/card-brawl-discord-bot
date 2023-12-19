@@ -75,21 +75,6 @@ async function createGuildEvent(setupModel) {
     });
     console.log("[GUILD EVENT] Successfully created guild scheduled event");
 
-    // Send scheduled event invite link
-    const link = `https://discord.com/events/${config.guildID}/${event.id}`;
-    const karutaUpdate = client.channels.cache.get(config.channelID.karutaUpdates);
-    const brawlAnnounce = client.channels.cache.get(config.channelID.brawlUpdates);
-    const content = `**Participate in the community [card competition](${link}) this weekend!** Visit the <#${config.channelID.brawlCompetitors}> to learn more. Click the button below to show pthers you're interested.`;
-    karutaUpdate.send({
-        content: content,
-        allowedMentions: { parse: [] },
-    });
-    brawlAnnounce.send({
-        content: content,
-        allowedMentions: { parse: [] },
-    });
-    console.log("[GUILD EVENT] Sent event links");
-
     const remind24 = new ScheduleModel({
         name: "24H",
         task: "brawl/tasks/sendReminder",

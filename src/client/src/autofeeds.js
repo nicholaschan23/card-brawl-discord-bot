@@ -14,14 +14,34 @@ function autofeedInit() {
     // Card bot roles
     cron.schedule("0 * * * *", () => {
         try {
+            const karutaDropButton = new ButtonBuilder()
+                .setCustomId("toggleKarutaDrop")
+                .setLabel("Karuta Drop")
+                .setStyle(ButtonStyle.Primary);
+            const karutaWishlistButton = new ButtonBuilder()
+                .setCustomId("toggleKarutaWishlist")
+                .setLabel("Karuta Wishlist")
+                .setStyle(ButtonStyle.Primary);
+            const karutaEventButton = new ButtonBuilder()
+                .setCustomId("toggleKarutaEvent")
+                .setLabel("Karuta Event")
+                .setStyle(ButtonStyle.Link);
+            const karutaRow = new ActionRowBuilder().addComponents(
+                karutaDropButton,
+                karutaWishlistButton,
+                karutaEventButton
+            );
             karutaMain.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\`!`,
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\` or use the buttons below!`,
                 allowedMentions: { parse: [] },
+                components: [karutaRow]
             });
             karutaDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\`!`,
+                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\` or use the buttons below!`,
                 allowedMentions: { parse: [] },
+                components: [karutaRow]
             });
+            
             sofiDrop.send({
                 content: `:shinto_shrine: Want to get notified for <@&${config.roleID.sofiWishlist}>? Use command \`/role bot\`!`,
                 allowedMentions: { parse: [] },
@@ -92,20 +112,29 @@ function autofeedInit() {
             events = [...events.values()];
             events.forEach((event) => {
                 if (event.name.includes("Card Brawl")) {
-                    const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
-                    const enterLink = `https://discord.com/events/${config.guildID}/${config.channelID.brawlCompetitors}`;
+                    const competitorButton = new ButtonBuilder()
+                        .setCustomId("toggleBrawlCompetitor")
+                        .setLabel("Brawl Competitor")
+                        .setStyle(ButtonStyle.Primary);
 
+                    const judgeButton = new ButtonBuilder()
+                        .setCustomId("toggleBrawlJudge")
+                        .setLabel("Brawl Judge")
+                        .setStyle(ButtonStyle.Primary);
+
+                    const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
                     const eventButton = new ButtonBuilder()
                         .setLabel("View Event")
                         .setURL(eventLink)
                         .setStyle(ButtonStyle.Link);
-                    const enterButton = new ButtonBuilder()
-                        .setLabel("Enter Event")
-                        .setURL(enterLink)
-                        .setStyle(ButtonStyle.Link);
-                    const row = new ActionRowBuilder().addComponents(eventButton, enterButton);
-                    const content = `:boxing_glove: **Participate in the community __${event.name}__ event this weekend!**`;
 
+                    const row = new ActionRowBuilder().addComponents(
+                        competitorButton,
+                        judgeButton,
+                        eventButton
+                    );
+
+                    const content = `:boxing_glove: **Participate in the community __${event.name}__ event this weekend!** Grab the <@&${config.roleID.brawlCompetitor}> and <@${config.roleID.brawlJudge} roles to get notification for the event.`;
                     karutaMain.send({
                         content: content,
                         components: [row],
