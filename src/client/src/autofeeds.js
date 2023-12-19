@@ -95,15 +95,15 @@ function autofeedInit() {
                     const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
                     const enterLink = `https://discord.com/events/${config.guildID}/${config.channelID.brawlCompetitors}`;
 
-                    const event = new ButtonBuilder()
+                    const eventButton = new ButtonBuilder()
                         .setLabel("View Event")
                         .setURL(eventLink)
                         .setStyle(ButtonStyle.Link);
-                    const enter = new ButtonBuilder()
+                    const enterButton = new ButtonBuilder()
                         .setLabel("Enter Event")
                         .setURL(enterLink)
                         .setStyle(ButtonStyle.Link);
-                    const row = new ActionRowBuilder().addComponents(event, enter);
+                    const row = new ActionRowBuilder().addComponents(eventButton, enterButton);
                     const content = `:boxing_glove: **Participate in the community __${event.name}__ event this weekend!**`;
 
                     karutaMain.send({
