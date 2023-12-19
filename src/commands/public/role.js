@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const add = require("./role/bot/add");
-const remove = require("./role/bot/remove");
+const bot = require("./role/bot");
 const color = require("./role/color");
 
 module.exports = {
@@ -8,23 +7,13 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("role")
         .setDescription("Role main command.")
-        .addSubcommandGroup((group) =>
-            group
-                .setName("bot")
-                .setDescription("Manage card bot pings.")
-                .addSubcommand(add.data)
-                .addSubcommand(remove.data)
-        )
+        .addSubcommand(bot.data)
         .addSubcommand(color.data),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
-            case "add": {
-                await add.execute(interaction);
-                break;
-            }
-            case "remove": {
-                await remove.execute(interaction);
+            case "bot": {
+                await bot.execute(interaction);
                 break;
             }
             case "color": {
