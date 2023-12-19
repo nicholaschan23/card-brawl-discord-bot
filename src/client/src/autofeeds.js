@@ -1,3 +1,4 @@
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const client = require("../../index");
 const config = require("../../../config.json");
 const cron = require("node-cron");
@@ -91,12 +92,27 @@ function autofeedInit() {
             events = [...events.values()];
             events.forEach((event) => {
                 if (event.name.includes("Card Brawl")) {
-                    const link = `https://discord.com/events/${config.guildID}/${event.id}`;
+                    const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
+                    const enterLink = `https://discord.com/events/${config.guildID}/${config.channelID.brawlCompetitors}`;
+
+                    const event = new ButtonBuilder()
+                        .setLabel("View Event")
+                        .setURL(eventLink)
+                        .setStyle(ButtonStyle.Link);
+                    const enter = new ButtonBuilder()
+                        .setLabel("Enter Event")
+                        .setURL(enterLink)
+                        .setStyle(ButtonStyle.Link);
+                    const row = new ActionRowBuilder().addComponents(event, enter);
+                    const content = `:boxing_glove: **Participate in the community __${event.name}__ event this weekend!**`;
+
                     karutaMain.send({
-                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit <#${config.channelID.brawlCompetitors}> to learn more. Click the button below to show you're interested.`,
+                        content: content,
+                        components: [row],
                     });
                     karutaDrop.send({
-                        content: `:shinto_shrine: **Participate in the community [card competition](${link}) this weekend!** Visit <#${config.channelID.brawlCompetitors}> to learn more. Click the button below to show you're interested.`,
+                        content: content,
+                        components: [row],
                     });
                     console.log("[INFO] [autofeed] Sent 'Card Brawl promotion' reminder");
                     return;
