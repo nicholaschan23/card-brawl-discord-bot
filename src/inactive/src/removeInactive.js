@@ -27,10 +27,13 @@ function removeInactive() {
                 const userID = member.user.id;
                 const uim = await UserInventoryModel.findOne({ userID }).exec();
 
+                const hasRole = member.roles.cache.some(
+                    (role) => role.id === config.roleID.serverSubscriber
+                );
                 if (uim.numTokens === 0) {
                     playersRevoked++;
                     member.roles.remove(activePlayer);
-                } else {
+                } else if (!hasRole) {
                     uim.numTokens--;
                     const task = async () => {
                         await uim.save();

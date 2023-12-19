@@ -268,10 +268,13 @@ module.exports = {
                             // Give Active Player role
                             const guild = client.guilds.cache.get(config.guildID);
                             const member = await guild.members.fetch(userID);
-                            const hasRole = member.roles.cache.some(
-                                (role) => role.name === "Active Player"
+                            const hasActiveRole = member.roles.cache.some(
+                                (role) => role.id === config.roleID.activePlayer
                             );
-                            if (!hasRole) {
+                            const hasSubscriberRole = member.roles.cache.some(
+                                (role) => role.id === config.roleID.serverSubscribr
+                            );
+                            if (!hasActiveRole && !hasSubscriberRole) {
                                 const activePlayer = guild.roles.cache.get(
                                     config.roleID.activePlayer
                                 );
@@ -287,6 +290,9 @@ module.exports = {
                                 message.channel.send(
                                     `<@${userID}>, you received a ${config.emoji.token} **Token**!`
                                 );
+                                if (!hasActiveRole && hasSubscriberRole) {
+                                    member.roles.add(activePlayer);
+                                }
                             }
                         }
 
