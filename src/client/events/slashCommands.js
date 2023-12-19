@@ -104,6 +104,16 @@ module.exports = {
                 toggleBotRole(interaction, config.roleID.karutaWishlist);
             } else if (interaction.customId === "toggleKarutaEvent") {
                 toggleBotRole(interaction, config.roleID.karutaEvent);
+            } else if (interaction.customId === "toggleSofiWishlist") {
+                toggleBotRole(interaction, config.roleID.sofiWishlist);
+            } else if (interaction.customId === "toggleTofuDrop") {
+                toggleBotRole(interaction, config.roleID.tofuDrop);
+            } else if (interaction.customId === "toggleTofuWishlist") {
+                toggleBotRole(interaction, config.roleID.tofuWishlist);
+            } else if (interaction.customId === "toggleGachaponDrop") {
+                toggleBotRole(interaction, config.roleID.gachaponDrop);
+            } else if (interaction.customId === "toggleGachaponWishlist") {
+                toggleBotRole(interaction, config.roleID.gachaponWishlist);
             }
         }
     },

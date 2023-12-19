@@ -14,6 +14,7 @@ function autofeedInit() {
     // Card bot roles
     cron.schedule("0 * * * *", () => {
         try {
+            // Karuta
             const karutaDropButton = new ButtonBuilder()
                 .setCustomId("toggleKarutaDrop")
                 .setLabel("Karuta Drop")
@@ -25,35 +26,77 @@ function autofeedInit() {
             const karutaEventButton = new ButtonBuilder()
                 .setCustomId("toggleKarutaEvent")
                 .setLabel("Karuta Event")
-                .setStyle(ButtonStyle.Link);
+                .setStyle(ButtonStyle.Primary);
             const karutaRow = new ActionRowBuilder().addComponents(
                 karutaDropButton,
                 karutaWishlistButton,
                 karutaEventButton
             );
+            const karutaContent = `:shinto_shrine: **Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>?** Use the buttons below or the command \`/role bot\`!`;
             karutaMain.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\` or use the buttons below!`,
+                content: karutaContent,
                 allowedMentions: { parse: [] },
-                components: [karutaRow]
+                components: [karutaRow],
             });
             karutaDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.karutaDrop}>, <@&${config.roleID.karutaWishlist}>, or <@&${config.roleID.karutaEvent}>? Use command \`/role bot\` or use the buttons below!`,
+                content: karutaContent,
                 allowedMentions: { parse: [] },
-                components: [karutaRow]
+                components: [karutaRow],
             });
-            
+
+            // Sofi
+            const sofiWishlistButton = new ButtonBuilder()
+                .setCustomId("toggleSofiWishlist")
+                .setLabel("Sofi Wishlist")
+                .setStyle(ButtonStyle.Primary);
+            const sofiRow = new ActionRowBuilder().addComponents(sofiWishlistButton);
+            const sofiContent = `:shinto_shrine: **Want to get notified for <@&${config.roleID.sofiWishlist}>?** Use the buttons below or the command \`/role bot\`!`;
             sofiDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.sofiWishlist}>? Use command \`/role bot\`!`,
+                content: sofiContent,
                 allowedMentions: { parse: [] },
+                components: [sofiRow],
             });
+
+            // Tofu
+            const tofuDropButton = new ButtonBuilder()
+                .setCustomId("toggleTofuDrop")
+                .setLabel("Tofu Drop")
+                .setStyle(ButtonStyle.Primary);
+            const tofuWishlistButton = new ButtonBuilder()
+                .setCustomId("toggleTofuWishlist")
+                .setLabel("Tofu Wishlist")
+                .setStyle(ButtonStyle.Primary);
+            const tofuRow = new ActionRowBuilder().addComponents(
+                tofuDropButton,
+                tofuWishlistButton
+            );
+            const tofuContent = `:shinto_shrine: **Want to get notified for <@&${config.roleID.tofuDrop}> or <@&${config.roleID.tofuWishlist}>?** Use the buttons below or the command \`/role bot\`!`;
             tofuSummon.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.tofuDrop}> or <@&${config.roleID.tofuWishlist}>? Use command \`/role bot\`!`,
+                content: tofuContent,
                 allowedMentions: { parse: [] },
+                components: [tofuRow],
             });
+
+            // Gachapon
+            const gachaponDropButton = new ButtonBuilder()
+                .setCustomId("toggleGachaponDrop")
+                .setLabel("Gachapon Drop")
+                .setStyle(ButtonStyle.Primary);
+            const gachaponWishlistButton = new ButtonBuilder()
+                .setCustomId("toggleGachaponWishlist")
+                .setLabel("Gachapon Wishlist")
+                .setStyle(ButtonStyle.Primary);
+            const gachaponRow = new ActionRowBuilder().addComponents(
+                gachaponDropButton,
+                gachaponWishlistButton
+            );
+            const gachaponContent = `:shinto_shrine: **Want to get notified for <@&${config.roleID.gachaponDrop}> or <@&${config.roleID.gachaponWishlist}>?** Use the buttons below or the command \`/role bot\`!`;
             gachaponDrop.send({
-                content: `:shinto_shrine: Want to get notified for <@&${config.roleID.gachaponDrop}> or <@&${config.roleID.gachaponWishlist}>? Use command \`/role bot\`!`,
+                content: gachaponContent,
                 allowedMentions: { parse: [] },
+                components: [gachaponRow],
             });
+
             console.log("[INFO] [autofeed] Sent 'card bot roles' reminder");
         } catch (error) {
             console.error(
@@ -134,13 +177,15 @@ function autofeedInit() {
                         eventButton
                     );
 
-                    const content = `:boxing_glove: **Participate in the community __${event.name}__ event this weekend!** Grab the <@&${config.roleID.brawlCompetitor}> and <@${config.roleID.brawlJudge} roles to get notification for the event.`;
+                    const content = `:boxing_glove: **Want to participate in the community __${event.name}__ event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@${config.roleID.brawlJudge}> roles to get notification for the event!`;
                     karutaMain.send({
                         content: content,
+                        allowedMentions: { parse: [] },
                         components: [row],
                     });
                     karutaDrop.send({
                         content: content,
+                        allowedMentions: { parse: [] },
                         components: [row],
                     });
                     console.log("[INFO] [autofeed] Sent 'Card Brawl promotion' reminder");

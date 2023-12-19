@@ -32,7 +32,7 @@ const ranks = [
  */
 function toggleBotRole(interaction, roleID) {
     try {
-        const guild = client.guilds.cache.get();
+        const guild = client.guilds.cache.get(config.guildID);
         const role = guild.roles.cache.find((r) => r.id === roleID);
         const hasRole = interaction.member.roles.cache.some((r) => r.id === roleID);
         if (hasRole) {
@@ -43,16 +43,15 @@ function toggleBotRole(interaction, roleID) {
                 ephemeral: true,
             });
         } else {
-            const eligible = ranks.some((roleName) => {
-                const role = member.roles.cache.find((r) => r.name === roleName);
-                return !!role;
-            });
-
+            const eligible = interaction.member.roles.cache.some(
+                (r) => r.id === config.roleID.activePlayer
+            );
             if (eligible) {
                 interaction.member.roles.add(role);
                 interaction.reply({
                     content: `You have successfully added the ${role} role!`,
                     allowedMentions: { parse: [] },
+                    ephemeral: true,
                 });
             } else {
                 interaction.reply({
@@ -63,7 +62,7 @@ function toggleBotRole(interaction, roleID) {
             }
         }
         console.log(
-            `[INFO] [toggleBotRole] Successfully toggled role ${role.name}:`,
+            `[INFO] [toggleBotRole] Successfully toggled role '${role.name}':`,
             interaction.user.tag
         );
     } catch (error) {
