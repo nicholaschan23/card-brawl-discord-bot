@@ -275,10 +275,9 @@ module.exports = {
                                 (role) => role.id === config.roleID.serverSubscribr
                             );
                             if (!hasActiveRole && !hasSubscriberRole) {
-                                const activePlayer = guild.roles.cache.get(
-                                    config.roleID.activePlayer
+                                member.roles.add(
+                                    guild.roles.cache.get(config.roleID.activePlayer)
                                 );
-                                member.roles.add(activePlayer);
                                 message.channel.send(
                                     `<@${userID}>, you received a ${config.emoji.token} **Token** and spent it to gain access to <#${config.channelID.karutaMain}>!`
                                 );
@@ -291,7 +290,9 @@ module.exports = {
                                     `<@${userID}>, you received a ${config.emoji.token} **Token**!`
                                 );
                                 if (!hasActiveRole && hasSubscriberRole) {
-                                    member.roles.add(activePlayer);
+                                    member.roles.add(
+                                        guild.roles.cache.get(config.roleID.activePlayer)
+                                    );
                                 }
                             }
                         }
