@@ -56,20 +56,20 @@ async function createGuildEvent(setupModel) {
         privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
         entityType: GuildScheduledEventEntityType.External,
         description:
-            `Get ready for a showdown of creativity in our card competition live event! It's your chance to showcase your card-styling skills and vote for your favorite designs. 🥊\n\n` +
-            `**Event Details**:\n` +
-            `Theme: ${setupModel.theme}\n` +
-            `Prize: <@&${config.roleID.brawlChampion}>\n` +
-            `Date: <t:${unixStartTime / 1000}:F>\n\n` +
-            `**How to Participate**:\n` +
-            `Be a competitor! See the <#${config.channelID.brawlCompetitors}> channel.\n` +
-            `Be a judge! See the <#${config.channelID.brawlJudges}> channel at the event start time.\n\n` +
-            `**Notifications**:\n` +
-            `Get the below roles in <id:customize> for reminders on Card Brawl events!\n` +
-            `<@&${config.roleID.brawlCompetitor}>: Get notified to submit cards to compete.\n` +
-            `<@&${config.roleID.brawlJudge}>: Get notified when the event goes live to vote.\n\n` +
-            `See you at the Card Brawl! 🥊`,
-        entityMetadata: { location: `<#${config.channelID.brawlJudges}>` },
+            `Get ready for a showdown of creativity in our card competition live event! It's your chance to showcase your card-styling skills and vote for your favorite designs. 🥊`,
+            // `**Event Details**:\n` +
+            // `Theme: ${setupModel.theme}\n` +
+            // `Prize: <@&${config.roleID.brawlChampion}>\n` +
+            // `Date: <t:${unixStartTime / 1000}:F>\n\n` +
+            // `**How to Participate**:\n` +
+            // `Be a competitor! See the <#${config.channelID.brawlCompetitors}> channel.\n` +
+            // `Be a judge! See the <#${config.channelID.brawlJudges}> channel at the event start time.\n\n` +
+            // `**Notifications**:\n` +
+            // `Get the below roles in <id:customize> for reminders on Card Brawl events!\n` +
+            // `<@&${config.roleID.brawlCompetitor}>: Get notified to submit cards to compete.\n` +
+            // `<@&${config.roleID.brawlJudge}>: Get notified when the event goes live to vote.\n\n` +
+            // `See you at the Card Brawl! 🥊`,
+        entityMetadata: { location: `Far Shore` },
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",
     });
