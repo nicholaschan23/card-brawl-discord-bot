@@ -1,10 +1,11 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const rules = require("./embed/rules");
+const rules = require("./post/rules");
+const features = require("./post/features");
 
 module.exports = {
     category: "public",
     data: new SlashCommandBuilder()
-        .setName("embed")
+        .setName("post")
         .setDescription("Embed main command.")
         .addSubcommand(rules.data)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
@@ -13,6 +14,10 @@ module.exports = {
         switch (subcommand) {
             case "rules": {
                 await rules.execute(interaction);
+                break;
+            }
+            case "features": {
+                await features.execute(interaction);
                 break;
             }
             default: {

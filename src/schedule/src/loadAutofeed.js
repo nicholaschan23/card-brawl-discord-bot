@@ -150,54 +150,65 @@ function loadAutofeed() {
 
     // Card Brawl promotion
     cron.schedule("15 * * * *", async () => {
-        try {
-            let events = await guild.scheduledEvents.fetch();
-            events = [...events.values()];
-            events.forEach((event) => {
-                if (event.name.includes("Card Brawl")) {
-                    const competitorButton = new ButtonBuilder()
-                        .setCustomId("toggleBrawlCompetitor")
-                        .setLabel("Brawl Competitor")
-                        .setStyle(ButtonStyle.Primary);
+        let events = await guild.scheduledEvents.fetch();
+        events = [...events.values()];
+        events.forEach((event) => {
+            if (event.name.includes("Card Brawl")) {
+                const competitorButton = new ButtonBuilder()
+                    .setCustomId("toggleBrawlCompetitor")
+                    .setLabel("Brawl Competitor")
+                    .setStyle(ButtonStyle.Primary);
 
-                    const judgeButton = new ButtonBuilder()
-                        .setCustomId("toggleBrawlJudge")
-                        .setLabel("Brawl Judge")
-                        .setStyle(ButtonStyle.Primary);
+                const judgeButton = new ButtonBuilder()
+                    .setCustomId("toggleBrawlJudge")
+                    .setLabel("Brawl Judge")
+                    .setStyle(ButtonStyle.Primary);
 
-                    const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
-                    const eventButton = new ButtonBuilder()
-                        .setLabel("View Event")
-                        .setURL(eventLink)
-                        .setStyle(ButtonStyle.Link);
+                const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
+                const eventButton = new ButtonBuilder()
+                    .setLabel("View Event")
+                    .setURL(eventLink)
+                    .setStyle(ButtonStyle.Link);
 
-                    const row = new ActionRowBuilder().addComponents(
-                        competitorButton,
-                        judgeButton,
-                        eventButton
-                    );
+                const competitorsChannel = client.channels.cache.get(
+                    config.channelID.brawlCompetitors
+                );
+                competitorsChannel.messages
+                    .fetch({ limit: 1 })
+                    .then((messages) => {
+                        const latestMessage = messages.first();
+                        const messageLink = `https://discord.com/channels/${latestMessage.guild.id}/${latestMessage.channel.id}/${latestMessage.id}`;
 
-                    const content = `:boxing_glove: **Want to participate in the community __${event.name}__ event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@&${config.roleID.brawlJudge}> roles to get notification for the event!`;
-                    karutaMain.send({
-                        content: content,
-                        allowedMentions: { parse: [] },
-                        components: [row],
-                    });
-                    karutaDrop.send({
-                        content: content,
-                        allowedMentions: { parse: [] },
-                        components: [row],
-                    });
-                    console.log("[INFO] [autofeed] Sent 'Card Brawl promotion' reminder");
-                    return;
-                }
-            });
-        } catch (error) {
-            console.error(
-                "[ERROR] [autofeed] Failed to send 'Card Brawl promotion' reminder:",
-                error
-            );
-        }
+                        const enterButton = new ButtonBuilder()
+                            .setLabel("Enter Competition")
+                            .setURL(messageLink)
+                            .setStyle(ButtonStyle.Link);
+
+                        const row = new ActionRowBuilder().addComponents(
+                            competitorButton,
+                            judgeButton,
+                            eventButton,
+                            enterButton
+                        );
+
+                        const content = `:boxing_glove: **Want to participate in the community __${event.name}__ event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@&${config.roleID.brawlJudge}> roles to get notification for the event!`;
+                        karutaMain.send({
+                            content: content,
+                            allowedMentions: { parse: [] },
+                            components: [row],
+                        });
+                        karutaDrop.send({
+                            content: content,
+                            allowedMentions: { parse: [] },
+                            components: [row],
+                        });
+                        console.log(
+                            "[INFO] [autofeed] Sent 'Card Brawl promotion' reminder"
+                        );
+                    })
+                    .catch(console.error);
+            }
+        });
     });
 
     // Karuta help

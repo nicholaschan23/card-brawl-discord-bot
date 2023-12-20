@@ -124,12 +124,13 @@ async function enterGiveaway(interaction) {
             .setTitle("Giveaway Entry");
         modal.addComponents(actionRow);
 
-        try {
-            await interaction.showModal(modal);
-        } catch (error) {
-            console.error("[ERROR] [enterGiveaway] Failed to send modal to:", userTag);
+        await interaction.showModal(modal).catch((error) => {
+            console.error(
+                `[ERROR] [enterGiveaway] Failed to send modal to: ${userTag}`,
+                error
+            );
             return;
-        }
+        });
 
         // Collect a modal submit interaction
         await interaction
@@ -138,15 +139,20 @@ async function enterGiveaway(interaction) {
                 time: 60_000,
             })
             .then(async (i) => {
+                await i.deferReply({ ephemeral: true });
+
                 amount = i.fields.getTextInputValue("entryAmount");
                 if (isNaN(amount)) {
-                    await i.reply({ content: "Please enter a number.", ephemeral: true });
+                    await i.editReply({
+                        content: "Please enter a number.",
+                        ephemeral: true,
+                    });
                     return;
                 }
                 amount = parseInt(amount);
 
                 if (amount === 0) {
-                    await i.reply({
+                    await i.editReply({
                         content: "Please enter a number greater than **0**.",
                         ephemeral: true,
                     });
@@ -154,7 +160,7 @@ async function enterGiveaway(interaction) {
                 }
 
                 if (amount > maxIn) {
-                    await i.reply({
+                    await i.editReply({
                         content: `You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
                         ephemeral: true,
                     });
@@ -162,7 +168,7 @@ async function enterGiveaway(interaction) {
                 }
 
                 if (amount > balance) {
-                    await i.reply({
+                    await i.editReply({
                         content: `You don't have **${amount} ${token} Tokens**.`,
                         ephemeral: true,
                     });
@@ -188,7 +194,7 @@ async function enterGiveaway(interaction) {
                             amount + currentEntries
                         }** entries?`
                     );
-                const response = await i.reply({
+                const response = await i.editReply({
                     fetchReply: true,
                     embeds: [embed],
                     components: [row],
