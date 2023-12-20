@@ -69,7 +69,7 @@ async function createGuildEvent(setupModel) {
             // `<@&${config.roleID.brawlCompetitor}>: Get notified to submit cards to compete.\n` +
             // `<@&${config.roleID.brawlJudge}>: Get notified when the event goes live to vote.\n\n` +
             // `See you at the Card Brawl! 🥊`,
-        entityMetadata: { location: `Far Shore` },
+        entityMetadata: { location: `<#${config.channelID.brawlJudges}>` },
         image: imageBuffer,
         reason: "Create weekend Card Brawl scheduled event.",
     });
