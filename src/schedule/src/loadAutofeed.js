@@ -3,7 +3,7 @@ const client = require("../../index");
 const config = require("../../../config.json");
 const cron = require("node-cron");
 
-function autofeedInit() {
+function loadAutofeed() {
     const guild = client.guilds.cache.get(config.guildID);
     const karutaMain = client.channels.cache.get(config.channelID.karutaMain);
     const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
@@ -177,7 +177,7 @@ function autofeedInit() {
                         eventButton
                     );
 
-                    const content = `:boxing_glove: **Want to participate in the community __${event.name}__ event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@${config.roleID.brawlJudge}> roles to get notification for the event!`;
+                    const content = `:boxing_glove: **Want to participate in the community __${event.name}__ event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@&${config.roleID.brawlJudge}> roles to get notification for the event!`;
                     karutaMain.send({
                         content: content,
                         allowedMentions: { parse: [] },
@@ -246,4 +246,4 @@ function autofeedInit() {
     });
 }
 
-module.exports = autofeedInit;
+module.exports = loadAutofeed;
