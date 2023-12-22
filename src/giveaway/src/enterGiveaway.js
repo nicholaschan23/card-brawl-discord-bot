@@ -291,7 +291,7 @@ async function enterGiveaway(interaction) {
             // No tokens
             if (balance === 0) {
                 await interaction.editReply({
-                    content: `You need **1 ${token} Token** to enter this giveaway!`,
+                    content: `You need at least **1 ${token} Token** to enter this giveaway!`,
                     embeds: [getTokenHelpEmbed()],
                     ephemeral: true,
                 });

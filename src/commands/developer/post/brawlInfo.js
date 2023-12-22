@@ -8,7 +8,7 @@ const config = require("../../../../config.json");
 
 const section1 =
     `# Card Brawl\n` +
-    `**Introducing Card Brawl, an exclusive feature dedicated to automatically coordinating card competition live events in a bracket-style format.** To participate, players can submit cards to compete and serve as judges to vote during the event in real-time.\n\n` +
+    `**Introducing Card Brawl, an exclusive feature to automatically coordinate card competition live events in a bracket-style format.** To participate, players can submit cards to compete and serve as judges to vote during the event in real-time.\n\n` +
     `The bot is in development. If you have any feedback or suggestions, please make a post in <#${config.channelID.brawlDiscussion}>.\n\n` +
     `Here's just some of the features **Card Brawl** currently offers:\n` +
     `\`\`\`md\n` +
@@ -22,7 +22,7 @@ const section1 =
 
 const section2 =
     `## Participate\n` +
-    `:boxing_glove: **To participate in a Card Brawl, players can be competitors and judges.** Competitors submit cards to enter the tournament and judges vote on cards during the live event.\n\n` +
+    `:boxing_glove: **Players can be competitors and judges for a Card Brawl.** Competitors submit cards to enter the tournament and judges vote on cards during the live event.\n\n` +
     `**Competitors**: Card competitions will be posted a week in advance for competitors to have time to style a card to enter. The competition will start the upcoming \`Saturday\`. Details about the requirements to enter will be posted in <#${config.channelID.brawlCompetitors}>. Use command \`/brawl enter\` to submit a card to the competition.\n\n` +
     `**Judges**: At the time of the event, card matchups will display in <#${config.channelID.brawlJudges}> according to the tournament bracket. Players can vote by pressing ":one:" or ":two:". This is repeated until there is a <@&${config.roleID.brawlChampion}>!\n\n` +
     `:question: Check out all the commands with the prefix \`/brawl\`! For additional help, visit <#${config.channelID.brawlDiscussion}>.`;
