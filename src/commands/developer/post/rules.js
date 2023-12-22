@@ -22,10 +22,10 @@ module.exports = {
         .setDescription("Post rules."),
     category: "developer/post",
     async execute(interaction) {
-        interaction.channel.send({
+        await interaction.channel.send({
             content: rulesContent,
             allowedMentions: { parse: [] },
         });
-        interaction.reply({ content: "Done!", ephemeral: true });
+        await interaction.reply({ content: "Done!", ephemeral: true });
     },
 };

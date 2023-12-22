@@ -9,7 +9,7 @@ const {
 const UserStatHelper = require("./UserStatHelper");
 const delay = require("../src/delay");
 const getWinnerEmbed = require("../embeds/brawlWinner");
-const mergeImages = require("../src/meregeImages");
+const mergeImages = require("../src/mergeImages");
 const shuffleArray = require("../src/shuffleArray");
 const client = require("../../index");
 const config = require("../../../config.json");
