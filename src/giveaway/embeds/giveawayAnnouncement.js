@@ -5,7 +5,7 @@ function getGiveawayEmbed(giveawayModel, type) {
     const token = config.emoji.token;
 
     const headers =
-        `Type: **${type}**` +
+        `Type: **${type}**\n` +
         `Sponsor: <@${giveawayModel.sponsor}>\n` +
         `Host: <@${giveawayModel.host}>\n` +
         `Winners: **${giveawayModel.winners}**\n` +
