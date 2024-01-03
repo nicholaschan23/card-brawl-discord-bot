@@ -49,7 +49,7 @@ async function createGuildEvent(setupModel) {
     // Create guild scheduled event
     const guild = client.guilds.cache.get(config.guildID);
     const eventManager = new GuildScheduledEventManager(guild);
-    const event = await eventManager.create({
+    await eventManager.create({
         name: `${setupModel.name} Card Brawl`,
         scheduledStartTime: new Date(unixStartTime),
         scheduledEndTime: new Date(unixEndTime),

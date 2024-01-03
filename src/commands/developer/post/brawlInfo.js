@@ -71,7 +71,7 @@ module.exports = {
 
         const supportButton = new ButtonBuilder()
             .setLabel("Support Irukanoko")
-            .setURL("https://discord.com/channels/727898987285315736/shop")
+            .setURL(config.serverShop)
             .setStyle(ButtonStyle.Link);
         const row4 = new ActionRowBuilder().addComponents(supportButton);
         await interaction.channel.send({

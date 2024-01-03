@@ -9,13 +9,14 @@ const config = require("../../../config.json");
 
 async function endGiveaway(data) {
     const messageID = data.messageID;
-    const channel = client.channels.cache.get(config.channelID.giveaway);
+    const giveawayChannel = client.channels.cache.get(config.channelID.giveaway);
+    const winnersChannel = client.channels.cache.get(config.threadID.giveawayWinners);
     const giveawayModel = await GiveawayModel.findOne({ messageID }).exec();
     if (!giveawayModel) {
         console.error("Couldn't find giveaway model in database");
     }
 
-    const message = await channel.messages.fetch(messageID);
+    const message = await giveawayChannel.messages.fetch(messageID);
 
     // Set embed color to red
     const embed = EmbedBuilder.from(message.embeds[0]);
@@ -58,11 +59,11 @@ async function endGiveaway(data) {
         };
         await client.inventoryQueue.enqueue(inventoryTask);
 
-        await channel.send(
+        await winnersChannel.send(
             `Thank you <@${userID}> for sponsoring this giveaway! You've received **${yield} ${config.emoji.token} Tokens**!`
         );
     } else {
-        await channel.send(
+        await winnersChannel.send(
             `Thank you <@${userID}> for sponsoring this giveaway! Unfortunately, not enough people entered the giveaway so you received **${yield} ${config.emoji.token} Tokens**.`
         );
     }
@@ -71,13 +72,13 @@ async function endGiveaway(data) {
     // Get array of winners and convert to mentions
     const winnerArray = await rollWinner(giveawayModel, giveawayModel.winners);
     if (!winnerArray) {
-        await channel.send("There are no participants to roll as winners.");
+        await winnersChannel.send("There are no participants to roll as winners.");
         console.warn("There are no participants to roll as winners");
     } else {
         const addMentions = [...winnerArray.map((element) => `<@${element}>`)];
         const winnerMentions = addMentions.join(", ");
 
-        await channel.send({
+        await winnersChannel.send({
             content: `Congrats to ${winnerMentions}! 🎉`,
             embeds: [
                 getWinnerEmbed(

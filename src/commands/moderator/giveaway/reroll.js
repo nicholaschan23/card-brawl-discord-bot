@@ -42,7 +42,7 @@ module.exports = {
             );
         }
         const winnerMentions = `<@${winnerArray[0]}>`;
-        const channel = client.channels.cache.get(config.channelID.giveaway);
+        const channel = client.channels.cache.get(config.threadID.giveawayWinners);
         await channel.send({
             content: `Congrats to ${winnerMentions}! 🎉`,
             embeds: [

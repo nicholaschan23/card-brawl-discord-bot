@@ -30,6 +30,19 @@ module.exports = {
                 .setDescription("Sponsor of this giveaway.")
                 .setRequired(true)
         )
+        .addStringOption((option) =>
+            option
+                .setName("type")
+                .setDescription("What bot is the giveaway for? No mixed-bot giveaways.")
+                .addChoices(
+                    { name: "Karuta", value: `<@${config.botID.karuta}>` },
+                    { name: "Sofi", value: `<@${config.botID.sofi}>` },
+                    { name: "Tofu", value: `<@${config.botID.tofu}>` },
+                    { name: "Gachapon", value: `<@${config.botID.gachapon}>` },
+                    { name: "Other", value: "Other" }
+                )
+                .setRequired(true)
+        )
         .addAttachmentOption((option) =>
             option.setName("image").setDescription("Image of the card being given away.")
         )
@@ -50,6 +63,7 @@ module.exports = {
     async execute(interaction) {
         // Gather input variables
         const prize = interaction.options.getString("prize");
+        const type = interaction.options.getString("type");
 
         const attachment = interaction.options.getAttachment("image");
         if (attachment && attachment.contentType !== "image/png") {
@@ -86,7 +100,7 @@ module.exports = {
         });
 
         // Send embed
-        const giveawayEmbed = getGiveawayEmbed(giveawayModel);
+        const giveawayEmbed = getGiveawayEmbed(giveawayModel, type);
         giveawayEmbed.setColor(config.embed.blue);
         if (image) {
             console.log("[INFO] [createGiveaway] Image found");

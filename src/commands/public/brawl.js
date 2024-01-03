@@ -27,6 +27,7 @@ module.exports = {
             case "view": {
                 const setup = await BrawlSetupModel.find();
                 choices = [...setup.map((model) => model.name)];
+                choices.reverse();
                 break;
             }
             default: {
@@ -37,8 +38,8 @@ module.exports = {
         }
 
         // Manage autocomplete
-        const focusedValue = interaction.options.getFocused();
-        const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
+        const focusedValue = interaction.options.getFocused().toLowerCase();
+        const filtered = choices.filter((choice) => choice.toLowerCase().startsWith(focusedValue));
         await interaction.respond(
             filtered.map((choice) => ({ name: choice, value: choice }))
         );

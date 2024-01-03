@@ -215,19 +215,19 @@ function loadAutofeed() {
     cron.schedule("30 * * * *", () => {
         try {
             karutaMain.send(
-                `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
+                `:shinto_shrine: **Need help with Karuta?** Ask in the <#${config.channelID.cardDiscussion}> channel!`
             );
             karutaDrop.send(
-                `:shinto_shrine: **Need help with Karuta?** Ask in the <#1023740163857338478> channel!`
+                `:shinto_shrine: **Need help with Karuta?** Ask in the <#${config.channelID.cardDiscussion}> channel!`
             );
             sofiDrop.send(
-                `:shinto_shrine: **Need help with Sofi?** Ask in the <#1023740163857338478> channel!`
+                `:shinto_shrine: **Need help with Sofi?** Ask in the <#${config.channelID.cardDiscussion}> channel!`
             );
             tofuSummon.send(
-                `:shinto_shrine: **Need help with Tofu?** Ask in the <#1023740163857338478> channel!`
+                `:shinto_shrine: **Need help with Tofu?** Ask in the <#${config.channelID.cardDiscussion}> channel!`
             );
             gachaponDrop.send(
-                `:shinto_shrine: **Need help with Gachapon?** Ask in the <#1023740163857338478> channel!`
+                `:shinto_shrine: **Need help with Gachapon?** Ask in the <#${config.channelID.cardDiscussion}> channel!`
             );
             console.log("[INFO] [autofeed] Sent 'Karuta help' reminder");
         } catch (error) {

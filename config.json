@@ -21,6 +21,8 @@
         "brawlJudges": "1152352856247119953",
         "brawlHallOfFame": "1185347652141994024",
 
+        "cardDiscussion": "1023740163857338478",
+
         "karutaUpdates": "1157474189024972860",
         "karutaMain": "1153101919179513980",
         "karutaDrop": "768727462221578260",
@@ -33,6 +35,9 @@
         "giveawayClaim": "1153087079736168478",
 
         "serverSupport": "1149458425357545572"
+    },
+    "threadID": {
+        "giveawayWinners": "1191997603651538984"
     },
     "roleID": {
         "giveaway": "1117829641336528956",
@@ -108,5 +113,8 @@
         "serverBoosterCap": 2,
         "activeBoosterCap": 3,
         "serverSubscriberCap": 5
+    },
+    "token": {
+        "serverSubscriber": 3
     }
 }

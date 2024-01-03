@@ -1,10 +1,11 @@
 const { EmbedBuilder } = require("discord.js");
 const config = require("../../../config.json");
 
-function getGiveawayEmbed(giveawayModel) {
+function getGiveawayEmbed(giveawayModel, type) {
     const token = config.emoji.token;
 
     const headers =
+        `Type: **${type}**` +
         `Sponsor: <@${giveawayModel.sponsor}>\n` +
         `Host: <@${giveawayModel.host}>\n` +
         `Winners: **${giveawayModel.winners}**\n` +

@@ -262,18 +262,18 @@ module.exports = {
                         );
 
                         if (uim.tokenCounter === 5) {
-                            console.log(`[INFO] [inventory] Token received: ${user.tag}`);
                             uim.tokenCounter = 0;
 
-                            // Give Active Player role
                             const guild = client.guilds.cache.get(config.guildID);
                             const member = await guild.members.fetch(userID);
                             const hasActiveRole = member.roles.cache.some(
                                 (role) => role.id === config.roleID.activePlayer
                             );
                             const hasSubscriberRole = member.roles.cache.some(
-                                (role) => role.id === config.roleID.serverSubscribr
+                                (role) => role.id === config.roleID.serverSubscriber
                             );
+
+                            // Give Active Player role
                             if (!hasActiveRole && !hasSubscriberRole) {
                                 member.roles.add(
                                     guild.roles.cache.get(config.roleID.activePlayer)
@@ -285,13 +285,32 @@ module.exports = {
                                     `[INFO] [inventory] Granted access to 'Karuta main': ${user.tag}`
                                 );
                             } else {
-                                uim.numTokens++;
-                                message.channel.send(
-                                    `<@${userID}>, you received a ${config.emoji.token} **Token**!`
-                                );
-                                if (!hasActiveRole && hasSubscriberRole) {
-                                    member.roles.add(
-                                        guild.roles.cache.get(config.roleID.activePlayer)
+                                // Bonus tokens received
+                                if (hasSubscriberRole) {
+                                    console.log(
+                                        `[INFO] [inventory] Token received: ${user.tag}`
+                                    );
+                                    const amount = config.token.serverSubscriber;
+                                    uim.numTokens += amount;
+                                    message.channel.send(
+                                        `<@${userID}>, you received **${amount} ${config.emoji.token} Tokens**!`
+                                    );
+
+                                    // Add active role
+                                    if (!hasActiveRole) {
+                                        member.roles.add(
+                                            guild.roles.cache.get(
+                                                config.roleID.activePlayer
+                                            )
+                                        );
+                                    }
+                                } else {
+                                    console.log(
+                                        `[INFO] [inventory] Token received: ${user.tag}`
+                                    );
+                                    uim.numTokens++;
+                                    message.channel.send(
+                                        `<@${userID}>, you received a ${config.emoji.token} **Token**!`
                                     );
                                 }
                             }

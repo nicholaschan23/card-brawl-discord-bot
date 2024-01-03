@@ -1,3 +1,4 @@
+const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const BrawlBracketHelper = require("../classes/BrawlBracketHelper");
 const BrawlBracketModel = require("../schemas/brawlBracketSchema");
 const BrawlSetupModel = require("../schemas/brawlSetupSchema");
@@ -69,12 +70,12 @@ async function startBrawl(data) {
     }
     if (myBrawlBracket.getStatus() === 1) {
         await judgesChannel.send(
-            `<@&${config.roleID.brawlJudge}> An unexpected crash occured. Resuming the **${setupModel.name}** Card Brawl...`
+            `<@&${config.roleID.brawlJudge}> An unexpected crash occurred. Resuming the **${setupModel.name}** Card Brawl...`
         );
         await delay(3);
     } else if (myBrawlBracket.getStatus() === 0) {
         // Get competitors and generate brawl bracket
-        await myBrawlBracket.generateInitialBracket();
+        myBrawlBracket.generateInitialBracket();
 
         // Introduction
         let message = await judgesChannel.send({
@@ -101,11 +102,21 @@ async function startBrawl(data) {
 
     // Start or resume tournament
     await myBrawlBracket.conductTournament();
+
     await delay(3);
+    const statsButton = new ButtonBuilder()
+        .setLabel("View Stats")
+        .setCustomId("viewUserStats")
+        .setStyle(ButtonStyle.Primary);
+    const supportButton = new ButtonBuilder()
+        .setLabel("Support Irukanoko")
+        .setURL(config.serverShop)
+        .setStyle(ButtonStyle.Link);
+    const row = new ActionRowBuilder().addComponents(statsButton, supportButton);
     message = await judgesChannel.send({
         embeds: [getConclusionEmbed()],
+        components: [row],
     });
-    await message.react("🎉");
 
     // Delete schedule
     try {

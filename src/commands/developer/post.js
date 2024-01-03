@@ -2,6 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const rules = require("./post/rules");
 const features = require("./post/features");
 const brawlInfo = require("./post/brawlInfo");
+const karutaGuide = require("./post/karutaGuide");
 
 module.exports = {
     category: "public",
@@ -11,6 +12,7 @@ module.exports = {
         .addSubcommand(rules.data)
         .addSubcommand(features.data)
         .addSubcommand(brawlInfo.data)
+        .addSubcommand(karutaGuide.data)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -25,6 +27,10 @@ module.exports = {
             }
             case "brawl-info": {
                 await brawlInfo.execute(interaction);
+                break;
+            }
+            case "karuta-guide": {
+                await karutaGuide.execute(interaction);
                 break;
             }
             default: {
