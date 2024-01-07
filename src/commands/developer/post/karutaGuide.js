@@ -104,9 +104,9 @@ const section6 =
 const section7 =
     `# Affection\n` +
     `Affection is a Karuta system similar to dating simulator games that rewards both your knowledge of a character and luck.\n\n` +
-    `To start, you can "visit" any character with a card that **has grabber** (\`kc grabber=true\`) every **2 hours** with \`kvisit <card code>\`. Visiting allows you to interact with this character in a number of different ways. Many of these actions are meant to increase both your **Affection Rating** and **Affection Points**.\n\n` +
+    `To start, you can "visit" any character with a card that **has grabber** (\`kc grabber=true\`) every **2 hours** with \`kvisit <card code>\`. Visiting allows you to interact with this character in a number of different ways. Many of these actions are meant to increase both your **Affection Rating** and **Affection Points**.\n` +
     `### Affection Rating (AR)\n` +
-    `This stat represents your overall progress in your relationship with a character. Actions (talking, hugging, etc.) can either increase or decrease this score.\n\n` +
+    `This stat represents your overall progress in your relationship with a character. Actions (talking, hugging, etc.) can either increase or decrease this score.\n` +
     `### Affection Points (AP)\n` +
     `These are points accumulated from **talking** that can be used for other actions at **0 energy cost**, which includes activities like telling jokes, hugging, etc.`;
 

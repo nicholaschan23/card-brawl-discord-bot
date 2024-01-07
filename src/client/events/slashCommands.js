@@ -3,6 +3,7 @@ const enterGiveaway = require("../../giveaway/src/enterGiveaway");
 const toggleRole = require("../../role/src/toggleRole");
 const toggleBotRole = require("../../role/src/toggleBotRole");
 const viewParticipants = require("../../giveaway/src/viewParticipants");
+const viewUserStats = require("../../brawl/src/viewUserStats")
 const client = require("../../index");
 const config = require("../../../config.json");
 
@@ -93,7 +94,7 @@ module.exports = {
             } else if (interaction.customId === "viewParticipants") {
                 viewParticipants(interaction);
             } else if (interaction.customId === "viewUserStats") {
-                viewBrawlStats(interaction);
+                viewUserStats(interaction);
             } else if (interaction.customId === "toggleBrawlCompetitor") {
                 toggleRole(interaction, config.roleID.brawlCompetitor);
             } else if (interaction.customId === "toggleBrawlJudge") {

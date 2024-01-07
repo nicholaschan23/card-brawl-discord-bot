@@ -104,15 +104,23 @@ async function startBrawl(data) {
     await myBrawlBracket.conductTournament();
 
     await delay(3);
+    const competitorButton = new ButtonBuilder()
+        .setCustomId("toggleBrawlCompetitor")
+        .setLabel("Brawl Competitor")
+        .setStyle(ButtonStyle.Primary);
+    const judgeButton = new ButtonBuilder()
+        .setCustomId("toggleBrawlJudge")
+        .setLabel("Brawl Judge")
+        .setStyle(ButtonStyle.Primary);
     const statsButton = new ButtonBuilder()
         .setLabel("View Stats")
         .setCustomId("viewUserStats")
-        .setStyle(ButtonStyle.Primary);
+        .setStyle(ButtonStyle.Success);
     const supportButton = new ButtonBuilder()
         .setLabel("Support Irukanoko")
         .setURL(config.serverShop)
         .setStyle(ButtonStyle.Link);
-    const row = new ActionRowBuilder().addComponents(statsButton, supportButton);
+    const row = new ActionRowBuilder().addComponents(competitorButton, judgeButton, statsButton, supportButton);
     message = await judgesChannel.send({
         embeds: [getConclusionEmbed()],
         components: [row],

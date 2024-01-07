@@ -14,7 +14,8 @@ const rulesContent =
     `8. No Lurking: Avoid excessive lurk-grabbing and add value to the community.\n` +
     `\`\`\`\n` +
     `We appreciate your kindness, maturity, and display of common sense.\n\n` +
-    `For support, make a post in <#${config.channelID.serverSupport}>. For urgent server support, ping <@&${config.roleID.moderator}>. If you see someone breaking [Discord's guidelines](https://discord.com/guidelines), right click the user's message and report them.`;
+    `# Support\n` +
+    `Make a post in <#${config.channelID.serverSupport}>. For urgent server support, ping <@&${config.roleID.moderator}>. If you see someone breaking [Discord's guidelines](https://discord.com/guidelines), right click the user's message and report them.`;
 
 module.exports = {
     data: new SlashCommandSubcommandBuilder()
