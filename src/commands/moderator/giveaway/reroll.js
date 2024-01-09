@@ -54,5 +54,6 @@ module.exports = {
                 ),
             ],
         });
+        await interaction.reply("Reroll successful!");
     },
 };
