@@ -135,9 +135,17 @@ module.exports = {
                     const channel = client.channels.cache.get(
                         config.channelID.brawlCompetitors
                     );
+                    
+                    const supportButton = new ButtonBuilder()
+                        .setLabel("Server Subscriber")
+                        .setURL(config.serverShop)
+                        .setStyle(ButtonStyle.Link);
+                    const row = new ActionRowBuilder().addComponents(supportButton);
+
                     const message = await channel.send({
                         content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                         embeds: [setupBrawlEmbed],
+                        components: [row],
                     });
 
                     // Define setup model

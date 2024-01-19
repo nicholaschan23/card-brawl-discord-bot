@@ -3,16 +3,19 @@
     "clientID": "1160952315050729582",
     "developerID": "195592343771021312",
     "globalCooldown": 10,
-    "serverShop": "https://discord.com/channels/727898987285315736/role-subscriptions",
+    "serverShop": "https://discord.com/channels/727898987285315736/shop",
+    "serverSubscriptions": "https://discord.com/channels/727898987285315736/role-subscriptions",
     "botID": {
         "starflight": "816328822051045436",
         "karuta": "646937666251915264",
         "sofi": "853629533855809596",
         "tofu": "792827809797898240",
-        "gachapon": "815289915557675118"
+        "gachapon": "815289915557675118",
+        "partybeast": "409822832256876545"
     },
     "channelID": {
         "features": "728441122636169307",
+        "levels": "776705377226981387",
 
         "brawlInfo": "1153360255158321162",
         "brawlDiscussion": "1152351222456647780",
@@ -34,34 +37,14 @@
         "giveaway": "1117827373325369384",
         "giveawayClaim": "1153087079736168478",
 
+        "bot": "1024903648825856040",
         "serverSupport": "1149458425357545572"
     },
     "threadID": {
         "giveawayWinners": "1191997603651538984"
     },
     "roleID": {
-        "giveaway": "1117829641336528956",
-        "activePlayer": "1182184357553787000",
-
-        "serverBooster": "814708993393426482",
-        "activeBooster": "776543515735883828",
-        "serverSubscriber": "1153438565796155405",
-
-        "brawlCompetitor": "1157371773009006703",
-        "brawlJudge": "1143997170731729046",
-        "brawlChampion": "1158801902939672668",
-
-        "karutaDrop": "1160350696923734186",
-        "karutaWishlist": "1160350192579649626",
-        "karutaEvent": "1160350076695232593",
-
-        "sofiWishlist": "1186319757285265498",
-
-        "tofuDrop": "1186335231125504171",
-        "tofuWishlist": "1186337440416399552",
-
-        "gachaponDrop": "1183805383555420170",
-        "gachaponWishlist": "1184144815974264892",
+        "moderator": "946322489175314443",
 
         "red": "1172024340561276958",
         "pink": "1171094203418279996",
@@ -85,14 +68,65 @@
         "neonTeal": "1172007373355888770",
         "neonGreen": "1172007491010314240",
 
-        "moderator": "946322489175314443"
+        "copper5": "789659437919895593",
+        "copper4": "789659462700761128",
+        "copper3": "789659483793653780",
+        "copper2": "789659506300157972",
+        "copper1": "789659527657029672",
+        "bronze5": "789659541586837525",
+        "bronze4": "789659579172257792",
+        "bronze3": "789659603214139402",
+        "bronze2": "789659625669525544",
+        "bronze1": "789659649255276555",
+        "silver5": "789660094219943986",
+        "silver4": "789660071411318825",
+        "silver3": "789660058798784523",
+        "silver2": "789660046396358667",
+        "silver1": "789660030445158420",
+        "gold3": "789660015739928606",
+        "gold2": "789660001332494366",
+        "gold1": "789659987307528262",
+        "platinum3": "789659964964470835",
+        "platinum2": "789659935838961684",
+        "platinum1": "789659912879341598",
+        "diamond": "789659891714883626",
+        "champion": "789659664874340412",
+
+        "giveaway": "1117829641336528956",
+        "activePlayer": "1182184357553787000",
+
+        "serverBooster": "814708993393426482",
+        "activeBooster": "776543515735883828",
+        "serverSubscriber": "1153438565796155405",
+
+        "brawlCompetitor": "1157371773009006703",
+        "brawlJudge": "1143997170731729046",
+        "brawlChampion": "1158801902939672668",
+
+        "karutaDrop": "1160350696923734186",
+        "karutaWishlist": "1160350192579649626",
+        "karutaEvent": "1160350076695232593",
+
+        "sofiWishlist": "1186319757285265498",
+
+        "tofuDrop": "1186335231125504171",
+        "tofuWishlist": "1186337440416399552",
+
+        "gachaponDrop": "1183805383555420170",
+        "gachaponWishlist": "1184144815974264892"
     },
     "color": {
         "cost": 3,
         "neonCost": 30
     },
     "emoji": {
-        "token": "<:Token:1169794021435117640>"
+        "token": "<:Token:1169794021435117640>",
+        "bronze": "<:Rank1Bronze:931065721063104523>",
+        "silver": "<:Rank2Silver:931065720945664011>",
+        "gold": "<:Rank3Gold:931065720941457448>",
+        "platinum": "<:Rank4Platinum:931727872278790194>",
+        "diamond": "<:Rank5Diamond:931065721180532816>",
+        "champion": "<:Rank6Champ:931065720681422859>"
     },
     "brawl": {
         "voteTime": 30,
