@@ -3,6 +3,7 @@ const rules = require("./post/rules");
 const features = require("./post/features");
 const brawlInfo = require("./post/brawlInfo");
 const karutaGuide = require("./post/karutaGuide");
+const perks = require("./post/perks");
 
 module.exports = {
     category: "public",
@@ -13,6 +14,7 @@ module.exports = {
         .addSubcommand(features.data)
         .addSubcommand(brawlInfo.data)
         .addSubcommand(karutaGuide.data)
+        .addSubcommand(perks.data)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -31,6 +33,10 @@ module.exports = {
             }
             case "karuta-guide": {
                 await karutaGuide.execute(interaction);
+                break;
+            }
+            case "perks": {
+                await perks.execute(interaction);
                 break;
             }
             default: {

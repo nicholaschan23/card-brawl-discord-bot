@@ -43,9 +43,11 @@ function toggleBotRole(interaction, roleID) {
                 ephemeral: true,
             });
         } else {
-            const eligible = interaction.member.roles.cache.some(
-                (r) => r.id === config.roleID.activePlayer
-            );
+            // const eligible = interaction.member.roles.cache.some(
+            //     (r) => r.id === config.roleID.activePlayer
+            // );
+            const eligible = interaction.member.roles.cache.some((role) => ranks.includes(role.name));
+            
             if (eligible) {
                 interaction.member.roles.add(role);
                 interaction.reply({

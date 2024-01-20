@@ -20,8 +20,8 @@ const QA = [
     {
         question: `What can I spend tokens on?`,
         answer:
-            `Currently, the available options to spend tokens on are listed below. More features coming soon!\n` +
-            `- Karuta main (<#${config.channelID.karutaMain}> weekly access)\n` +
+            `Currently, the available options to spend tokens on are listed below.\n` +
+            // `- Karuta main (<#${config.channelID.karutaMain}> weekly access)\n` +
             `- Giveaways (<#${config.channelID.giveaway}>)\n` +
             `- Role color (\`/role color\`)`,
     },

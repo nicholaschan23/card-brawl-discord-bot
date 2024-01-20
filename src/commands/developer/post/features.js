@@ -9,7 +9,7 @@ const introduction =
 const roles =
     `# Server Features\n` +
     `## Unique Roles\n` +
-    `Customize your presence in <id:customize> to let the community know a little bit about who you are! :grin:` +
+    `Customize your presence in <id:customize> to let the community know a little bit about who you are!` +
     `\`\`\`md\n` +
     `1. What anime/manga genres do you like?\n` +
     `2. What anime/manga personality type would you be?\n` +
@@ -27,7 +27,7 @@ const stickers =
 
 const levels =
     `## Server Activity Levels\n` +
-    `:medal: **Earn XP levels by chatting!** When you have enough XP to reach a new rank, you will be notified in <#${config.channelID.levels}>. Each rank also comes with a role icon which is displayed next to your name to show off in chat. Use \`/level\` in <#${config.channelID.bot}> to see your progress.`;
+    `:medal: **Earn XP levels by chatting!** When you have enough XP to reach a new rank, you will be notified in <#${config.channelID.levels}> and unlock <#${config.channelID.perks}>. Each rank also comes with a role icon which is displayed next to your name to show off in chat. Use \`/level\` in <#${config.channelID.bot}> to see your progress.`;
 
 const ranksEmbed = new EmbedBuilder().setTitle("Ranks").addFields(
     {
@@ -118,9 +118,7 @@ const voiceEmbed = new EmbedBuilder().setTitle("Commands").addFields(
 
 const invite =
     `# Invite\n` +
-    `:crown: This server mainly grows via word of mouth so feel free to invite any friends who may be interested in enjoying the community!\n\n` +
-    `**Far Shore**\n` +
-    `Noragami-themed anime & gaming community whose members enjoy playing Discord card collecting games.\n` +
+    `:crown: **Feel free to invite friends who may be interested in enjoying this community!** The server grows through word of mouth to keep it exclusive. Thank you for making the community even more enjoyable.\n\n` +
     `https://discord.gg/farshore`;
 
 module.exports = {
