@@ -1,19 +1,17 @@
 const { EmbedBuilder } = require("discord.js");
 const config = require("../../../config.json");
 
-const token = config.emoji.token;
-
-function getAnnouncementEmbed(total, inactive) {
+function getAnnouncementEmbed(active, inactive) {
     const summary =
-        `**${total - inactive}** active players each paid their dues of **1 ${token}** to <@${config.clientID}>.\n` +
-        `**${inactive}** inactive players had insufficient balance and were removed from <#${config.channelID.karutaMain}>.`;
+        `There are currently **${active}** active players!\n` +
+        `**${inactive}** players have not dropped cards in a week and were marked as inactive.`;
 
     const embed = new EmbedBuilder()
         .setColor(config.embed.blue)
         .setTitle(`Active Players`)
         .setDescription(summary)
         .setFooter({
-            text: `Yato collects dues weekly. Have a token to stay an active player!`,
+            text: `Yato removes inactive players weekly!`,
         });
     return embed;
 }

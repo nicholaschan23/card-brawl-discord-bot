@@ -266,53 +266,41 @@ module.exports = {
 
                             const guild = client.guilds.cache.get(config.guildID);
                             const member = await guild.members.fetch(userID);
-                            const hasActiveRole = member.roles.cache.some(
-                                (role) => role.id === config.roleID.activePlayer
-                            );
+
+                            // Award tokens
                             const hasSubscriberRole = member.roles.cache.some(
                                 (role) => role.id === config.roleID.serverSubscriber
                             );
+                            if (hasSubscriberRole) {
+                                const amount = config.token.serverSubscriber;
+                                uim.numTokens += amount;
+                                message.channel.send({
+                                    content: `<@${userID}>, you received **${amount} ${config.emoji.token} Tokens**! Thank you for being a <@&${config.roleID.serverSubscriber}>.`,
+                                    allowedMentions: { parse: ["users"] },
+                                });
+                            } else {
+                                uim.numTokens++;
+                                message.channel.send(
+                                    `<@${userID}>, you received a ${config.emoji.token} **Token**!`
+                                );
+                            }
+                            console.log(`[INFO] [inventory] Token received: ${user.tag}`);
 
-                            // Give Active Player role
-                            if (!hasActiveRole && !hasSubscriberRole) {
+                            // Award active player role
+                            const hasActiveRole = member.roles.cache.some(
+                                (role) => role.id === config.roleID.activePlayer
+                            );
+                            if (!hasActiveRole) {
                                 member.roles.add(
                                     guild.roles.cache.get(config.roleID.activePlayer)
                                 );
-                                message.channel.send(
-                                    `<@${userID}>, you received a ${config.emoji.token} **Token** and spent it to gain access to <#${config.channelID.karutaMain}>!`
-                                );
+                                message.channel.send({
+                                    content: `<@${userID}>, you have been recognized as an <@&${config.roleID.activePlayer}> and have been granted access to <#${config.channelID.karutaMain}>!`,
+                                    allowedMentions: { parse: ["users"] },
+                                });
                                 console.log(
                                     `[INFO] [inventory] Granted access to 'Karuta main': ${user.tag}`
                                 );
-                            } else {
-                                // Bonus tokens received
-                                if (hasSubscriberRole) {
-                                    console.log(
-                                        `[INFO] [inventory] Token received: ${user.tag}`
-                                    );
-                                    const amount = config.token.serverSubscriber;
-                                    uim.numTokens += amount;
-                                    message.channel.send(
-                                        `<@${userID}>, you received **${amount} ${config.emoji.token} Tokens**!`
-                                    );
-
-                                    // Add active role
-                                    if (!hasActiveRole) {
-                                        member.roles.add(
-                                            guild.roles.cache.get(
-                                                config.roleID.activePlayer
-                                            )
-                                        );
-                                    }
-                                } else {
-                                    console.log(
-                                        `[INFO] [inventory] Token received: ${user.tag}`
-                                    );
-                                    uim.numTokens++;
-                                    message.channel.send(
-                                        `<@${userID}>, you received a ${config.emoji.token} **Token**!`
-                                    );
-                                }
                             }
                         }
 

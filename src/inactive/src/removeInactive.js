@@ -19,26 +19,22 @@ function removeInactive() {
      * 0 day of the week (Sunday)
      */
     cron.schedule("0 0 * * 0", () => {
-        const activePlayers = activePlayer.members;
+        // Get the date 1 week ago
+        const currentDate = new Date();
+        const sevenDaysAgo = new Date(currentDate);
+        sevenDaysAgo.setDate(currentDate.getDate() - 7);
+        const weekAgoUnixTime = Math.floor(sevenDaysAgo.getTime() / 1000); // seconds
 
-        let playersRevoked = 0;
+        const activePlayers = activePlayer.members;
+        const total = activePlayers.size;
         activePlayers.forEach(async (member) => {
             try {
                 const userID = member.user.id;
                 const uim = await UserInventoryModel.findOne({ userID }).exec();
 
-                const hasRole = member.roles.cache.some(
-                    (role) => role.id === config.roleID.serverSubscriber
-                );
-                if (uim.numTokens === 0) {
+                if (uim.lastUnixTime < weekAgoUnixTime) {
                     playersRevoked++;
                     member.roles.remove(activePlayer);
-                } else if (!hasRole) {
-                    uim.numTokens--;
-                    const task = async () => {
-                        await uim.save();
-                    };
-                    await client.inventoryQueue.enqueue(task);
                 }
             } catch (error) {
                 console.error(
@@ -48,7 +44,7 @@ function removeInactive() {
             }
         });
 
-        const embed = getAnnouncementEmbed(activePlayers.size, playersRevoked);
+        const embed = getAnnouncementEmbed(activePlayers.size, total - activePlayers.size);
         karutaUpdates.send({ embeds: [embed] });
         karutaMain.send({ embeds: [embed] });
         karutaDrop.send({ embeds: [embed] });
