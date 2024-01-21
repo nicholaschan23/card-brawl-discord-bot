@@ -295,7 +295,7 @@ module.exports = {
                                     guild.roles.cache.get(config.roleID.activePlayer)
                                 );
                                 message.channel.send({
-                                    content: `<@${userID}>, welcome to the <@&${config.roleID.activePlayer}> club! Your exclusive pass to <#${config.channelID.karutaMain}> is now active!`,
+                                    content: `<@${userID}>, you've been recognized as an <@&${config.roleID.activePlayer}>, earning access to <#${config.channelID.karutaMain}> for <@${config.botID.karuta}> server drops!`,
                                     allowedMentions: { parse: ["users"] },
                                 });
                                 console.log(
