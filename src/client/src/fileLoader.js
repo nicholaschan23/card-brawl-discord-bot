@@ -21,7 +21,7 @@ async function loadFiles(dirPath) {
                 }
             } catch (error) {
                 console.error(
-                    `[FILE LOADER] Error load files from directory ${itemPath}`
+                    `[ERROR] [fileLoader] Error load files from directory ${itemPath}`
                 );
                 throw error;
             }

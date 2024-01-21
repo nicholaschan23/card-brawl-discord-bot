@@ -22,7 +22,7 @@ function hasCronPassed(cronExpression) {
 async function loadSchedules() {
     const schedules = await ScheduleModel.find();
 
-    console.log(`[LOAD SCHEDULES] Loading ${schedules.length} schedules...`);
+    console.log(`[INFO] [loadSchedules] Loading ${schedules.length} schedules...`);
     try {
         for (const schedule of schedules) {
             const task = require(`../../${schedule.task}`);

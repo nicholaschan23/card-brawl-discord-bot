@@ -1,7 +1,7 @@
 const loadFiles = require("../src/fileLoader");
 
 async function loadEvents(client) {
-    console.time("[EVENT HANDLER] Events loaded");
+    console.time("[INFO] [eventHandler] Events loaded");
 
     const tableArray = new Array();
     const eventFiles = [
@@ -23,7 +23,7 @@ async function loadEvents(client) {
     }
 
     console.table(tableArray, ["Event", "Status"]);
-    console.timeEnd("[EVENT HANDLER] Events loaded");
+    console.timeEnd("[INFO] [eventHandler] Events loaded");
 }
 
 module.exports = loadEvents;

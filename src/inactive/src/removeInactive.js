@@ -49,6 +49,8 @@ function removeInactive() {
         karutaMain.send({ embeds: [embed] });
         karutaDrop.send({ embeds: [embed] });
     });
+
+    console.log("[INFO] [removeInactive] Scheduled remove inactive players weekly check")
 }
 
 module.exports = removeInactive;

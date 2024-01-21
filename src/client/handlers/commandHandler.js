@@ -2,7 +2,7 @@ const loadFiles = require("../src/fileLoader");
 const client = require("../../index");
 
 async function loadCommands() {
-    console.time("[COMMAND HANDLER] Commands loaded");
+    console.time("[INFO] [commandHandler] Commands loaded");
 
     const tableArray = new Array();
     const commandFiles = await loadFiles("src/commands");
@@ -19,7 +19,7 @@ async function loadCommands() {
     }
 
     console.table(tableArray, ["Command", "Status"]);
-    console.timeEnd("[COMMAND HANDLER] Commands loaded");
+    console.timeEnd("[INFO] [commandHandler] Commands loaded");
 }
 
 module.exports = loadCommands;
