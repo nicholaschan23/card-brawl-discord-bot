@@ -4,6 +4,7 @@ const features = require("./post/features");
 const brawlInfo = require("./post/brawlInfo");
 const karutaGuide = require("./post/karutaGuide");
 const perks = require("./post/perks");
+const cardInfo = require("./post/cardInfo");
 
 module.exports = {
     category: "public",
@@ -15,6 +16,7 @@ module.exports = {
         .addSubcommand(brawlInfo.data)
         .addSubcommand(karutaGuide.data)
         .addSubcommand(perks.data)
+        .addSubcommand(cardInfo.data)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -37,6 +39,10 @@ module.exports = {
             }
             case "perks": {
                 await perks.execute(interaction);
+                break;
+            }
+            case "card-info": {
+                await cardInfo.execute(interaction);
                 break;
             }
             default: {

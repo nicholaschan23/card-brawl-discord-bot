@@ -2,34 +2,39 @@ const { SlashCommandSubcommandBuilder } = require("discord.js");
 const config = require("../../../../config.json");
 
 const perks =
-    `## Levels\n` +
+    `# Levels\n` +
     `Server members are granted perks based on their server activity level. More info on levels in <#${config.channelID.features}>.\n` +
-    `### Copper V (<@&${config.roleID.copper5}>)\n` +
+    `## Copper V (<@&${config.roleID.copper5}>)\n` +
     `- Toggle card collecting pings (\`/role bot\`)\n` +
-    `### Bronze V (<@&${config.roleID.bronze5}>)\n` +
+    `## Bronze V (<@&${config.roleID.bronze5}>)\n` +
     `- Use external emojis\n` +
     `- Embed links (gifs)\n` +
     `- Change nickname\n` +
-    `## Boosters\n` +
+    `# Supporters\n` +
     `:heartpulse: **When you boost the server with Discord Nitro, you will gain both the <@&${config.roleID.activeBooster}> and <@&${config.roleID.serverBooster}> roles!** The <@&${config.roleID.serverBooster}> role is permanent, even if your boost runs out, to always grant you perks for supporting this server.\n` +
-    `### Active Booster (<@&${config.roleID.activeBooster}>)\n` +
-    `- **3x** bonus card giveaway entries\n` +
-    `- **2x** bonus card brawl competition vote\n` +
-    `- **80% XP boost** bonus for earning server levels\n` +
-    `- Name atop member list when online\n` +
-    `- Shoutout in <#${config.channelID.supporters}>\n` +
-    `- View server insights (community growth, engagement, and more data)\n` +
-    `### Server Booster (<@&${config.roleID.serverBooster}>)\n` +
-    `- Use external stickers\n` +
-    `- Use external emojis\n` +
-    `- Embed links (gifs)\n` +
-    `- Change nickname\n` +
-    `### Subscriber (<@&${config.roleID.serverSubscriber}>)\n` +
-    `- **3x** bonus ${config.emoji.token} earnings (more info on tokens in <#${config.channelID.cardInfo}>)\n` +
+    `## Subscriber (<@&${config.roleID.serverSubscriber}>)\n` +
+    `- **3x** bonus ${config.emoji.token} earnings (more info in \`/help\`)\n` +
     `- **5x** bonus card giveaway entries\n` +
     `- **5x** bonus card brawl competition entries\n` +
     `- **2x** bonus card brawl competition vote\n` +
+    `- Name atop member list when online\n` +
+    `- Shoutout in <#${config.channelID.supporters}>\n` +
     `- Use external stickers\n` +
+    `- Use external emojis\n` +
+    `- Embed links (gifs)\n` +
+    `- Change nickname\n` +
+    `## Active Booster (<@&${config.roleID.activeBooster}>)\n` +
+    `- **80% XP boost** bonus for earning server levels\n` +
+    `- **3x** bonus card giveaway entries\n` +
+    `- **2x** bonus card brawl competition vote\n` +
+    `- Name atop member list when online\n` +
+    `- Shoutout in <#${config.channelID.supporters}>\n` +
+    `- Use external stickers\n` +
+    `- Use external emojis\n` +
+    `- Embed links (gifs)\n` +
+    `- Change nickname\n` +
+    `## Server Booster (<@&${config.roleID.serverBooster}>)\n` +
+    `- **2x** bonus card giveaway entries\n` +
     `- Use external emojis\n` +
     `- Embed links (gifs)\n` +
     `- Change nickname\n`;
