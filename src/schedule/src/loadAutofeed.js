@@ -149,7 +149,7 @@ function loadAutofeed() {
     });
 
     // Card Brawl promotion
-    cron.schedule("57 * * * *", async () => {
+    cron.schedule("15 * * * *", async () => {
         let events = await guild.scheduledEvents.fetch();
         events = [...events.values()];
         events.forEach((event) => {
