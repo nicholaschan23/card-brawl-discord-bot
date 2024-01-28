@@ -3,8 +3,9 @@ const config = require("../../../config.json");
 
 function getAnnouncementEmbed(active, inactive) {
     const summary =
-        `There are currently **${active}** active players!\n` +
-        `**${inactive}** players have not dropped cards in a week and were marked as inactive.`;
+        `**${active}** active players\n` +
+        `**${inactive}** inactive players\n\n` +
+        `:confetti_ball: **Active players get exclusive access to <#${config.channelID.karutaMain}>!** Earn a ${config.emoji.token} to be an <@&${config.roleID.activePlayer}>. If a player hasn't dropped cards in a week, they will be marked as inactive.`;
 
     const embed = new EmbedBuilder()
         .setColor(config.embed.blue)
