@@ -149,7 +149,7 @@ function loadAutofeed() {
     });
 
     // Card Brawl promotion
-    cron.schedule("15 * * * *", async () => {
+    cron.schedule("57 * * * *", async () => {
         let events = await guild.scheduledEvents.fetch();
         events = [...events.values()];
         events.forEach((event) => {
@@ -163,12 +163,6 @@ function loadAutofeed() {
                     .setCustomId("toggleBrawlJudge")
                     .setLabel("Brawl Judge")
                     .setStyle(ButtonStyle.Primary);
-
-                const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`;
-                const eventButton = new ButtonBuilder()
-                    .setLabel("View Event")
-                    .setURL(eventLink)
-                    .setStyle(ButtonStyle.Link);
 
                 const competitorsChannel = client.channels.cache.get(
                     config.channelID.brawlCompetitors
@@ -187,11 +181,10 @@ function loadAutofeed() {
                         const row = new ActionRowBuilder().addComponents(
                             competitorButton,
                             judgeButton,
-                            eventButton,
                             enterButton
                         );
 
-                        const content = `:boxing_glove: **Want to participate in the community __${event.name}__ event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@&${config.roleID.brawlJudge}> roles to get notification for the event using the buttons below!`;
+                        const content = `:boxing_glove: **Want to participate in the community [${event.name}](${eventLink}) event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@&${config.roleID.brawlJudge}> roles to get notification for the event using the buttons below!`;
                         karutaMain.send({
                             content: content,
                             allowedMentions: { parse: [] },
