@@ -149,7 +149,7 @@ function loadAutofeed() {
     });
 
     // Card Brawl promotion
-    cron.schedule("15 * * * *", async () => {
+    cron.schedule("32 * * * *", async () => {
         let events = await guild.scheduledEvents.fetch();
         events = [...events.values()];
         events.forEach((event) => {
@@ -184,6 +184,7 @@ function loadAutofeed() {
                             enterButton
                         );
 
+                        const eventLink = `https://discord.com/events/${config.guildID}/${event.id}`
                         const content = `:boxing_glove: **Want to participate in the community [${event.name}](${eventLink}) event this weekend?** Grab the <@&${config.roleID.brawlCompetitor}> and <@&${config.roleID.brawlJudge}> roles to get notification for the event using the buttons below!`;
                         karutaMain.send({
                             content: content,
