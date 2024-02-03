@@ -143,7 +143,7 @@ async function startBrawl(data) {
         .setCustomId("viewUserStats")
         .setStyle(ButtonStyle.Success);
     const supportButton = new ButtonBuilder()
-        .setLabel("Support Irukanoko")
+        .setLabel("Server Subscriber")
         .setURL(config.serverShop)
         .setStyle(ButtonStyle.Link);
     const row = new ActionRowBuilder().addComponents(

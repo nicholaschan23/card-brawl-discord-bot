@@ -18,7 +18,7 @@ function removeInactive() {
      * * any month
      * 0 day of the week (Sunday)
      */
-    cron.schedule("0 0 * * 0", () => {
+    cron.schedule("0 0 * * 0", async () => {
         // Get the date 1 week ago
         const currentDate = new Date();
         const sevenDaysAgo = new Date(currentDate);
@@ -27,14 +27,15 @@ function removeInactive() {
 
         const activePlayers = activePlayer.members;
         const total = activePlayers.size;
-        activePlayers.forEach(async (member) => {
+
+        for (const member of activePlayers) {
             try {
                 const userID = member.user.id;
                 const uim = await UserInventoryModel.findOne({ userID }).exec();
-
+        
                 if (uim.lastUnixTime < weekAgoUnixTime) {
                     playersRevoked++;
-                    member.roles.remove(activePlayer);
+                    await member.roles.remove(activePlayer);
                 }
             } catch (error) {
                 console.error(
@@ -42,7 +43,7 @@ function removeInactive() {
                     error
                 );
             }
-        });
+        }
 
         const embed = getAnnouncementEmbed(activePlayers.size, total - activePlayers.size);
         karutaUpdates.send({ embeds: [embed] });
