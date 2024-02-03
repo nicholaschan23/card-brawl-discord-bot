@@ -82,6 +82,19 @@ async function startBrawl(data) {
             content: `We'll be starting in \`5 minutes\`. <@&${config.roleID.brawlJudge}>`,
             embeds: [getIntroductionEmbed(setupModel)],
         });
+
+        try {
+            const content = `:boxing_glove: **A Card Brawl will be starting in \`5 minutes\`!** Get ready to cast your votes in the <#${config.channelID.brawlJudges}> channel.`;
+            const main = client.channels.cache.get(config.channelID.karutaMain);
+            const drop = client.channels.cache.get(config.channelID.karutaDrop);
+            main.send({
+                content: content,
+            });
+            drop.send({
+                content: content,
+            });
+        } catch (e) {}
+
         await message.react("🥳");
         await delay(360);
         await judgesChannel.send("## 1 minute");
@@ -93,6 +106,19 @@ async function startBrawl(data) {
         await judgesChannel.send("# 1");
         await delay(1);
         await judgesChannel.send("# Let the Card Brawl begin! 🥊");
+
+        try {
+            const content = `:boxing_glove: **A Card Brawl has just started!** Go and cast your votes now in the <#${config.channelID.brawlJudges}> channel.`;
+            const main = client.channels.cache.get(config.channelID.karutaMain);
+            const drop = client.channels.cache.get(config.channelID.karutaDrop);
+            main.send({
+                content: content,
+            });
+            drop.send({
+                content: content,
+            });
+        } catch (e) {}
+
         await delay(2);
         await judgesChannel.send(
             "If you don't see your card in **Round 1**, you've received a free pass to **Round 2**!"
@@ -120,7 +146,12 @@ async function startBrawl(data) {
         .setLabel("Support Irukanoko")
         .setURL(config.serverShop)
         .setStyle(ButtonStyle.Link);
-    const row = new ActionRowBuilder().addComponents(competitorButton, judgeButton, statsButton, supportButton);
+    const row = new ActionRowBuilder().addComponents(
+        competitorButton,
+        judgeButton,
+        statsButton,
+        supportButton
+    );
     message = await judgesChannel.send({
         embeds: [getConclusionEmbed()],
         components: [row],
