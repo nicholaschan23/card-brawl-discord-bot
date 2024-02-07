@@ -6,7 +6,6 @@ const {
 } = require("discord.js");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
-const formatTitle = require("../../../brawl/src/formatTitle");
 const { getNextSaturday, createGuildEvent } = require("../../../schedule/src/schedule");
 const client = require("../../../index");
 const config = require("../../../../config.json");
@@ -63,8 +62,8 @@ module.exports = {
             });
         }
 
-        const name = formatTitle(interaction.options.getString("name"));
-        const theme = formatTitle(interaction.options.getString("theme"));
+        const name = interaction.options.getString("name");
+        const theme = interaction.options.getString("theme");
         const series = interaction.options.getString("series") ?? null;
         const sketch = interaction.options.getString("sketch") ?? "prohibited";
 

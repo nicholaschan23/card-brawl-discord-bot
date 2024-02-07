@@ -8,7 +8,6 @@ const {
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const getEnterEmbed = require("../../../brawl/embeds/brawlEnter");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
-const formatTitle = require("../../../brawl/src/formatTitle");
 const client = require("../../../index");
 const config = require("../../../../config.json");
 
@@ -25,7 +24,7 @@ module.exports = {
                 .setAutocomplete(true)
         ),
     async execute(interaction) {
-        const name = formatTitle(interaction.options.getString("name"));
+        const name = interaction.options.getString("name");
         const channel = client.channels.cache.get(interaction.channel.id);
         const userID = interaction.user.id;
 

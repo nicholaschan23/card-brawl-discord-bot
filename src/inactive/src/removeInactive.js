@@ -15,7 +15,7 @@ async function removeInactive() {
     const weekAgoUnixTime = Math.floor(sevenDaysAgo.getTime() / 1000); // seconds
 
     const activePlayerMembers = activePlayerRole.members;
-    const totalActive = activePlayerMembers.size;
+    const total = activePlayerMembers.size;
     let totalInactive = 0;
     for (const memberArr of activePlayerMembers) {
         try {
@@ -39,7 +39,7 @@ async function removeInactive() {
     const karutaUpdates = client.channels.cache.get(config.channelID.karutaUpdates);
     const karutaMain = client.channels.cache.get(config.channelID.karutaMain);
     const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
-    const embed = getAnnouncementEmbed(totalActive, totalInactive);
+    const embed = getAnnouncementEmbed(total - totalInactive, totalInactive);
     karutaUpdates.send({ embeds: [embed] });
     karutaMain.send({ embeds: [embed] });
     karutaDrop.send({ embeds: [embed] });

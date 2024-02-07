@@ -6,7 +6,6 @@ const delay = require("../../../brawl/src/delay");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const getConclusionEmbed = require("../../../brawl/embeds/brawlConclusion");
 const getIntroductionEmbed = require("../../../brawl/embeds/brawlIntroduction");
-const formatTitle = require("../../../brawl/src/formatTitle");
 const client = require("../../../index");
 const config = require("../../../../config.json");
 
@@ -20,6 +19,7 @@ module.exports = {
                 .setName("name")
                 .setDescription("Name of the Card Brawl you are starting.")
                 .setRequired(true)
+                .setAutocomplete(true)
         ),
     async execute(interaction) {
         // Owner permissions
@@ -30,7 +30,7 @@ module.exports = {
             });
         }
 
-        const name = formatTitle(interaction.options.getString("name"));
+        const name = interaction.options.getString("name");
 
         // Find brawl setup in database
         let setupModel;

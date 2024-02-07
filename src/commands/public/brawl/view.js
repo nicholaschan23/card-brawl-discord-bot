@@ -1,7 +1,6 @@
 const { SlashCommandSubcommandBuilder, EmbedBuilder } = require("discord.js");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
 const buttonPages = require("../../../support/src/pagination");
-const formatTitle = require("../../../brawl/src/formatTitle");
 const config = require("../../../../config.json");
 
 module.exports = {
@@ -17,7 +16,7 @@ module.exports = {
                 .setAutocomplete(true)
         ),
     async execute(interaction) {
-        const name = formatTitle(interaction.options.getString("name"));
+        const name = interaction.options.getString("name");
 
         let setupModel;
         try {
