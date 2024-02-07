@@ -5,11 +5,8 @@ const config = require("../../../config.json");
 const cron = require("node-cron");
 
 async function removeInactive() {
-    const karutaUpdates = client.channels.cache.get(config.channelID.karutaUpdates);
-    const karutaMain = client.channels.cache.get(config.channelID.karutaMain);
-    const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
     const guild = client.guilds.cache.get(config.guildID);
-    const activePlayer = guild.roles.cache.get(config.roleID.activePlayer);
+    const activePlayerRole = guild.roles.cache.get(config.roleID.activePlayer);
 
     // Get the date 1 week ago
     const currentDate = new Date();
@@ -17,27 +14,32 @@ async function removeInactive() {
     sevenDaysAgo.setDate(currentDate.getDate() - 7);
     const weekAgoUnixTime = Math.floor(sevenDaysAgo.getTime() / 1000); // seconds
 
-    const activePlayers = activePlayer.members;
-    const total = activePlayers.size;
-
-    for (const member of activePlayers) {
+    const activePlayerMembers = activePlayerRole.members;
+    const totalActive = activePlayerMembers.size;
+    let totalInactive = 0;
+    for (const memberArr of activePlayerMembers) {
         try {
-            const userID = member.user.id;
+            const userID = memberArr[0];
             const uim = await UserInventoryModel.findOne({ userID }).exec();
 
             if (uim.lastUnixTime < weekAgoUnixTime) {
-                playersRevoked++;
-                await member.roles.remove(activePlayer);
+                totalInactive++;
+                const member = guild.members.cache.get(userID);
+                await member.roles.remove(activePlayerRole);
             }
         } catch (error) {
             console.error(
-                `[ERROR] [removeInactive] Failed to check active player status for: ${member.user.tag}`,
+                `[ERROR] [removeInactive] Failed to check active player status for: ${memberArr[1].user.tag}`,
                 error
             );
         }
     }
 
-    const embed = getAnnouncementEmbed(activePlayers.size, total - activePlayers.size);
+    // Send results messages to the below channels
+    const karutaUpdates = client.channels.cache.get(config.channelID.karutaUpdates);
+    const karutaMain = client.channels.cache.get(config.channelID.karutaMain);
+    const karutaDrop = client.channels.cache.get(config.channelID.karutaDrop);
+    const embed = getAnnouncementEmbed(totalActive, totalInactive);
     karutaUpdates.send({ embeds: [embed] });
     karutaMain.send({ embeds: [embed] });
     karutaDrop.send({ embeds: [embed] });
