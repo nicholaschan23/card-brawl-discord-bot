@@ -21,18 +21,17 @@ const QA = [
         question: `What can I spend tokens on?`,
         answer:
             `Currently, the available options to spend tokens on are listed below.\n` +
-            // `- Karuta main (<#${config.channelID.karutaMain}> weekly access)\n` +
             `- Giveaways (<#${config.channelID.giveaway}>)\n` +
             `- Role color (\`/role color\`)`,
     },
 ];
 
 function getTokenHelpEmbed() {
-    const formatedQA = QA.map(
+    const formattedQA = QA.map(
         (item) => `**Q**: **${item.question}**\n**A**: ${item.answer}`
     ).join("\n\n");
 
-    const embed = new EmbedBuilder().setTitle("Token Q&A").setDescription(formatedQA);
+    const embed = new EmbedBuilder().setTitle("Token Q&A").setDescription(formattedQA);
     return embed;
 }
 

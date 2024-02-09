@@ -10,7 +10,6 @@ const {
 } = require("discord.js");
 const GiveawayModel = require("../schemas/giveawaySchema");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
-const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
 const client = require("../../index");
 const config = require("../../../config.json");
 
@@ -153,7 +152,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount === 0) {
                     await i.editReply({
-                        content: "Please enter a number greater than **0**.",
+                        content: ":x: Please enter a number greater than **0**.",
                         ephemeral: true,
                     });
                     return;
@@ -161,7 +160,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount > maxIn) {
                     await i.editReply({
-                        content: `You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
+                        content: `:x: You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
                         ephemeral: true,
                     });
                     return;
@@ -169,7 +168,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount > balance) {
                     await i.editReply({
-                        content: `You don't have **${amount} ${token} Tokens**.`,
+                        content: `:x: You don't have **${amount} ${token} Tokens**.`,
                         ephemeral: true,
                     });
                     return;
@@ -247,7 +246,7 @@ async function enterGiveaway(interaction) {
                                 const successEmbed = new EmbedBuilder()
                                     .setTitle("Giveaway")
                                     .setDescription(
-                                        `Success! Your **${
+                                        `:white_check_mark: Success! Your **${
                                             amount + currentEntries
                                         } entries** for this [giveaway](${messageLink}) are confirmed!`
                                     )
@@ -278,7 +277,7 @@ async function enterGiveaway(interaction) {
             // Sponsor cannot enter their own giveaway
             if (userID === giveaway.sponsor) {
                 await interaction.editReply({
-                    content: "You cannot enter your own giveaway.",
+                    content: ":x: You cannot enter your own giveaway.",
                     ephemeral: true,
                 });
                 console.log(
@@ -291,8 +290,7 @@ async function enterGiveaway(interaction) {
             // No tokens
             if (balance === 0) {
                 await interaction.editReply({
-                    content: `You need at least **1 ${token} Token** to enter this giveaway!`,
-                    embeds: [getTokenHelpEmbed()],
+                    content: `:x: You need at least **1 ${token} Token** to enter this giveaway (\`/help\`).`,
                     ephemeral: true,
                 });
                 console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userTag);
@@ -344,7 +342,7 @@ async function enterGiveaway(interaction) {
                 const embed = new EmbedBuilder()
                     .setTitle("Giveaway")
                     .setDescription(
-                        `Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
+                        `:white_check_mark: Success! Your **1 entry** for this [giveaway](${messageLink}) is confirmed!`
                     )
                     .setColor(green);
 
