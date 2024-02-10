@@ -227,10 +227,12 @@ module.exports = {
                     message.content.includes("summoning")) &&
                 !message.content.includes("wishlist")
             ) {
+                // Message has to actually ping (mention) the user
                 const user = message.mentions.users.first();
                 if (!user) {
                     return console.warn(
-                        "[WARN] [readMessages] Couldn't find user that dropped cards"
+                        "[WARN] [readMessages] Couldn't find user that dropped cards:",
+                        message.url
                     );
                 }
                 if (user.bot) {
