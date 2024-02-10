@@ -223,8 +223,8 @@ module.exports = {
         ) {
             // User dropped cards
             if (
-                (message.content.includes("is dropping") ||
-                    message.content.includes("is summoning")) &&
+                (message.content.includes("dropping") ||
+                    message.content.includes("summoning")) &&
                 !message.content.includes("wishlist")
             ) {
                 const user = message.mentions.users.first();
