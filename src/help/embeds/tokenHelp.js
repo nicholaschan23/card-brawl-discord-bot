@@ -4,12 +4,12 @@ const config = require("../../../config.json");
 const QA = [
     {
         question: `What are tokens?`,
-        answer: `Tokens are Far Shore's exclusive form of currency. Spend them to elevate your presence in the community, unlocking visual flair, event bonuses, and more!`,
+        answer: `Tokens are Far Shore's exclusive form of currency earned through community engagement!`,
     },
     {
         question: `How do you earn tokens?`,
         answer:
-            `There are various ways to earn tokens through community engagement.\n` +
+            `There are various ways to earn tokens.\n` +
             ` 1. Every 5 drops rewards you a ${config.emoji.token}! Drops count every 30 minutes between any of the bots below. See <#1144103186974646402> for details.\n` +
             ` - <@${config.botID.karuta}>\n` +
             ` - <@${config.botID.sofi}>\n` +
@@ -20,7 +20,7 @@ const QA = [
     {
         question: `What can I spend tokens on?`,
         answer:
-            `Currently, the available options to spend tokens on are listed below.\n` +
+            `Below is a list of available options.\n` +
             `- Giveaways (<#${config.channelID.giveaway}>)\n` +
             `- Role color (\`/role color\`)`,
     },

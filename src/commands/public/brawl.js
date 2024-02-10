@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("discord.js");
-const BrawlBracketModel = require("../../brawl/schemas/brawlBracketSchema");
 const BrawlSetupModel = require("../../brawl/schemas/brawlSetupSchema");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");

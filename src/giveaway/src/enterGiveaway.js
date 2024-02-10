@@ -10,6 +10,7 @@ const {
 } = require("discord.js");
 const GiveawayModel = require("../schemas/giveawaySchema");
 const UserInventoryModel = require("../../inventory/schemas/userInventorySchema");
+const getTokenHelpEmbed = require("../../help/embeds/tokenHelp");
 const client = require("../../index");
 const config = require("../../../config.json");
 
@@ -290,7 +291,8 @@ async function enterGiveaway(interaction) {
             // No tokens
             if (balance === 0) {
                 await interaction.editReply({
-                    content: `:x: You need at least **1 ${token} Token** to enter this giveaway (\`/help\`).`,
+                    content: `:x: You need at least **1 ${token} Token** to enter this giveaway.`,
+                    embeds: [getTokenHelpEmbed()],
                     ephemeral: true,
                 });
                 console.log(`[INFO] [enterGiveaway] 0 tokens in inventory:`, userTag);
