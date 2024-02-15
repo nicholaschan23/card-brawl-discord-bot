@@ -48,7 +48,7 @@ module.exports = {
         // Check preconditions
         if (!setupModel.open) {
             return await interaction.reply(
-                `The **${setupModel.name}** Card Brawl is closed!`
+                `The **${setupModel.name}** Card Brawl is closed.`
             );
         }
 
@@ -204,7 +204,7 @@ module.exports = {
         const match = regex.exec(botResponseEmbed.description);
         if (!match) {
             console.warn(
-                `[BRAWL ENTER] Coudn't finding card code between backticks. Found "${cardCode}"`
+                `[BRAWL ENTER] Couldn't finding card code between backticks. Found "${cardCode}"`
             );
             return await embedMessage.reply(
                 `Error finding card code. Found \`${cardCode}\`. Notifying <@${config.developerID}>.`

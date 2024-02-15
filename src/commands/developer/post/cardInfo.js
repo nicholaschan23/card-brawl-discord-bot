@@ -1,6 +1,10 @@
-const { SlashCommandSubcommandBuilder } = require("discord.js");
+const {
+    SlashCommandSubcommandBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+} = require("discord.js");
 const config = require("../../../../config.json");
-
 
 const gettingStarted =
     `# Getting Started\n` +
@@ -24,7 +28,13 @@ const gettingStarted =
     `- Show off cards in <#${config.channelID.cardGallery}>\n` +
     `- Compete in card competitions (more info in <#${config.channelID.brawlInfo}>)\n`;
 
-const activePlayer = `# Active Player\n` + `:confetti_ball: **Active players get exclusive access to <#${config.channelID.karutaMain}>!** Earn a ${config.emoji.token} to be an <@&${config.roleID.activePlayer}>. If a player hasn't dropped cards in a week, they will be marked as inactive.`
+const pings =
+    `# Notifications\n` +
+    `Use the buttons below to toggle notifications of certain card drops! Each row corresponds to a different bot.`;
+
+const activePlayer =
+    `# Active Player\n` +
+    `:confetti_ball: **Active players get exclusive access to <#${config.channelID.karutaMain}>!** Earn a ${config.emoji.token} to be an <@&${config.roleID.activePlayer}>. If a player hasn't dropped cards in a week, the role will be removed.`;
 
 const lurking =
     `# No Lurking\n` +
@@ -32,6 +42,57 @@ const lurking =
     `- __Example of excessive lurk grabbing__: You're a member of the server for several months, 0-10 messages, and have grabbed high wishlist value or very expensive cards from server drop fights.\n` +
     `- __How to avoid an excessive lurk ban__: You don't have to do a lot. At least react when you grab something good, drop cards, or chat every so often. *If you're active in the community, you don't have to worry and can happily ignore this rule!*\n` +
     `- __Why this is a rule__: We want to promote an active community, and in doing so reward the members who are contributing to the server. If you're not contributing anything yourself, you're actively taking away from those who make this server what it is. Thank you for understanding.`;
+
+// Karuta
+const karutaDropButton = new ButtonBuilder()
+    .setCustomId("toggleKarutaDrop")
+    .setLabel("Karuta Drop")
+    .setStyle(ButtonStyle.Primary);
+const karutaWishlistButton = new ButtonBuilder()
+    .setCustomId("toggleKarutaWishlist")
+    .setLabel("Karuta Wishlist")
+    .setStyle(ButtonStyle.Primary);
+const karutaEventButton = new ButtonBuilder()
+    .setCustomId("toggleKarutaEvent")
+    .setLabel("Karuta Event")
+    .setStyle(ButtonStyle.Primary);
+const karutaRow = new ActionRowBuilder().addComponents(
+    karutaDropButton,
+    karutaWishlistButton,
+    karutaEventButton
+);
+
+// Sofi
+const sofiWishlistButton = new ButtonBuilder()
+    .setCustomId("toggleSofiWishlist")
+    .setLabel("Sofi Wishlist")
+    .setStyle(ButtonStyle.Primary);
+const sofiRow = new ActionRowBuilder().addComponents(sofiWishlistButton);
+
+// Tofu
+const tofuDropButton = new ButtonBuilder()
+    .setCustomId("toggleTofuDrop")
+    .setLabel("Tofu Drop")
+    .setStyle(ButtonStyle.Primary);
+const tofuWishlistButton = new ButtonBuilder()
+    .setCustomId("toggleTofuWishlist")
+    .setLabel("Tofu Wishlist")
+    .setStyle(ButtonStyle.Primary);
+const tofuRow = new ActionRowBuilder().addComponents(tofuDropButton, tofuWishlistButton);
+
+// Gachapon
+const gachaponDropButton = new ButtonBuilder()
+    .setCustomId("toggleGachaponDrop")
+    .setLabel("Gachapon Drop")
+    .setStyle(ButtonStyle.Primary);
+const gachaponWishlistButton = new ButtonBuilder()
+    .setCustomId("toggleGachaponWishlist")
+    .setLabel("Gachapon Wishlist")
+    .setStyle(ButtonStyle.Primary);
+const gachaponRow = new ActionRowBuilder().addComponents(
+    gachaponDropButton,
+    gachaponWishlistButton
+);
 
 // ## Bots
 // ### Karuta
@@ -76,6 +137,12 @@ module.exports = {
     async execute(interaction) {
         await interaction.channel.send({
             content: gettingStarted,
+            allowedMentions: { parse: [] },
+        });
+
+        await interaction.channel.send({
+            content: pings,
+            components: [karutaRow, sofiRow, tofuRow, gachaponRow],
             allowedMentions: { parse: [] },
         });
 
