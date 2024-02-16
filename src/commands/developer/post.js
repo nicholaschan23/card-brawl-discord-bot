@@ -7,17 +7,17 @@ const perks = require("./post/perks");
 const cardInfo = require("./post/cardInfo");
 
 module.exports = {
-    category: "public",
     data: new SlashCommandBuilder()
-        .setName("post")
-        .setDescription("Embed main command.")
-        .addSubcommand(rules.data)
-        .addSubcommand(features.data)
-        .addSubcommand(brawlInfo.data)
-        .addSubcommand(karutaGuide.data)
-        .addSubcommand(perks.data)
-        .addSubcommand(cardInfo.data)
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    .setName("post")
+    .setDescription("Post main command.")
+    .addSubcommand(rules.data)
+    .addSubcommand(features.data)
+    .addSubcommand(brawlInfo.data)
+    .addSubcommand(karutaGuide.data)
+    .addSubcommand(perks.data)
+    .addSubcommand(cardInfo.data)
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    category: "developer",
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
@@ -47,7 +47,7 @@ module.exports = {
             }
             default: {
                 console.error(
-                    "[ERROR] [role] There was no execute case for the '${subcommand}' subcommand"
+                    "[ERROR] [post] There was no execute case for the '${subcommand}' subcommand"
                 );
                 await interaction.reply(
                     `There was no execute case for the \`${subcommand}\` subcommand.`
