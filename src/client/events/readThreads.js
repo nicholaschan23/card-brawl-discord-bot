@@ -7,7 +7,8 @@ module.exports = {
     async execute(threadChannel) {
         if (
             threadChannel.parentId === config.channelID.tradingAds ||
-            threadChannel.parentId === config.channelID.serviceAds
+            threadChannel.parentId === config.channelID.serviceAds ||
+            threadChannel.parentId === config.channelID.clanAds
         ) {
             // Owner is exempt
             if (threadChannel.ownerId === config.developerID) {
@@ -27,7 +28,7 @@ module.exports = {
                             threadChannel.createdTimestamp !== thread._createdTimestamp
                         ) {
                             thread.send(
-                                `**:x: <@${threadChannel.ownerId}>, your post was deleted because you already opened shop here!** If you want to make a new post, delete this one first.`
+                                `**:x: <@${threadChannel.ownerId}>, your post was deleted because you already have this one!** If you want to make a new post, delete this one first.`
                             );
                             threadChannel.delete("Duplicate thread");
                             return;
