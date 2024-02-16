@@ -1,4 +1,5 @@
 const { SlashCommandSubcommandBuilder } = require("discord.js");
+const config = require("../../../../config.json");
 
 module.exports = {
     data: new SlashCommandSubcommandBuilder()
@@ -37,7 +38,7 @@ module.exports = {
                     if (ownerSet.has(thread.ownerId)) {
                         numDeleted++;
                         thread.delete("Duplicate thread");
-                    } else {
+                    } else if (thread.ownerId !== config.developerID) {
                         ownerSet.add(thread.ownerId);
                     }
                 }
