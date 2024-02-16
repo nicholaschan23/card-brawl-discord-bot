@@ -28,7 +28,7 @@ module.exports = {
                             threadChannel.createdTimestamp !== thread._createdTimestamp
                         ) {
                             thread.send(
-                                `**:x: <@${threadChannel.ownerId}>, your post was deleted because you already have this one!** If you want to make a new post, delete this one first.`
+                                `**:x: <@${threadChannel.ownerId}>, your post was deleted because you already have this one!** I recommend you keep and edit this post to show credibility. If you truly want to make a new post, delete this one first.`
                             );
                             threadChannel.delete("Duplicate thread");
                             return;
