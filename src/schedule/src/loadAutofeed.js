@@ -205,7 +205,7 @@ function loadAutofeed() {
         });
     });
 
-    // Karuta help
+    // Help
     cron.schedule("30 * * * *", () => {
         try {
             karutaMain.send(
@@ -232,7 +232,7 @@ function loadAutofeed() {
         }
     });
 
-    // Karuta wishlist
+    // Wishlist
     cron.schedule("45 * * * *", () => {
         try {
             karutaMain.send(
@@ -240,6 +240,15 @@ function loadAutofeed() {
             );
             karutaDrop.send(
                 `:shinto_shrine: **Set your wishlist watch channel here!** Use command \`kww\`.`
+            );
+            sofiDrop.send(
+                `:shinto_shrine: **Set your wishlist channel here!** Use command \`swishlistchannel\`.`
+            );
+            tofuSummon.send(
+                `:shinto_shrine: **Set your summon watch channel here!** Use command \`tsummonwatch\`.`
+            );
+            gachaponDrop.send(
+                `:shinto_shrine: **Set your wishlist alert channel here!** Use command \`gwishalert\`.`
             );
             console.log("[INFO] [autofeed] Sent 'Karuta wishlist' reminder");
         } catch (error) {
