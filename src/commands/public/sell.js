@@ -18,8 +18,7 @@ module.exports = {
             option.setName("code").setDescription("Card's unique code.").setRequired(true)
         ),
     category: "public",
-    cooldown: 0,
-    // cooldown: 60,
+    cooldown: 60,
     async execute(interaction) {
         const userID = interaction.user.id;
         const code = interaction.options.getString("code");

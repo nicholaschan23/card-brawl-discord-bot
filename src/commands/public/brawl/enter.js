@@ -157,26 +157,32 @@ module.exports = {
         });
 
         // Read card details embed
-        const botResponseFilter = (response) =>
-            response.author.id === config.botID.karuta &&
-            response.channelId === interaction.channel.id &&
-            response.mentions.repliedUser &&
-            response.mentions.repliedUser.id === userID &&
-            response.embeds.length === 1 &&
-            response.embeds[0].data.title === "Card Details" &&
-            response.embeds[0].data.description.includes("Dropped in server ID");
         let collected;
         try {
             collected = await interaction.channel.awaitMessages({
-                filter: botResponseFilter,
+                filter: (response) =>
+                response.author.id === config.botID.karuta &&
+                response.channelId === interaction.channel.id &&
+                response.mentions.repliedUser &&
+                response.mentions.repliedUser.id === userID &&
+                response.embeds.length === 1 &&
+                response.embeds[0].data.title === "Card Details" &&
+                response.embeds[0].data.description.includes("Dropped in server ID");,
                 max: 1,
                 time: 60 * 1000,
             });
-        } catch (error) {
-            console.warn("[BRAWL ENTER] Command timed out:", interaction.user.tag);
 
+            if (collected.size === 0) {
+                console.warn("[WARN] [enter] Command timed out:", interaction.user.tag);
+                return await interaction.followUp({
+                    content: "Confirmation not received within `1 minute`, cancelling.",
+                    ephemeral: true,
+                });
+            }
+        } catch (error) {
+            console.error(`[ERROR] [enter]:`, error);
             return await interaction.followUp({
-                content: "Confirmation not received within `1 minute`, cancelling.",
+                content: "❌ An error occurred.",
                 ephemeral: true,
             });
         }
