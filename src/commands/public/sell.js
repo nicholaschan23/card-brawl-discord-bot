@@ -26,7 +26,7 @@ module.exports = {
 
         // Ask for card details
         await interaction.reply({
-            content: `<@${userID}>, show the card info for what you want to sell. \`\`\`kci ${code}\`\`\``,
+            content: `<@${userID}>, show the card info for what you want to sell. Type command \`kci ${code}\`.`,
             allowedMentions: { parse: [] },
         });
 
@@ -103,9 +103,9 @@ module.exports = {
             });
         }
 
-        // Ask for card work info
+        // Ask for worker info
         await embedMessage.reply({
-            content: `<@${userID}>, show the work info for the card you want to sell. \`\`\`kwi ${code}\`\`\``,
+            content: `<@${userID}>, show the worker info for what you want to sell. Type command \`kwi ${code}\`.`,
             allowedMentions: { parse: [] },
         });
 
