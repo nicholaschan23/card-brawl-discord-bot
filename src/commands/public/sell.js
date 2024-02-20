@@ -48,7 +48,7 @@ module.exports = {
             });
 
             if (collected.size === 0) {
-                console.warn(`[INFO] [sell] Command timed out:`, interaction.user.tag);
+                console.warn(`[WARN] [sell] Command timed out:`, interaction.user.tag);
                 return await interaction.followUp({
                     content:
                         "❌ Card info command not received within `1 minute`, cancelling.",
@@ -125,7 +125,7 @@ module.exports = {
             });
 
             if (collected.size === 0) {
-                console.warn(`[INFO] [sell] Command timed out:`, interaction.user.tag);
+                console.warn(`[WARN] [sell] Command timed out:`, interaction.user.tag);
                 return await interaction.followUp({
                     content:
                         "❌ Worker info command not received within `1 minute`, cancelling.",
