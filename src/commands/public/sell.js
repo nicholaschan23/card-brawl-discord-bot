@@ -81,8 +81,8 @@ module.exports = {
         let info = lines[0].split(" · ");
         const print = parseInt(info[2].slice(2, -1));
         const edition = parseInt(info[3].slice(2, -1));
-        const series = info[4];
-        const character = info[5].slice(2, -2);
+        const series = info[4].replace(/~~/, "");
+        const character = info[5].replace(/~~/, "").slice(2, -2);
 
         info = lines[9].split(" ");
         const condition = info[2].slice(2, -2);
@@ -350,6 +350,9 @@ module.exports = {
                 break;
             }
         }
-        console.log(`[INFO] [sell] Successfully listed ${code} for sale:`, interaction.user.tag);
+        console.log(
+            `[INFO] [sell] Successfully listed ${code} for sale:`,
+            interaction.user.tag
+        );
     },
 };
