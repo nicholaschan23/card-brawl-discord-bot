@@ -265,7 +265,7 @@ module.exports = {
         const cardEmbed = new EmbedBuilder()
             .setTitle(`E${edition} ${printPrefix} ${character}`)
             .setDescription(
-                `${lines[6]}\n\n` +
+                `Owned by <@${userID}>\n\n` +
                     `\`${code}\` · \`#${print}\` · \`◈${edition}\` · ${series} · **${character}**`
             )
             .addFields(
