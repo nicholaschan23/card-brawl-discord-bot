@@ -161,13 +161,13 @@ module.exports = {
         try {
             collected = await interaction.channel.awaitMessages({
                 filter: (response) =>
-                response.author.id === config.botID.karuta &&
-                response.channelId === interaction.channel.id &&
-                response.mentions.repliedUser &&
-                response.mentions.repliedUser.id === userID &&
-                response.embeds.length === 1 &&
-                response.embeds[0].data.title === "Card Details" &&
-                response.embeds[0].data.description.includes("Dropped in server ID");,
+                    response.author.id === config.botID.karuta &&
+                    response.channelId === interaction.channel.id &&
+                    response.mentions.repliedUser &&
+                    response.mentions.repliedUser.id === userID &&
+                    response.embeds.length === 1 &&
+                    response.embeds[0].data.title === "Card Details" &&
+                    response.embeds[0].data.description.includes("Dropped in server ID"),
                 max: 1,
                 time: 60 * 1000,
             });
