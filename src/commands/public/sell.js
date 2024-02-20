@@ -172,8 +172,6 @@ module.exports = {
         const regexQuickness = /\((\w)\) Quickness/;
         const quickness = regexQuickness.exec(cardWorkerEmbed.description)[1];
 
-        //
-
         // Format info for post
         let conditionText;
         switch (condition) {
@@ -181,10 +179,10 @@ module.exports = {
                 conditionText = `+ (S) Dropped Mint`;
                 break;
             case "excellent":
-                conditionText = `(A) Dropped Excellent`;
+                conditionText = `  (A) Dropped Excellent`;
                 break;
             case "good":
-                conditionText = `(B) Dropped Good`;
+                conditionText = `  (B) Dropped Good`;
                 break;
             case "poor":
                 conditionText = `- (C) Dropped Poor`;
@@ -203,16 +201,16 @@ module.exports = {
                 quicknessText = `+ (A) Quickness`;
                 break;
             case "B":
-                quicknessText = `(B) Quickness`;
+                quicknessText = `  (B) Quickness`;
                 break;
             case "C":
-                quicknessText = `(C) Quickness`;
+                quicknessText = `  (C) Quickness`;
                 break;
             case "D":
-                quicknessText = `(D) Quickness`;
+                quicknessText = `  (D) Quickness`;
                 break;
             case "F":
-                quicknessText = `(F) Quickness`;
+                quicknessText = `  (F) Quickness`;
                 break;
         }
 
@@ -225,16 +223,16 @@ module.exports = {
                 toughnessText = `+ (A) Toughness`;
                 break;
             case "B":
-                toughnessText = `(B) Toughness`;
+                toughnessText = `  (B) Toughness`;
                 break;
             case "C":
-                toughnessText = `(C) Toughness`;
+                toughnessText = `  (C) Toughness`;
                 break;
             case "D":
-                toughnessText = `(D) Toughness`;
+                toughnessText = `  (D) Toughness`;
                 break;
             case "F":
-                toughnessText = `(F) Toughness`;
+                toughnessText = `  (F) Toughness`;
                 break;
         }
 
