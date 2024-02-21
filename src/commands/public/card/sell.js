@@ -1,15 +1,16 @@
 const {
-    SlashCommandBuilder,
+    SlashCommandSubcommandBuilder,
     EmbedBuilder,
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
 } = require("discord.js");
-const client = require("../../index");
-const config = require("../../../config.json");
+const CardAdsModel = require("../../../sell/schemas/cardAdSchema");
+const client = require("../../../index");
+const config = require("../../../../config.json");
 
 module.exports = {
-    data: new SlashCommandBuilder()
+    data: new SlashCommandSubcommandBuilder()
         .setName("sell")
         .setDescription(
             "List a card for sale. The card's print number must be less than or equal to #999."
@@ -17,12 +18,11 @@ module.exports = {
         .addStringOption((option) =>
             option.setName("code").setDescription("Card's unique code.").setRequired(true)
         ),
-    category: "public",
-    cooldown: 60,
+    category: "public/card",
     async execute(interaction) {
         const userID = interaction.user.id;
         const code = interaction.options.getString("code");
-        const postChannel = client.channels.cache.get(config.channelID.cardAds);
+        const channel = client.channels.cache.get(config.channelID.cardAds);
 
         // Ask for card details
         await interaction.reply({
@@ -334,11 +334,63 @@ module.exports = {
                 });
             }
             case "confirmEnter": {
+                const message = await channel.send({ embeds: [cardEmbed] });
+
+                const task = async () => {
+                    // Fetch existing card ad model
+                    const cardAdsModel = await CardAdsModel.findOne({
+                        code,
+                    }).exec();
+
+                    // Duplicate listing found
+                    if (cardAdsModel) {
+                        // Fetch card ad message to delete
+                        try {
+                            const messageToDelete = await channel.messages.fetch(
+                                cardAdsModel.messageID
+                            );
+
+                            await messageToDelete.delete();
+                            console.log(
+                                `[INFO] [sell] Deleted messageID:`,
+                                cardAdsModel.messageID
+                            );
+                        } catch (error) {}
+
+                        // Update listing message id
+                        cardAdsModel.messageID = message.id;
+                        cardAdsModel.ownerID = userID;
+                        await cardAdsModel.save();
+                    } else {
+                        // Didn't exist, create a model
+                        const cardAdSchema = new CardAdsModel({
+                            code: code,
+                            messageID: message.id,
+                            ownerID: userID,
+                            timestamp: Math.floor(new Date().getTime() / 1000),
+                        });
+                        await cardAdSchema.save();
+                    }
+                };
+
+                // Enqueue task
+                try {
+                    client.cardAdsQueue.enqueue(task);
+                } catch (error) {
+                    console.log(`[ERROR] [sell]:`, error);
+
+                    cardEmbed.setColor(config.embed.red);
+                    return await confirmation.update({
+                        content: `<@${userID}>, is this the correct card you want to sell?`,
+                        embeds: [cardEmbed],
+                        components: [],
+                        allowedMentions: { parse: [] },
+                    });
+                }
+
                 await interaction.channel.send(
                     `✅ Successfully listed \`${code}\` for sale in <#${config.channelID.cardAds}>!`
                 );
-
-                await postChannel.send({ embeds: [cardEmbed] });
 
                 cardEmbed.setColor(config.embed.green);
                 await confirmation.update({

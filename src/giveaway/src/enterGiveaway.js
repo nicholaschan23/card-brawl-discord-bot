@@ -153,7 +153,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount === 0) {
                     await i.editReply({
-                        content: ":x: Please enter a number greater than **0**.",
+                        content: "❌ Please enter a number greater than **0**.",
                         ephemeral: true,
                     });
                     return;
@@ -161,7 +161,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount > maxIn) {
                     await i.editReply({
-                        content: `:x: You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
+                        content: `❌ You can have up to **${maxEntries}** entries but currently have **${currentEntries}**. Please insert an amount that is less than or equal to **${maxIn}**.`,
                         ephemeral: true,
                     });
                     return;
@@ -169,7 +169,7 @@ async function enterGiveaway(interaction) {
 
                 if (amount > balance) {
                     await i.editReply({
-                        content: `:x: You don't have **${amount} ${token} Tokens**.`,
+                        content: `❌ You don't have **${amount} ${token} Tokens**.`,
                         ephemeral: true,
                     });
                     return;
@@ -278,7 +278,7 @@ async function enterGiveaway(interaction) {
             // Sponsor cannot enter their own giveaway
             if (userID === giveaway.sponsor) {
                 await interaction.editReply({
-                    content: ":x: You cannot enter your own giveaway.",
+                    content: "❌ You cannot enter your own giveaway.",
                     ephemeral: true,
                 });
                 console.log(
@@ -291,7 +291,7 @@ async function enterGiveaway(interaction) {
             // No tokens
             if (balance === 0) {
                 await interaction.editReply({
-                    content: `:x: You need at least **1 ${token} Token** to enter this giveaway.`,
+                    content: `❌ You need at least **1 ${token} Token** to enter this giveaway.`,
                     embeds: [getTokenHelpEmbed()],
                     ephemeral: true,
                 });

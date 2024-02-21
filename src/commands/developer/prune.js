@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const inactive = require("./prune/inactive");
 const duplicateThreads = require("./prune/duplicateThreads");
+const cardAds = require("./prune/cardAds")
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,6 +9,7 @@ module.exports = {
     .setDescription("Prune main command.")
     .addSubcommand(inactive.data)
     .addSubcommand(duplicateThreads.data)
+    .addSubcommand(cardAds.data)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     category: "developer",
     async execute(interaction) {
@@ -19,6 +21,10 @@ module.exports = {
             }
             case "duplicate-threads": {
                 await duplicateThreads.execute(interaction);
+                break;
+            }
+            case "card-ads": {
+                await cardAds.execute(interaction);
                 break;
             }
             default: {

@@ -1,28 +1,29 @@
 const { SlashCommandBuilder } = require("discord.js");
-const bot = require("./role/bot");
-const color = require("./role/color");
+const sell = require("./card/sell");
+const sold = require("./card/sold");
 
 module.exports = {
     category: "public",
     data: new SlashCommandBuilder()
-        .setName("role")
-        .setDescription("Role main command.")
-        .addSubcommand(bot.data)
-        .addSubcommand(color.data),
+        .setName("card")
+        .setDescription("Card main command.")
+        .addSubcommand(sell.data)
+        .addSubcommand(sold.data),
+    cooldown: 0,
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
-            case "bot": {
-                await bot.execute(interaction);
+            case "sell": {
+                await sell.execute(interaction);
                 break;
             }
-            case "color": {
-                await color.execute(interaction);
+            case "sold": {
+                await sold.execute(interaction);
                 break;
             }
             default: {
                 console.error(
-                    `[ERROR] [role] There was no execute case for the '${subcommand}' subcommand`
+                    `[ERROR] [card] There was no execute case for the '${subcommand}' subcommand`
                 );
                 await interaction.reply(
                     `There was no execute case for the \`${subcommand}\` subcommand.`

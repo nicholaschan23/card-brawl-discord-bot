@@ -31,6 +31,7 @@ client.setupModelQueue = new TaskQueue();
 client.userStatQueue = new TaskQueue();
 client.giveawayQueue = new TaskQueue();
 client.inventoryQueue = new TaskQueue();
+client.cardAdsQueue = new TaskQueue();
 
 client.events = new Collection();
 client.cooldowns = new Collection();
