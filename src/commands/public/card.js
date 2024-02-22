@@ -9,7 +9,7 @@ module.exports = {
         .setDescription("Card main command.")
         .addSubcommand(sell.data)
         .addSubcommand(sold.data),
-    cooldown: 0,
+    cooldown: 60,
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
