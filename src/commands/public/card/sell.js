@@ -4,6 +4,8 @@ const {
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
+    StringSelectMenuBuilder,
+    ComponentType,
 } = require("discord.js");
 const CardAdsModel = require("../../../sell/schemas/cardAdSchema");
 const client = require("../../../index");
@@ -172,239 +174,337 @@ module.exports = {
         const regexQuickness = /\((\w)\) Quickness/;
         const quickness = regexQuickness.exec(cardWorkerEmbed.description)[1];
 
-        // Format info for post
-        let conditionText;
-        switch (condition) {
-            case "mint":
-                conditionText = `+ (S) Dropped Mint`;
-                break;
-            case "excellent":
-                conditionText = `  (A) Dropped Excellent`;
-                break;
-            case "good":
-                conditionText = `  (B) Dropped Good`;
-                break;
-            case "poor":
-                conditionText = `- (C) Dropped Poor`;
-                break;
-            case "damaged":
-                conditionText = `- (F) Dropped Damaged`;
-                break;
-        }
-
-        let quicknessText;
-        switch (quickness) {
-            case "S":
-                quicknessText = `+ (S) Quickness`;
-                break;
-            case "A":
-                quicknessText = `+ (A) Quickness`;
-                break;
-            case "B":
-                quicknessText = `  (B) Quickness`;
-                break;
-            case "C":
-                quicknessText = `  (C) Quickness`;
-                break;
-            case "D":
-                quicknessText = `  (D) Quickness`;
-                break;
-            case "F":
-                quicknessText = `  (F) Quickness`;
-                break;
-        }
-
-        let toughnessText;
-        switch (toughness) {
-            case "S":
-                toughnessText = `+ (S) Toughness`;
-                break;
-            case "A":
-                toughnessText = `+ (A) Toughness`;
-                break;
-            case "B":
-                toughnessText = `  (B) Toughness`;
-                break;
-            case "C":
-                toughnessText = `  (C) Toughness`;
-                break;
-            case "D":
-                toughnessText = `  (D) Toughness`;
-                break;
-            case "F":
-                toughnessText = `  (F) Toughness`;
-                break;
-        }
-
-        let printPrefix;
-        let printText;
-        if (print >= 100) {
-            printPrefix = "MP";
-            printText = "(MP) Mid Print";
-        } else if (print >= 10) {
-            printPrefix = "LP";
-            printText = "(LP) Low Print";
-        } else {
-            printPrefix = "SP";
-            printText = "(SP) Single Print";
-        }
-
-        // Create buttons
-        const confirm = new ButtonBuilder()
-            .setCustomId("confirmEnter")
-            .setLabel("Confirm")
-            .setStyle(ButtonStyle.Success);
-        const cancel = new ButtonBuilder()
-            .setCustomId("cancelEnter")
-            .setLabel("Cancel")
-            .setStyle(ButtonStyle.Danger);
-        const row = new ActionRowBuilder().addComponents(cancel, confirm);
-
-        // Display card confirmation
-        const cardImage = cardDetailsEmbed.thumbnail.url;
-        const cardEmbed = new EmbedBuilder()
-            .setTitle(`E${edition} ${printPrefix} ${character}`)
-            .setDescription(
-                `Owned by <@${userID}>\n\n` +
-                    `\`${code}\` · \`#${print}\` · \`◈${edition}\` · ${series} · **${character}**`
-            )
-            .addFields(
+        // Ask for want tags
+        const select = new StringSelectMenuBuilder()
+            .setCustomId("tagsSelect")
+            .setPlaceholder("Select currencies")
+            .setMinValues(1)
+            .setMaxValues(3)
+            .addOptions(
                 {
-                    name: `Effort Modifiers`,
-                    value:
-                        `\`\`\`diff\n` +
-                        `${conditionText}\n` +
-                        `${quicknessText}\n` +
-                        `${toughnessText}\n` +
-                        `\`\`\``,
-                    inline: true,
+                    label: "Cards",
+                    value: "♻️",
+                    emoji: "♻️", // Unicode representation of the recycle emoji
                 },
                 {
-                    name: `Tags`,
-                    value:
-                        `\`\`\`\n` +
-                        `(E${edition}) Edition ${edition}\n` +
-                        `${printText}\n` +
-                        `\`\`\``,
-                    inline: true,
+                    label: "Tickets",
+                    value: "🎟️",
+                    emoji: "🎟️", // Unicode representation of the tickets emoji
+                },
+                {
+                    label: "Gems",
+                    value: "💎",
+                    emoji: "💎", // Unicode representation of the gems emoji
                 }
-            )
-            .setColor(cardDetailsEmbed.color)
-            .setImage(cardImage);
-        const response = await embedMessage.reply({
-            content: `<@${userID}>, is this the correct card you want to sell?`,
-            embeds: [cardEmbed],
-            components: [row],
-            allowedMentions: { parse: [] },
+            );
+        const selectRow = new ActionRowBuilder().addComponents(select);
+
+        const selectEmbed = new EmbedBuilder()
+            .setTitle("Card Sell")
+            .setDescription(`What currencies are you accepting for \`${code}\`?`);
+        const selectResponse = await interaction.followUp({
+            embeds: [selectEmbed],
+            components: [selectRow],
         });
 
-        // Collect button press interaction
+        // Wait for color role selection
         try {
-            confirmation = await response.awaitMessageComponent({
+            const collector = await selectResponse.createMessageComponentCollector({
+                componentType: ComponentType.StringSelect,
                 filter: (i) => i.user.id === userID,
                 max: 1,
-                time: 60 * 1000,
-            });
-        } catch (error) {
-            console.warn(`[WARN] [sell] Command timed out:`, interaction.user.tag);
-
-            cardEmbed.setColor(config.embed.red);
-            await response.edit({
-                content: `<@${userID}>, is this the correct card you want to submit?`,
-                embeds: [cardEmbed],
-                components: [],
-                allowedMentions: { parse: [] },
+                time: 60_000,
             });
 
-            return await interaction.followUp({
-                content: "❌ Confirmation not received within `1 minute`, cancelling.",
-                ephemeral: true,
-            });
-        }
-
-        // Button press outcome
-        switch (confirmation.customId) {
-            case "cancelEnter": {
-                cardEmbed.setColor(config.embed.red);
-                return await confirmation.update({
-                    content: `<@${userID}>, is this the correct card you want to sell?`,
-                    embeds: [cardEmbed],
-                    components: [],
-                    allowedMentions: { parse: [] },
-                });
-            }
-            case "confirmEnter": {
-                const message = await channel.send({ embeds: [cardEmbed] });
-
-                const task = async () => {
-                    // Fetch existing card ad model
-                    const cardAdsModel = await CardAdsModel.findOne({
-                        code,
-                    }).exec();
-
-                    // Duplicate listing found
-                    if (cardAdsModel) {
-                        // Fetch card ad message to delete
-                        try {
-                            const messageToDelete = await channel.messages.fetch(
-                                cardAdsModel.messageID
-                            );
-
-                            await messageToDelete.delete();
-                            console.log(
-                                `[INFO] [sell] Deleted messageID:`,
-                                cardAdsModel.messageID
-                            );
-                        } catch (error) {}
-
-                        // Update listing message id
-                        cardAdsModel.messageID = message.id;
-                        cardAdsModel.ownerID = userID;
-                        await cardAdsModel.save();
-                    } else {
-                        // Didn't exist, create a model
-                        const cardAdSchema = new CardAdsModel({
-                            code: code,
-                            messageID: message.id,
-                            ownerID: userID,
-                            timestamp: Math.floor(new Date().getTime() / 1000),
-                        });
-                        await cardAdSchema.save();
-                    }
-                };
-
-                // Enqueue task
-                try {
-                    client.cardAdsQueue.enqueue(task);
-                } catch (error) {
-                    console.log(`[ERROR] [sell]:`, error);
-
-                    cardEmbed.setColor(config.embed.red);
-                    return await confirmation.update({
-                        content: `<@${userID}>, is this the correct card you want to sell?`,
-                        embeds: [cardEmbed],
-                        components: [],
-                        allowedMentions: { parse: [] },
+            collector.on("end", async (collected, reason) => {
+                if (reason === "time") {
+                    selectEmbed.setColor(config.embed.red);
+                    await interaction.followUp({
+                        content:
+                            "❌ Currencies not selected within `1 minute`, cancelling.",
+                        ephemeral: true,
                     });
                 }
 
-                await interaction.channel.send(
-                    `✅ Successfully listed \`${code}\` for sale in <#${config.channelID.cardAds}>!`
-                );
-
-                cardEmbed.setColor(config.embed.green);
-                await confirmation.update({
-                    content: `<@${userID}>, is this the correct card you want to sell?`,
-                    embeds: [cardEmbed],
+                return await selectResponse.edit({
+                    embeds: [selectEmbed],
                     components: [],
-                    allowedMentions: { parse: [] },
                 });
-                break;
-            }
+            });
+
+            collector.on("collect", async (i) => {
+                const tags = i.values.sort().join(" ");
+
+                // Mark select embed as success
+                selectEmbed.setColor(config.embed.green);
+                await i.update({
+                    embeds: [selectEmbed],
+                    components: [],
+                });
+
+                // Format info for post
+                const conditionText = getConditionText(condition);
+                const quicknessText = getQuicknessText(quickness);
+                const toughnessText = getToughnessText(toughness);
+                const { printPrefix, printText } = getPrintText(print);
+
+                // Create buttons
+                const confirm = new ButtonBuilder()
+                    .setCustomId("confirmEnter")
+                    .setLabel("Confirm")
+                    .setStyle(ButtonStyle.Success);
+                const cancel = new ButtonBuilder()
+                    .setCustomId("cancelEnter")
+                    .setLabel("Cancel")
+                    .setStyle(ButtonStyle.Danger);
+                const row = new ActionRowBuilder().addComponents(cancel, confirm);
+
+                // Display card confirmation
+                const cardImage = cardDetailsEmbed.thumbnail.url;
+                const cardEmbed = new EmbedBuilder()
+                    .setTitle(`E${edition} ${printPrefix} ${character}`)
+                    .setDescription(
+                        `Owned by <@${userID}>\n\n` +
+                            `\`${code}\` · \`#${print}\` · \`◈${edition}\` · ${series} · **${character}**`
+                    )
+                    .addFields(
+                        {
+                            name: `Effort Modifiers`,
+                            value:
+                                `\`\`\`diff\n` +
+                                `${conditionText}\n` +
+                                `${quicknessText}\n` +
+                                `${toughnessText}\n` +
+                                `\`\`\``,
+                            inline: true,
+                        },
+                        {
+                            name: `Tags`,
+                            value:
+                                `${tags}\`\`\`\n` +
+                                `(E${edition}) Edition ${edition}\n` +
+                                `${printText}\n` +
+                                `\`\`\``,
+                            inline: true,
+                        }
+                    )
+                    .setColor(cardDetailsEmbed.color)
+                    .setImage(cardImage);
+
+                const confirmationResponse = await interaction.channel.send({
+                    content: `<@${userID}>, is this the correct card you want to sell?`,
+                    allowedMentions: { parse: [] },
+                    embeds: [cardEmbed],
+                    components: [row],
+                });
+
+                // Collect button press interaction
+                let confirmation;
+                try {
+                    confirmation = await confirmationResponse.awaitMessageComponent({
+                        filter: (i) => i.user.id === userID,
+                        max: 1,
+                        time: 60 * 1000,
+                    });
+                } catch (error) {
+                    console.warn(
+                        `[WARN] [sell] Command timed out:`,
+                        interaction.user.tag
+                    );
+
+                    cardEmbed.setColor(config.embed.red);
+                    await confirmationResponse.edit({
+                        content: `<@${userID}>, is this the correct card you want to submit?`,
+                        allowedMentions: { parse: [] },
+                        embeds: [cardEmbed],
+                        components: [],
+                    });
+
+                    return await interaction.followUp({
+                        content:
+                            "❌ Confirmation not received within `1 minute`, cancelling.",
+                        ephemeral: true,
+                    });
+                }
+
+                // Button press outcome
+                switch (confirmation.customId) {
+                    case "cancelEnter": {
+                        cardEmbed.setColor(config.embed.red);
+                        return await confirmation.update({
+                            content: `<@${userID}>, is this the correct card you want to sell?`,
+                            embeds: [cardEmbed],
+                            components: [],
+                            allowedMentions: { parse: [] },
+                        });
+                    }
+                    case "confirmEnter": {
+                        const message = await channel.send({ embeds: [cardEmbed] });
+
+                        const task = async () => {
+                            // Fetch existing card ad model
+                            const cardAdsModel = await CardAdsModel.findOne({
+                                code,
+                            }).exec();
+
+                            // Duplicate listing found
+                            if (cardAdsModel) {
+                                // Fetch card ad message to delete
+                                try {
+                                    const messageToDelete = await channel.messages.fetch(
+                                        cardAdsModel.messageID
+                                    );
+
+                                    await messageToDelete.delete();
+                                    console.log(
+                                        `[INFO] [sell] Deleted messageID:`,
+                                        cardAdsModel.messageID
+                                    );
+                                } catch (error) {}
+
+                                // Update listing message id
+                                cardAdsModel.messageID = message.id;
+                                cardAdsModel.ownerID = userID;
+                                await cardAdsModel.save();
+                            } else {
+                                // Didn't exist, create a model
+                                const cardAdSchema = new CardAdsModel({
+                                    code: code,
+                                    messageID: message.id,
+                                    ownerID: userID,
+                                    timestamp: Math.floor(new Date().getTime() / 1000),
+                                });
+                                await cardAdSchema.save();
+                            }
+                        };
+
+                        // Enqueue task
+                        try {
+                            client.cardAdsQueue.enqueue(task);
+                        } catch (error) {
+                            console.log(`[ERROR] [sell]:`, error);
+
+                            cardEmbed.setColor(config.embed.red);
+                            return await confirmation.update({
+                                content: `<@${userID}>, is this the correct card you want to sell?`,
+                                embeds: [cardEmbed],
+                                components: [],
+                                allowedMentions: { parse: [] },
+                            });
+                        }
+
+                        await interaction.channel.send(
+                            `✅ Successfully listed \`${code}\` for sale in <#${config.channelID.cardAds}>!`
+                        );
+
+                        cardEmbed.setColor(config.embed.green);
+                        await confirmation.update({
+                            content: `<@${userID}>, is this the correct card you want to sell?`,
+                            embeds: [cardEmbed],
+                            components: [],
+                            allowedMentions: { parse: [] },
+                        });
+                        break;
+                    }
+                }
+                console.log(
+                    `[INFO] [sell] Successfully listed ${code} for sale:`,
+                    interaction.user.tag
+                );
+            });
+        } catch (error) {
+            console.error("[ERROR] [sell]:", error);
+            return await interaction.followUp({
+                content: "❌ Currency tags not selected within `1 minute`, cancelling.",
+                ephemeral: true,
+            });
         }
-        console.log(
-            `[INFO] [sell] Successfully listed ${code} for sale:`,
-            interaction.user.tag
-        );
     },
 };
+
+function getConditionText(condition) {
+    let conditionText;
+    switch (condition) {
+        case "mint":
+            conditionText = `+ (S) Dropped Mint`;
+            break;
+        case "excellent":
+            conditionText = `  (A) Dropped Excellent`;
+            break;
+        case "good":
+            conditionText = `  (B) Dropped Good`;
+            break;
+        case "poor":
+            conditionText = `- (C) Dropped Poor`;
+            break;
+        case "damaged":
+            conditionText = `- (F) Dropped Damaged`;
+            break;
+    }
+    return conditionText;
+}
+
+function getQuicknessText(quickness) {
+    let quicknessText;
+    switch (quickness) {
+        case "S":
+            quicknessText = `+ (S) Quickness`;
+            break;
+        case "A":
+            quicknessText = `+ (A) Quickness`;
+            break;
+        case "B":
+            quicknessText = `  (B) Quickness`;
+            break;
+        case "C":
+            quicknessText = `  (C) Quickness`;
+            break;
+        case "D":
+            quicknessText = `  (D) Quickness`;
+            break;
+        case "F":
+            quicknessText = `  (F) Quickness`;
+            break;
+    }
+    return quicknessText;
+}
+
+function getToughnessText(toughness) {
+    let toughnessText;
+    switch (toughness) {
+        case "S":
+            toughnessText = `+ (S) Toughness`;
+            break;
+        case "A":
+            toughnessText = `+ (A) Toughness`;
+            break;
+        case "B":
+            toughnessText = `  (B) Toughness`;
+            break;
+        case "C":
+            toughnessText = `  (C) Toughness`;
+            break;
+        case "D":
+            toughnessText = `  (D) Toughness`;
+            break;
+        case "F":
+            toughnessText = `  (F) Toughness`;
+            break;
+    }
+    return toughnessText;
+}
+
+function getPrintText(print) {
+    let printPrefix, printText;
+    if (print >= 100) {
+        printPrefix = "MP";
+        printText = "(MP) Mid Print";
+    } else if (print >= 10) {
+        printPrefix = "LP";
+        printText = "(LP) Low Print";
+    } else {
+        printPrefix = "SP";
+        printText = "(SP) Single Print";
+    }
+    return { printPrefix, printText };
+}

@@ -173,7 +173,6 @@ module.exports = {
         });
 
         // Wait for color role selection
-        let role;
         const collectorFilter = (i) => i.user.id === userID;
         try {
             const collector = await response1.createMessageComponentCollector({
@@ -202,7 +201,7 @@ module.exports = {
 
                 const roles = [...colors, ...neonColors];
                 const currentRole = findCurrentColorRole(member, roles);
-                addRole = guild.roles.cache.get(i.values[0]);
+                const addRole = guild.roles.cache.get(i.values[0]);
 
                 // Already have selected color
                 if (currentRole === addRole) {
