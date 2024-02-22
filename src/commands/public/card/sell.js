@@ -81,6 +81,15 @@ module.exports = {
         const lines = cardDetailsEmbed.description.split("\n");
 
         let info = lines[0].split(" · ");
+
+        // Check if card code is the same as before
+        if (code !== info[0].slice(3, -3)) {
+            return await embedMessage.reply({
+                content: `❌ <@${userID}>, mismatching card codes.`,
+                allowedMentions: { parse: [] },
+            });
+        }
+
         const print = parseInt(info[2].slice(2, -1));
         const edition = parseInt(info[3].slice(2, -1));
         const series = info[4].replace(/~~/, "");
