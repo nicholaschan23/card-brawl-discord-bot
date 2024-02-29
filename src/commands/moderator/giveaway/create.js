@@ -35,10 +35,10 @@ module.exports = {
                 .setName("type")
                 .setDescription("What bot is the giveaway for? No mixed-bot giveaways.")
                 .addChoices(
-                    { name: "Karuta", value: `<@&${config.roleID.karutaGiveaway}>` },
-                    { name: "Sofi", value: `<@&${config.roleID.sofiGiveaway}>` },
-                    { name: "Tofu", value: `<@&${config.roleID.tofuGiveaway}>` },
-                    { name: "Gachapon", value: `<@&${config.roleID.gachaponGiveaway}>` },
+                    { name: "Karuta", value: config.botID.karuta },
+                    { name: "Sofi", value: config.botID.sofi },
+                    { name: "Tofu", value: config.botID.tofu },
+                    { name: "Gachapon", value: config.botID.gachapon },
                     { name: "Other", value: "Other" }
                 )
                 .setRequired(true)
@@ -90,7 +90,7 @@ module.exports = {
         }
         const sponsorID = sponsor.id;
 
-        // Initialize giveaway schema model
+        // Intialize giveaway schema model
         const giveawayModel = new GiveawayModel({
             prize: prize,
             winners: winners,
@@ -100,7 +100,7 @@ module.exports = {
         });
 
         // Send embed
-        const giveawayEmbed = getGiveawayEmbed(giveawayModel, type);
+        const giveawayEmbed = getGiveawayEmbed(giveawayModel, `<@${type}>`);
         giveawayEmbed.setColor(config.embed.blue);
         if (image) {
             console.log("[INFO] [createGiveaway] Image found");
@@ -156,7 +156,20 @@ module.exports = {
                     });
                     giveawayModel.messageID = message.id;
 
-                    await channel.send(`${type} Click 🎉 to join the giveaway!`);
+                    const giveawayRoleMap = {
+                        [config.botID.karuta]: config.roleID.karutaGiveaway,
+                        [config.botID.sofi]: config.roleID.sofiGiveaway,
+                        [config.botID.tofu]: config.roleID.tofuGiveaway,
+                        [config.botID.gachapon]: config.roleID.gachaponGiveaway,
+                    };
+                    
+                    let giveawayPing;
+                    if (giveawayRoleMap[type]) {
+                        giveawayPing = `<@&${giveawayRoleMap[type]}>`;
+                    } else {
+                        giveawayPing = Object.values(giveawayRoleMap).map(roleID => `<@&${roleID}>`).join(' ');
+                    }
+                    await channel.send(`${giveawayPing} Click 🎉 to join the giveaway!`);
 
                     // Save BrawlSetupModel
                     try {
