@@ -11,7 +11,7 @@ module.exports = {
         .addSubcommand(sell.data)
         .addSubcommand(sold.data)
         .addSubcommand(offer.data),
-    cooldown: 0,
+    cooldown: 60,
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
