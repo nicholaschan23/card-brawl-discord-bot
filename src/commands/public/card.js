@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const sell = require("./card/sell");
 const sold = require("./card/sold");
+const offer = require("./card/offer");
 
 module.exports = {
     category: "public",
@@ -8,8 +9,9 @@ module.exports = {
         .setName("card")
         .setDescription("Card main command.")
         .addSubcommand(sell.data)
-        .addSubcommand(sold.data),
-    cooldown: 60,
+        .addSubcommand(sold.data)
+        .addSubcommand(offer.data),
+    cooldown: 0,
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
@@ -19,6 +21,10 @@ module.exports = {
             }
             case "sold": {
                 await sold.execute(interaction);
+                break;
+            }
+            case "offer": {
+                await offer.execute(interaction);
                 break;
             }
             default: {

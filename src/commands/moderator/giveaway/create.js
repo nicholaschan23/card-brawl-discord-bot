@@ -155,9 +155,27 @@ module.exports = {
                         components: [row],
                     });
                     giveawayModel.messageID = message.id;
-                    await channel.send(
-                        `<@&${config.roleID.giveaway}> Click 🎉 to join the giveaway!`
-                    );
+
+                    let giveawayPing;
+                    switch (type) {
+                        case "Karuta": {
+                            giveawayPing = config.roleID.karutaGiveaway;
+                            break;
+                        }
+                        case "Sofi": {
+                            giveawayPing = config.roleID.sofiGiveaway;
+                            break;
+                        }
+                        case "Tofu": {
+                            giveawayPing = config.roleID.tofuGiveaway;
+                            break;
+                        }
+                        case "Gachapon": {
+                            giveawayPing = config.roleID.gachaponGiveaway;
+                            break;
+                        }
+                    }
+                    await channel.send(`<@&${giveawayPing}> Click 🎉 to join the giveaway!`);
 
                     // Save BrawlSetupModel
                     try {

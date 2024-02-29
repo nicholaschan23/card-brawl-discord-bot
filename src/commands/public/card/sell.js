@@ -389,7 +389,7 @@ module.exports = {
 
                         // Enqueue task
                         try {
-                            client.cardAdsQueue.enqueue(task);
+                            await client.cardAdsQueue.enqueue(task);
                         } catch (error) {
                             console.log(`[ERROR] [sell]:`, error);
 

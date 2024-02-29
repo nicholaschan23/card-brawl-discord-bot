@@ -1,0 +1,263 @@
+const {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
+    ModalBuilder,
+    SlashCommandSubcommandBuilder,
+    TextInputBuilder,
+    TextInputStyle,
+} = require("discord.js");
+const CardAdsModel = require("../../../sell/schemas/cardAdSchema");
+const client = require("../../../index");
+const config = require("../../../../config.json");
+
+module.exports = {
+    data: new SlashCommandSubcommandBuilder()
+        .setName("offer")
+        .setDescription("Send an offer for a card.")
+        .addStringOption((option) =>
+            option.setName("code").setDescription("Card's unique code.").setRequired(true)
+        ),
+    category: "public/card",
+    async execute(interaction) {
+        const code = interaction.options.getString("code");
+        const adChannel = client.channels.cache.get(config.channelID.cardAds);
+        const offersChannel = client.channels.cache.get(config.channelID.cardOffers);
+
+        // Make sure card exists to offer
+        let messageID, ownerID;
+        const task = async () => {
+            // Fetch existing card ad model
+            const cardAdsModel = await CardAdsModel.findOne({
+                code,
+            }).exec();
+
+            // Listing not found
+            if (!cardAdsModel) {
+                throw new Error(
+                    `❌ The \`${code}\` card is not listed in <#${config.channelID.cardAds}>.`
+                );
+            }
+
+            if (cardAdsModel.ownerID === interaction.user.id) {
+                throw new Error(`❌ You cannot offer for your own card.`);
+            }
+
+            messageID = cardAdsModel.messageID;
+            ownerID = cardAdsModel.ownerID;
+        };
+
+        // Enqueue task
+        try {
+            await client.cardAdsQueue.enqueue(task);
+        } catch (error) {
+            return await interaction.reply(error.message);
+        }
+
+        // Get data from embed
+        let embedTitle, cardDetails;
+        await adChannel.messages.fetch(messageID).then((message) => {
+            embedTitle = message.embeds[0].data.title;
+            cardDetails = message.embeds[0].data.description.split("\n")[2];
+        });
+
+        const gemOffer = new TextInputBuilder()
+            .setCustomId("gemOffer")
+            .setLabel(`Gems`)
+            .setPlaceholder(`15`)
+            .setStyle(TextInputStyle.Short)
+            .setMaxLength(6)
+            .setRequired(false);
+        const ticketOffer = new TextInputBuilder()
+            .setCustomId("ticketOffer")
+            .setLabel(`Tickets`)
+            .setPlaceholder(`1`)
+            .setStyle(TextInputStyle.Short)
+            .setMaxLength(6)
+            .setRequired(false);
+        const cardOffer = new TextInputBuilder()
+            .setCustomId("cardOffer")
+            .setLabel(`Cards`)
+            .setPlaceholder(`◾ ♡999 · abc123 · ★★★★ · #999 · ◈1 · Series · Character`)
+            .setStyle(TextInputStyle.Paragraph)
+            .setRequired(false);
+        const gemRow = new ActionRowBuilder().addComponents(gemOffer);
+        const ticketRow = new ActionRowBuilder().addComponents(ticketOffer);
+        const cardRow = new ActionRowBuilder().addComponents(cardOffer);
+
+        // Add inputs to the modal
+        const modal = new ModalBuilder()
+            .setCustomId("offerModal")
+            .setTitle(`${embedTitle}`);
+        modal.addComponents(gemRow, ticketRow, cardRow);
+
+        await interaction.showModal(modal).catch((error) => {
+            return console.error(
+                `[ERROR] [offer] Failed to send modal to: ${interaction.user.tag}`,
+                error
+            );
+        });
+
+        // Collect a modal submit interaction
+        await interaction
+            .awaitModalSubmit({
+                filter: (i) => i.customId === "offerModal",
+                time: 60_000,
+            })
+            .then(async (i) => {
+                let offer = "";
+                await i.deferReply({ ephemeral: true });
+
+                const embed = new EmbedBuilder()
+                    .setTitle("Finalize Offer")
+                    .setDescription(
+                        `Offer by ${interaction.user}\n\n` + `${cardDetails}\n`
+                    );
+
+                // Validate gem offer
+                let gemAmount = i.fields.getTextInputValue("gemOffer");
+                if (gemAmount) {
+                    if (isNaN(gemAmount)) {
+                        return await i.editReply({
+                            content: "❌ Please enter a number of gems.",
+                            ephemeral: true,
+                        });
+                    }
+                    offer += `💎 **${gemAmount}**\n`;
+                }
+
+                // Validate ticket offer
+                let ticketAmount = i.fields.getTextInputValue("ticketOffer");
+                if (ticketAmount) {
+                    if (isNaN(ticketAmount)) {
+                        return await i.editReply({
+                            content: "❌ Please enter a number of tickets.",
+                            ephemeral: true,
+                        });
+                    }
+                    offer += `🎟️ **${ticketAmount}**\n`;
+                }
+
+                if (offer) {
+                    embed.addFields({
+                        name: `Inventory`,
+                        value: offer.trim(),
+                        inline: false,
+                    });
+                }
+
+                // Validate card offer format
+                let cards = i.fields.getTextInputValue("cardOffer");
+                if (cards) {
+                    cards = cards.split("\n");
+                    for (let i = 0; i < cards.length; i++) {
+                        let line = cards[i];
+                        // Split the line by the '·' character and trim each part
+                        const parts = line.split("·").map((part) => part.trim());
+
+                        // Check if the number of parts matches the expected format
+                        if (parts.length !== 7) {
+                            return await i.editReply({
+                                content: `❌ Invalid format: \`${line}\``,
+                                ephemeral: true,
+                            });
+                        }
+
+                        // Check for wishlist and trim emoji
+                        const wishlist = parts[0].match(/♡\d+/);
+                        if (!wishlist) {
+                            return await i.editReply({
+                                content: `❌ No wishlist found. Invalid format: \`${line}\``,
+                                ephemeral: true,
+                            });
+                        }
+                        parts[0] = wishlist[0];
+
+                        // Join the trimmed parts back together and store it back in line
+                        cards[i] = parts.join(" · ");
+                    }
+
+                    embed.addFields({
+                        name: `Cards`,
+                        value: `\`\`\`ls\n` + `${cards}\n` + `\`\`\``,
+                        inline: false,
+                    });
+                }
+
+                // Must have one of the 3 fields filled out
+                if (!gemAmount && !ticketAmount && !cards) {
+                    return await i.editReply({
+                        content: "❌ Your offer cannot be empty.",
+                        ephemeral: true,
+                    });
+                }
+
+                // Buttons
+                const cancel = new ButtonBuilder()
+                    .setCustomId("cancelOffer")
+                    .setEmoji("❌")
+                    .setStyle(ButtonStyle.Secondary);
+                const confirm = new ButtonBuilder()
+                    .setCustomId("confirmOffer")
+                    .setEmoji("✅")
+                    .setStyle(ButtonStyle.Secondary);
+                const row = new ActionRowBuilder().addComponents(cancel, confirm);
+
+                const response = await i.editReply({
+                    fetchReply: true,
+                    embeds: [embed],
+                    components: [row],
+                    ephemeral: true,
+                });
+
+                // Wait for confirmation
+                try {
+                    const collector = response.createMessageComponentCollector({
+                        componentType: ComponentType.Button,
+                        max: 1,
+                        time: 60_000,
+                    });
+
+                    collector.on("collect", async (i) => {
+                        switch (i.customId) {
+                            case "cancelOffer": {
+                                embed.setColor(config.embed.red);
+                                return await i.update({
+                                    embeds: [embed],
+                                    components: [],
+                                });
+                            }
+                            case "confirmOffer": {
+                                embed.setTitle(embedTitle);
+                                await offersChannel.send({
+                                    content: `<@${ownerID}>, ${interaction.user} sent you an offer!`,
+                                    embeds: [embed],
+                                });
+
+                                embed.setColor(green);
+                                await i.update({
+                                    embeds: [embed],
+                                    components: [],
+                                });
+
+                                console.log(
+                                    `[INFO] [offer] Successfully offered for ${code}:`,
+                                    interaction.user.tag
+                                );
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("[ERROR] [offer]", error);
+                    embed.setColor(config.embed.red);
+                    return await i.update({
+                        embeds: [embed],
+                        components: [],
+                    });
+                }
+            })
+            .catch(console.error);
+    },
+};
