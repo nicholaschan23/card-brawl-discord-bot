@@ -107,14 +107,10 @@ module.exports = {
                 time: 60_000,
             })
             .then(async (i) => {
-                let offer = "";
-                await i.deferReply({ ephemeral: true });
+                let inventoryOffer = "",
+                    cardOffer = "";
 
-                const embed = new EmbedBuilder()
-                    .setTitle("Finalize Offer")
-                    .setDescription(
-                        `Offer by ${interaction.user}\n\n` + `${cardDetails}\n`
-                    );
+                await i.deferReply({ ephemeral: true });
 
                 // Validate gem offer
                 let gemAmount = i.fields.getTextInputValue("gemOffer");
@@ -125,7 +121,7 @@ module.exports = {
                             ephemeral: true,
                         });
                     }
-                    offer += `💎 **${gemAmount}**\n`;
+                    inventoryOffer += `💎 **${gemAmount}**`;
                 }
 
                 // Validate ticket offer
@@ -137,15 +133,7 @@ module.exports = {
                             ephemeral: true,
                         });
                     }
-                    offer += `🎟️ **${ticketAmount}**\n`;
-                }
-
-                if (offer) {
-                    embed.addFields({
-                        name: `Inventory`,
-                        value: offer.trim(),
-                        inline: false,
-                    });
+                    inventoryOffer += `   🎟️ **${ticketAmount}**`;
                 }
 
                 // Validate card offer format
@@ -178,12 +166,7 @@ module.exports = {
                         // Join the trimmed parts back together and store it back in line
                         cards[i] = parts.join(" · ");
                     }
-
-                    embed.addFields({
-                        name: `Cards`,
-                        value: `\`\`\`ls\n` + `${cards}\n` + `\`\`\``,
-                        inline: false,
-                    });
+                    cardOffer = `${`\`\`\`ls\n` + `${cards}\n` + `\`\`\``}`;
                 }
 
                 // Must have one of the 3 fields filled out
@@ -193,6 +176,17 @@ module.exports = {
                         ephemeral: true,
                     });
                 }
+
+                const embed = new EmbedBuilder().addFields(
+                    {
+                        name: "Card",
+                        value: `${cardDetails}`,
+                    },
+                    {
+                        name: "Offer",
+                        value: `${inventoryOffer.trim()}\n` + `${cardOffer}`,
+                    }
+                );
 
                 // Buttons
                 const cancel = new ButtonBuilder()
@@ -230,13 +224,12 @@ module.exports = {
                                 });
                             }
                             case "confirmOffer": {
-                                embed.setTitle(embedTitle);
                                 await offersChannel.send({
-                                    content: `<@${ownerID}>, ${interaction.user} sent you an offer!`,
+                                    content: `<@${ownerID}>, an offer was sent to you by ${interaction.user}!`,
                                     embeds: [embed],
                                 });
 
-                                embed.setColor(green);
+                                embed.setColor(config.embed.green);
                                 await i.update({
                                     embeds: [embed],
                                     components: [],
