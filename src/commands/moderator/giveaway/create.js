@@ -35,10 +35,10 @@ module.exports = {
                 .setName("type")
                 .setDescription("What bot is the giveaway for? No mixed-bot giveaways.")
                 .addChoices(
-                    { name: "Karuta", value: `<@${config.botID.karuta}>` },
-                    { name: "Sofi", value: `<@${config.botID.sofi}>` },
-                    { name: "Tofu", value: `<@${config.botID.tofu}>` },
-                    { name: "Gachapon", value: `<@${config.botID.gachapon}>` },
+                    { name: "Karuta", value: `<@&${config.roleID.karutaGiveaway}>` },
+                    { name: "Sofi", value: `<@&${config.roleID.sofiGiveaway}>` },
+                    { name: "Tofu", value: `<@&${config.roleID.tofuGiveaway}>` },
+                    { name: "Gachapon", value: `<@&${config.roleID.gachaponGiveaway}>` },
                     { name: "Other", value: "Other" }
                 )
                 .setRequired(true)
@@ -90,7 +90,7 @@ module.exports = {
         }
         const sponsorID = sponsor.id;
 
-        // Intialize giveaway schema model
+        // Initialize giveaway schema model
         const giveawayModel = new GiveawayModel({
             prize: prize,
             winners: winners,
@@ -156,26 +156,7 @@ module.exports = {
                     });
                     giveawayModel.messageID = message.id;
 
-                    let giveawayPing;
-                    switch (type) {
-                        case "Karuta": {
-                            giveawayPing = config.roleID.karutaGiveaway;
-                            break;
-                        }
-                        case "Sofi": {
-                            giveawayPing = config.roleID.sofiGiveaway;
-                            break;
-                        }
-                        case "Tofu": {
-                            giveawayPing = config.roleID.tofuGiveaway;
-                            break;
-                        }
-                        case "Gachapon": {
-                            giveawayPing = config.roleID.gachaponGiveaway;
-                            break;
-                        }
-                    }
-                    await channel.send(`<@&${giveawayPing}> Click 🎉 to join the giveaway!`);
+                    await channel.send(`${type} Click 🎉 to join the giveaway!`);
 
                     // Save BrawlSetupModel
                     try {
