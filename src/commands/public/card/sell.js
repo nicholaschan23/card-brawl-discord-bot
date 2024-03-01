@@ -292,7 +292,7 @@ module.exports = {
                             value:
                                 `${tags}\`\`\`\n` +
                                 `  (E${edition}) Edition ${edition}\n` +
-                                `${printText}\n` +
+                                `  ${printText}\n` +
                                 `\`\`\``,
                             inline: true,
                         }
@@ -523,13 +523,13 @@ function getPrintText(print) {
     let printPrefix, printText;
     if (print >= 100) {
         printPrefix = "MP";
-        printText = "  (MP) Mid Print";
+        printText = "(MP) Mid Print";
     } else if (print >= 10) {
         printPrefix = "LP";
-        printText = "  (LP) Low Print";
+        printText = "(LP) Low Print";
     } else {
         printPrefix = "SP";
-        printText = "  (SP) Single Print";
+        printText = "(SP) Single Print";
     }
     return { printPrefix, printText };
 }
