@@ -93,10 +93,10 @@ module.exports = {
         const print = parseInt(info[2].slice(2, -1));
         const edition = parseInt(info[3].slice(2, -1));
         const series = info[4].replace(/~~/, "");
-        const character = info[5].replace(/~~/, "").slice(2, -2);
+        const character = parseCharacter(info[5].replace(/~~/, "").replace(/\*/g, ""));
 
         info = lines[9].split(" ");
-        const condition = info[2].slice(2, -2);
+        const condition = info[2].replace(/\*/g, "");
 
         // Check card print number precondition
         if (print > 999) {
@@ -430,6 +430,22 @@ module.exports = {
         }
     },
 };
+
+function parseCharacter(input) {
+    // Check if the input contains "alias of"
+    if (input.includes("(alias of")) {
+        const regexAlias = /\(alias of (.+?)\)/;
+
+        // Extract the name within parentheses using the regular expression
+        const match = input.match(regexAlias);
+        if (match) {
+            return match[1].trim(); // Return the trimmed name
+        }
+    }
+
+    // No alias, return the original
+    return input;
+}
 
 function getConditionText(condition) {
     let conditionText;
