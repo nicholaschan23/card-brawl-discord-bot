@@ -90,7 +90,7 @@ module.exports = {
         }
         const sponsorID = sponsor.id;
 
-        // Intialize giveaway schema model
+        // Initialize giveaway schema model
         const giveawayModel = new GiveawayModel({
             prize: prize,
             winners: winners,
