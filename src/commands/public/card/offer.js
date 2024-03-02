@@ -101,6 +101,7 @@ module.exports = {
         });
 
         // Collect a modal submit interaction
+        const regexValidNum = /^[1-9]\d*$/;
         await interaction
             .awaitModalSubmit({
                 filter: (i) => i.customId === "offerModal",
@@ -115,9 +116,11 @@ module.exports = {
                 // Validate gem offer
                 let gemAmount = i.fields.getTextInputValue("gemOffer");
                 if (gemAmount) {
-                    if (isNaN(gemAmount)) {
+                    console.log(regexValidNum.test(gemAmount));
+                    // Only accept whole positive number
+                    if (!regexValidNum.test(gemAmount)) {
                         return await i.editReply({
-                            content: "❌ Please enter a number of gems.",
+                            content: "❌ Please enter a valid number of gems.",
                             ephemeral: true,
                         });
                     }
@@ -127,9 +130,9 @@ module.exports = {
                 // Validate ticket offer
                 let ticketAmount = i.fields.getTextInputValue("ticketOffer");
                 if (ticketAmount) {
-                    if (isNaN(ticketAmount)) {
+                    if (!regexValidNum.test(ticketAmount)) {
                         return await i.editReply({
-                            content: "❌ Please enter a number of tickets.",
+                            content: "❌ Please enter a valid number of tickets.",
                             ephemeral: true,
                         });
                     }
