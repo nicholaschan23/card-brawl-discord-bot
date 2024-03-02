@@ -26,6 +26,16 @@ module.exports = {
         const code = interaction.options.getString("code");
         const channel = client.channels.cache.get(config.channelID.cardAds);
 
+        // Validate card code
+        const regexCode = /[^a-z0-9]/;
+        if (regexCode.test(code)) {
+            return await interaction.reply({
+                content: `❌ <@${userID}>, that is not a valid card code: \`${code}\``,
+                allowedMentions: { parse: [] },
+                ephemeral: true,
+            });
+        }
+
         // Ask for card details
         await interaction.reply({
             content: `<@${userID}>, show the card info for what you want to sell. Type command \`kci ${code}\`.`,
