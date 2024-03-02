@@ -5,6 +5,7 @@ const brawlInfo = require("./post/brawlInfo");
 const karutaGuide = require("./post/karutaGuide");
 const perks = require("./post/perks");
 const cardInfo = require("./post/cardInfo");
+const marketInfo = require("./post/marketInfo");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,6 +17,7 @@ module.exports = {
     .addSubcommand(karutaGuide.data)
     .addSubcommand(perks.data)
     .addSubcommand(cardInfo.data)
+    .addSubcommand(marketInfo.data)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     category: "developer",
     async execute(interaction) {
@@ -43,6 +45,10 @@ module.exports = {
             }
             case "card-info": {
                 await cardInfo.execute(interaction);
+                break;
+            }
+            case "market-info": {
+                await marketInfo.execute(interaction);
                 break;
             }
             default: {

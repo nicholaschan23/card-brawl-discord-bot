@@ -6,6 +6,41 @@ const {
 } = require("discord.js");
 const config = require("../../../../config.json");
 
+// ## Bots
+// ### Karuta
+// @Karuta#1280 Main card bot
+// - 4 card server drops `kchest`
+// ### Starflight
+// @Starflight#8533 Utility bot
+// __Regular__
+// - Pings <@&1143587516373549186> when there's a server drop
+// - Pings <@&1143587614788702238> when there's a card dropping from someone's wishlist (`kww` to set your wishlist watch channel in #《🥢》karuta-drop)
+// - Pings @Brawl Judge when there's an event drop
+// - Add cards to your Starflight wishlist `sf.wa` (second wishlist in addition to Karuta's)
+// - Set your Starflight wishwatch channel `sf.ww`
+// - `kci` and react with :moneybag: for card pricer
+// __Premium__
+// - Check premium status `sf.premium`
+// - Provide information about cards in a drop with `wishlist >= 5` in #《🥢》karuta-drop
+// - Auto stars high wishlist cards with `wishlist >= 100` and posts in #《⭐》best-drops
+// - Test dyes, cards, and frames __you don't own__ `sf.dye <dye code>`
+// ### Koibot
+// @Koibot#0054 Date solver bot
+// - Check premium status `/wls` and `/swls`
+// - `kvi`
+// - `ssolve [insert image url]`
+// ### Keqing
+// @Keqing#9910 Effort calculator bot
+// - `kwi` and react with :1234: to get effort analysis
+// ### Kalendar
+// @Kalendar#5027 Collection utility bot
+// - `kc` and react with :calendar: or :calendar_spiral: to automatically copy card codes
+// - `kbi` and react with :pencil: or :money_with_wings: to get bit totals
+// - `kci` and react with :calendar: to find Koibito
+// ### Queen's Right Leg (QRL)
+// @Queen's Right Leg#7475 Utility bot [Documentation](https://docs.leg.ryansbakery.dev/)
+// - Solves `kdaily`
+
 const gettingStarted =
     `# Getting Started\n` +
     `:game_die: **There are several card collecting games you can play: <@${config.botID.karuta}>, <@${config.botID.sofi}>, <@${config.botID.tofu}>, and <@${config.botID.gachapon}>!** There are designated channels to drop (get), trade, organize, style, and show off cards. There are also other bots that provide complimentary features to these games like drop analysis, auto card pricing, dye/frame testing, and more.\n\n` +
@@ -15,18 +50,7 @@ const gettingStarted =
     `- In <#${config.channelID.karutaDrop}> type \`kd\` and pick a number (\`khelp\` for all commands)\n` +
     `- In <#${config.channelID.sofiDrop}> type \`sd\` and pick a number (\`shelp\` for all commands)\n` +
     `- In <#${config.channelID.tofuSummon}> type \`ts\` and pick a number (\`thelp\` for all commands)\n` +
-    `- In <#${config.channelID.gachaponDrop}> type \`gg\` and pick a number (\`ghelp\` for all commands)\n` +
-    `## Trade\n` +
-    `- Post trading ads in <#${config.channelID.tradingAds}>\n` +
-    `- Conduct trades in any of the <#${config.channelID.card1}> channels\n` +
-    `## Organize\n` +
-    `- Organize your card collection in any of the <#${config.channelID.card1}> channels\n` +
-    `## Style\n` +
-    `- Post styling service ads in <#${config.channelID.serviceAds}>\n` +
-    `- Conduct services in any of the <#${config.channelID.style1}> channels\n` +
-    `## Show off\n` +
-    `- Show off cards in <#${config.channelID.cardGallery}>\n` +
-    `- Compete in card competitions (more info in <#${config.channelID.brawlInfo}>)\n`;
+    `- In <#${config.channelID.gachaponDrop}> type \`gg\` and pick a number (\`ghelp\` for all commands)`;
 
 const pings =
     `# Notifications\n` +
@@ -93,41 +117,6 @@ const gachaponRow = new ActionRowBuilder().addComponents(
     gachaponDropButton,
     gachaponWishlistButton
 );
-
-// ## Bots
-// ### Karuta
-// @Karuta#1280 Main card bot
-// - 4 card server drops `kchest`
-// ### Starflight
-// @Starflight#8533 Utility bot
-// __Regular__
-// - Pings <@&1143587516373549186> when there's a server drop
-// - Pings <@&1143587614788702238> when there's a card dropping from someone's wishlist (`kww` to set your wishlist watch channel in #《🥢》karuta-drop)
-// - Pings @Brawl Judge when there's an event drop
-// - Add cards to your Starflight wishlist `sf.wa` (second wishlist in addition to Karuta's)
-// - Set your Starflight wishwatch channel `sf.ww`
-// - `kci` and react with :moneybag: for card pricer
-// __Premium__
-// - Check premium status `sf.premium`
-// - Provide information about cards in a drop with `wishlist >= 5` in #《🥢》karuta-drop
-// - Auto stars high wishlist cards with `wishlist >= 100` and posts in #《⭐》best-drops
-// - Test dyes, cards, and frames __you don't own__ `sf.dye <dye code>`
-// ### Koibot
-// @Koibot#0054 Date solver bot
-// - Check premium status `/wls` and `/swls`
-// - `kvi`
-// - `ssolve [insert image url]`
-// ### Keqing
-// @Keqing#9910 Effort calculator bot
-// - `kwi` and react with :1234: to get effort analysis
-// ### Kalendar
-// @Kalendar#5027 Collection utility bot
-// - `kc` and react with :calendar: or :calendar_spiral: to automatically copy card codes
-// - `kbi` and react with :pencil: or :money_with_wings: to get bit totals
-// - `kci` and react with :calendar: to find Koibito
-// ### Queen's Right Leg (QRL)
-// @Queen's Right Leg#7475 Utility bot [Documentation](https://docs.leg.ryansbakery.dev/)
-// - Solves `kdaily`
 
 module.exports = {
     data: new SlashCommandSubcommandBuilder()
