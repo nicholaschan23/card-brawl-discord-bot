@@ -15,7 +15,10 @@ module.exports = {
         const threadChannel = interaction.channel;
 
         if (threadChannel.ownerId !== interaction.user.id) {
-            return await interaction.reply({ content: "❌ You do not own this post." });
+            return await interaction.reply({
+                content: "❌ You do not own this post.",
+                ephemeral: true,
+            });
         }
 
         const confirm = new ButtonBuilder()
