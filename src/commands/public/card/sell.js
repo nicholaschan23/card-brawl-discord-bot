@@ -126,8 +126,19 @@ module.exports = {
 
         // Find style tags
         let tagsStyle = "";
-        if (cardDetailsEmbed.description.includes(`Framed with`)) {
-            tagsStyle += "Framed\n";
+        const regexFrame = /Framed with \*\*(.*?)\*\*/;
+        const matchFrame = cardDetailsEmbed.description.match(regexFrame);
+        if (matchFrame) {
+            tagsStyle += `${matchFrame[1]} Frame\n`;
+        }
+        if (cardDetailsEmbed.description.includes(`Dyed with`)) {
+            var regexMysticDye = /Dyed with \*\*Mystic/;
+            var matchMysticDye = cardDetailsEmbed.description.match(regexMysticDye);
+            if (matchMysticDye) {
+                tagsStyle += "Mystic Dyed\n";
+            } else {
+                tagsStyle += "Regular Dyed\n";
+            }
         }
         if (cardDetailsEmbed.description.includes(`Morphed by`)) {
             tagsStyle += "Morphed\n";
@@ -304,28 +315,32 @@ module.exports = {
                         `Owned by <@${userID}>\n\n` +
                             `\`${code}\` · \`#${print}\` · \`◈${edition}\` · ${series} · **${character}**`
                     )
-                    .addFields(
-                        {
-                            name: `Effort Modifiers`,
-                            value:
-                                `\`\`\`diff\n` +
-                                `${conditionText}\n` +
-                                `${quicknessText}\n` +
-                                `${toughnessText}\n` +
-                                `\`\`\``,
-                            inline: true,
-                        },
-                        {
-                            name: `Tags`,
-                            value:
-                                `${tagsCurrency}\`\`\`\n` +
-                                `${tagsStyle}` +
-                                `\`\`\``,
-                            inline: true,
-                        }
-                    )
+                    .addFields({
+                        name: `Effort Modifiers`,
+                        value:
+                            `\`\`\`diff\n` +
+                            `${conditionText}\n` +
+                            `${quicknessText}\n` +
+                            `${toughnessText}\n` +
+                            `\`\`\``,
+                        inline: true,
+                    })
                     .setColor(cardDetailsEmbed.color)
                     .setImage(cardImage);
+
+                if (tagsStyle.length > 0) {
+                    cardEmbed.addFields({
+                        name: "Tags",
+                        value: `\`\`\`\n${tagsStyle}\n\`\`\``,
+                        inline: true,
+                    });
+                }
+
+                cardEmbed.addFields({
+                    name: `Accepted Currency`,
+                    value: `${tagsCurrency}`,
+                    inline: false,
+                });
 
                 const confirmationResponse = await interaction.channel.send({
                     content: `<@${userID}>, is this the correct card you want to sell?`,
