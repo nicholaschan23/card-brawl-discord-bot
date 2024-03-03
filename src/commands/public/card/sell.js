@@ -23,7 +23,7 @@ module.exports = {
     category: "public/card",
     async execute(interaction) {
         const userID = interaction.user.id;
-        const code = interaction.options.getString("code");
+        const code = interaction.options.getString("code").toLowerCase();
         const channel = client.channels.cache.get(config.channelID.cardAds);
 
         // Validate card code

@@ -13,8 +13,18 @@ module.exports = {
     category: "public/card",
     async execute(interaction) {
         const userID = interaction.user.id;
-        const code = interaction.options.getString("code");
+        const code = interaction.options.getString("code").toLowerCase();
         const channel = client.channels.cache.get(config.channelID.cardAds);
+
+        // Validate card code
+        const regexCode = /[^a-z0-9]/;
+        if (regexCode.test(code)) {
+            return await interaction.reply({
+                content: `❌ <@${userID}>, that is not a valid card code: \`${code}\``,
+                allowedMentions: { parse: [] },
+                ephemeral: true,
+            });
+        }
 
         await interaction.deferReply({ ephemeral: true });
 

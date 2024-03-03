@@ -22,9 +22,19 @@ module.exports = {
         ),
     category: "public/card",
     async execute(interaction) {
-        const code = interaction.options.getString("code");
+        const code = interaction.options.getString("code").toLowerCase();
         const adChannel = client.channels.cache.get(config.channelID.cardAds);
         const offersChannel = client.channels.cache.get(config.channelID.cardOffers);
+
+        // Validate card code
+        const regexCode = /[^a-z0-9]/;
+        if (regexCode.test(code)) {
+            return await interaction.reply({
+                content: `❌ ${interaction.user}, that is not a valid card code: \`${code}\``,
+                allowedMentions: { parse: [] },
+                ephemeral: true,
+            });
+        }
 
         // Make sure card exists to offer
         let messageID, ownerID;
