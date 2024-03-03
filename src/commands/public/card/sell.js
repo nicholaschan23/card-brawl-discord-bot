@@ -124,6 +124,25 @@ module.exports = {
             });
         }
 
+        // Find style tags
+        let tagsStyle = "";
+        if (cardDetailsEmbed.description.includes(`Framed with`)) {
+            tagsStyle += "Framed\n";
+        }
+        if (cardDetailsEmbed.description.includes(`Morphed by`)) {
+            tagsStyle += "Morphed\n";
+        }
+        if (cardDetailsEmbed.description.includes(`Sketched by`)) {
+            tagsStyle += "Sketched\n";
+        }
+        if (cardDetailsEmbed.description.includes(`Trimmed by`)) {
+            tagsStyle += "Trimmed\n";
+        }
+        if (cardDetailsEmbed.description.includes(`alias of`)) {
+            tagsStyle += "Aliased";
+        }
+        tagsStyle.trim();
+
         // Ask for worker info
         await embedMessage.reply({
             content: `<@${userID}>, show the worker info for what you want to sell. Type command \`kwi ${code}\`.`,
@@ -252,7 +271,7 @@ module.exports = {
             });
 
             collector.on("collect", async (i) => {
-                const tags = i.values.sort().join(" ");
+                const tagsCurrency = i.values.sort().join(" ");
 
                 // Mark select embed as success
                 selectEmbed.setColor(config.embed.green);
@@ -265,7 +284,6 @@ module.exports = {
                 const conditionText = getConditionText(condition);
                 const quicknessText = getQuicknessText(quickness);
                 const toughnessText = getToughnessText(toughness);
-                const { printPrefix, printText } = getPrintText(print);
 
                 // Create buttons
                 const confirm = new ButtonBuilder()
@@ -281,7 +299,7 @@ module.exports = {
                 // Display card confirmation
                 const cardImage = cardDetailsEmbed.thumbnail.url;
                 const cardEmbed = new EmbedBuilder()
-                    .setTitle(`E${edition} ${printPrefix} ${character}`)
+                    .setTitle(`E${edition} ${getPrintAbbreviation(print)} ${character}`)
                     .setDescription(
                         `Owned by <@${userID}>\n\n` +
                             `\`${code}\` · \`#${print}\` · \`◈${edition}\` · ${series} · **${character}**`
@@ -300,9 +318,8 @@ module.exports = {
                         {
                             name: `Tags`,
                             value:
-                                `${tags}\`\`\`\n` +
-                                `  (E${edition}) Edition ${edition}\n` +
-                                `  ${printText}\n` +
+                                `${tagsCurrency}\`\`\`\n` +
+                                `${tagsStyle}` +
                                 `\`\`\``,
                             inline: true,
                         }
@@ -333,7 +350,7 @@ module.exports = {
 
                     cardEmbed.setColor(config.embed.red);
                     await confirmationResponse.edit({
-                        content: `<@${userID}>, is this the correct card you want to submit?`,
+                        content: `<@${userID}>, is this the correct card you want to sell?`,
                         allowedMentions: { parse: [] },
                         embeds: [cardEmbed],
                         components: [],
@@ -529,17 +546,14 @@ function getToughnessText(toughness) {
     return toughnessText;
 }
 
-function getPrintText(print) {
-    let printPrefix, printText;
+function getPrintAbbreviation(print) {
+    let printAbbreviation;
     if (print >= 100) {
-        printPrefix = "MP";
-        printText = "(MP) Mid Print";
+        printAbbreviation = "MP";
     } else if (print >= 10) {
-        printPrefix = "LP";
-        printText = "(LP) Low Print";
+        printAbbreviation = "LP";
     } else {
-        printPrefix = "SP";
-        printText = "(SP) Single Print";
+        printAbbreviation = "SP";
     }
-    return { printPrefix, printText };
+    return printAbbreviation;
 }
