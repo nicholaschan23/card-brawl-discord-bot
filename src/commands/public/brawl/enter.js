@@ -34,21 +34,21 @@ module.exports = {
             setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (!setupModel) {
                 return await interaction.reply({
-                    content: `No Card Brawl found with the name "${name}".`,
+                    content: `❌ No Card Brawl found with the name "${name}".`,
                     ephemeral: true,
                 });
             }
         } catch (error) {
-            console.error("[BRAWL ENTER] Error retrieving BrawlSetupModel:", error);
+            console.error("[brawl/enter] Error retrieving BrawlSetupModel:", error);
             return await interaction.reply(
-                `Error retrieving Card Brawl. Notifying <@${config.developerID}>.`
+                `❌ Error retrieving Card Brawl. Notifying <@${config.developerID}>.`
             );
         }
 
         // Check preconditions
         if (!setupModel.open) {
             return await interaction.reply(
-                `The **${setupModel.name}** Card Brawl is closed.`
+                `❌ The **${setupModel.name}** Card Brawl is closed.`
             );
         }
 
@@ -68,13 +68,13 @@ module.exports = {
                         config.brawl.serverSubscriberEntry
                     ) {
                         return await interaction.reply({
-                            content: `<@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`,
+                            content: `❌ <@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`,
                             allowedMentions: { parse: [] },
                         });
                     }
                 } else {
                     return await interaction.reply({
-                        content: `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`,
+                        content: `❌ <@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`,
                         allowedMentions: { parse: [] },
                     });
                 }
@@ -111,7 +111,7 @@ module.exports = {
                 time: 60 * 1000,
             });
         } catch (error) {
-            console.warn("[BRAWL ENTER] Command timed out:", interaction.user.tag);
+            console.warn("[brawl/enter] Command timed out:", interaction.user.tag);
 
             enterEmbed.setColor(config.embed.red);
             await confirmation.update({
@@ -122,7 +122,7 @@ module.exports = {
             });
 
             return await interaction.followUp({
-                content: "Confirmation not received within `1 minute`, cancelling.",
+                content: "❌ Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }
@@ -175,7 +175,7 @@ module.exports = {
             if (collected.size === 0) {
                 console.warn("[WARN] [enter] Command timed out:", interaction.user.tag);
                 return await interaction.followUp({
-                    content: "Confirmation not received within `1 minute`, cancelling.",
+                    content: "❌ Confirmation not received within `1 minute`, cancelling.",
                     ephemeral: true,
                 });
             }
@@ -189,7 +189,7 @@ module.exports = {
 
         // Confirmation received
         console.log(
-            "[BRAWL ENTER] Found Card Details embed for: " + interaction.user.tag
+            "[brawl/enter] Found Card Details embed for: " + interaction.user.tag
         );
         let embedMessage;
         try {
@@ -210,10 +210,10 @@ module.exports = {
         const match = regex.exec(botResponseEmbed.description);
         if (!match) {
             console.warn(
-                `[BRAWL ENTER] Couldn't finding card code between backticks. Found "${cardCode}"`
+                `[brawl/enter] Couldn't finding card code between backticks. Found "${cardCode}"`
             );
             return await embedMessage.reply(
-                `Error finding card code. Found \`${cardCode}\`. Notifying <@${config.developerID}>.`
+                `❌ Error finding card code. Found \`${cardCode}\`. Notifying <@${config.developerID}>.`
             );
         }
         const cardCode = match[1];
@@ -221,30 +221,29 @@ module.exports = {
         // Check precondition
         if (setupModel.cards.get(cardCode)) {
             return await embedMessage.reply({
-                content: `<@${userID}>, this card is already submitted to this Card Brawl.`,
+                content: `❌ <@${userID}>, this card is already submitted to this Card Brawl.`,
                 allowedMentions: { parse: [] },
             });
         }
 
         // Check card requirements
         if (!description.includes(`Owned by <@${userID}>`)) {
-            return await embedMessage.reply("You do not own this card.");
+            return await embedMessage.reply("❌ You do not own this card.");
         }
         if (setupModel.series !== null && !description.includes(setupModel.series)) {
             return await embedMessage.reply(
-                `This card is not from the \`${setupModel.series}\` series.`
+                `❌ This card is not from the \`${setupModel.series}\` series.`
             );
         }
         if (!description.includes(`Framed with`)) {
-            return await embedMessage.reply("This card is not framed.");
+            return await embedMessage.reply("❌ This card is not framed.");
         }
         if (!description.includes(`Morphed by`)) {
-            return await embedMessage.reply("This card is not morphed.");
+            return await embedMessage.reply("❌ This card is not morphed.");
         }
-        // Check sketch
         if (setupModel.sketch === "prohibited") {
             if (description.includes(`Sketched by`)) {
-                return await embedMessage.reply("This card is sketched.");
+                return await embedMessage.reply("❌ This card is sketched.");
             }
         }
 
@@ -268,7 +267,7 @@ module.exports = {
                 time: 60 * 1000,
             });
         } catch (error) {
-            console.warn("[BRAWL ENTER] Command timed out:", interaction.user.tag);
+            console.warn("[brawl/enter] Command timed out:", interaction.user.tag);
 
             cardEmbed.setColor(config.embed.red);
             await response.edit({
@@ -279,7 +278,7 @@ module.exports = {
             });
 
             return await interaction.followUp({
-                content: "Confirmation not received within `1 minute`, cancelling.",
+                content: "❌ Confirmation not received within `1 minute`, cancelling.",
                 ephemeral: true,
             });
         }
@@ -306,13 +305,13 @@ module.exports = {
                     // Check eligibility again
                     if (!recentSetupModel.open) {
                         throw new Error(
-                            `The **${recentSetupModel.name}** Card Brawl is closed!`
+                            `❌ The **${recentSetupModel.name}** Card Brawl is closed!`
                         );
                     }
 
                     if (recentSetupModel.cards.get(cardCode)) {
                         throw new Error(
-                            `<@${userID}>, this card is already submitted to this Card Brawl.`
+                            `❌ <@${userID}>, this card is already submitted to this Card Brawl.`
                         );
                     }
 
@@ -332,12 +331,12 @@ module.exports = {
                                     config.brawl.serverSubscriberEntry
                                 ) {
                                     throw new Error(
-                                        `<@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`
+                                        `❌ <@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`
                                     );
                                 }
                             } else {
                                 throw new Error(
-                                    `<@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`
+                                    `❌ <@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`
                                 );
                             }
                         }
@@ -375,7 +374,7 @@ module.exports = {
                 try {
                     await client.setupModelQueue.enqueue(task);
                     await channel.send(
-                        `Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
+                        `✅ Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                     );
 
                     cardEmbed.setColor(config.embed.green);
@@ -386,7 +385,7 @@ module.exports = {
                         allowedMentions: { parse: [] },
                     });
                 } catch (error) {
-                    console.error("[BRAWL ENTER]:", error);
+                    console.error("[brawl/enter]:", error);
 
                     cardEmbed.setColor(config.embed.red);
                     await confirmation.update({
@@ -405,7 +404,7 @@ module.exports = {
             }
         }
         console.log(
-            `[BRAWL ENTER] Successfully submitted ${cardCode} to the ${setupModel.name} Card Brawl:`,
+            `[brawl/enter] Successfully submitted ${cardCode} to the ${setupModel.name} Card Brawl:`,
             interaction.user.tag
         );
     },

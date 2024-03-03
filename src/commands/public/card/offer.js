@@ -53,7 +53,7 @@ module.exports = {
         try {
             await client.cardAdsQueue.enqueue(task);
         } catch (error) {
-            return await interaction.reply(error.message);
+            return await interaction.reply({ content: error.message, ephemeral: true });
         }
 
         // Get data from embed
