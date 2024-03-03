@@ -5,7 +5,6 @@ const {
     ButtonStyle,
     ComponentType,
 } = require("discord.js");
-const config = require("../../../config.json");
 
 module.exports = {
     category: "public",
@@ -16,7 +15,7 @@ module.exports = {
         const threadChannel = interaction.channel;
 
         if (threadChannel.ownerId !== interaction.user.id) {
-            await interaction.reply({ content: "❌ You do not own this post." });
+            return await interaction.reply({ content: "❌ You do not own this post." });
         }
 
         const confirm = new ButtonBuilder()
