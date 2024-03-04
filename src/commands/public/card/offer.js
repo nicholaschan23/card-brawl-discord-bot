@@ -237,9 +237,23 @@ module.exports = {
                                 });
                             }
                             case "confirmOffer": {
+                                const reject = new ButtonBuilder()
+                                    .setCustomId("rejectOffer")
+                                    .setEmoji("❌")
+                                    .setStyle(ButtonStyle.Secondary);
+                                const accept = new ButtonBuilder()
+                                    .setCustomId("acceptOffer")
+                                    .setEmoji("✅")
+                                    .setStyle(ButtonStyle.Secondary);
+                                const row = new ActionRowBuilder().addComponents(
+                                    reject,
+                                    accept
+                                );
+
                                 await offersChannel.send({
                                     content: `<@${ownerID}>, an offer was sent to you by ${interaction.user}!`,
                                     embeds: [embed],
+                                    components: [row],
                                 });
 
                                 embed.setColor(config.embed.green);
