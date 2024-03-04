@@ -24,11 +24,11 @@ async function handleOffer(interaction, decision) {
             content = `✅ <@${buyerID}>, your offer was accepted by <@${sellerID}>!`;
         }
 
+        const match = /`([^`]+)`/.exec(interaction.message.embeds[0].fields[0].value);
+    
         await interaction.message.delete();
-        const response = await interaction.channel.send({ content: content, embeds: [embed] });
-
-        const regex = /`([^`]+)`/;
-        const match = regex.exec(response.embeds[0].data.description);
+        await interaction.channel.send({ content: content, embeds: [embed] });
+        
         const code = match[1];
         const channel = client.channels.cache.get(config.channelID.cardAds);
         const task = async () => {
@@ -53,7 +53,7 @@ async function handleOffer(interaction, decision) {
                 } catch (error) {
                     console.error("[ERROR] [handleOffer]:", error);
                 }
-                
+
                 await cardAdsModel.deleteOne();
             }
         };
