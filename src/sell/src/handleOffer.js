@@ -1,7 +1,7 @@
 const { EmbedBuilder, MessageMentions } = require("discord.js");
 const config = require("../../../config.json");
 
-const REJECT = 0;
+const DECLINE = 0;
 const ACCEPT = 1;
 
 async function handleOffer(interaction, decision) {
@@ -14,9 +14,9 @@ async function handleOffer(interaction, decision) {
         const embed = new EmbedBuilder(interaction.message.embeds[0]);
         let content = "";
 
-        if (decision === REJECT) {
+        if (decision === DECLINE) {
             embed.setColor(config.embed.red);
-            content = `❌ <@${buyerID}>, your offer was reject by <@${sellerID}>.`;
+            content = `❌ <@${buyerID}>, your offer was declined by <@${sellerID}>.`;
         } else if (decision === ACCEPT) {
             embed.setColor(config.embed.green);
             content = `✅ <@${buyerID}>, your offer was accepted by <@${sellerID}>!`;

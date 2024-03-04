@@ -237,8 +237,8 @@ module.exports = {
                                 });
                             }
                             case "confirmOffer": {
-                                const reject = new ButtonBuilder()
-                                    .setCustomId("rejectOffer")
+                                const decline = new ButtonBuilder()
+                                    .setCustomId("declineOffer")
                                     .setEmoji("❌")
                                     .setStyle(ButtonStyle.Secondary);
                                 const accept = new ButtonBuilder()
@@ -246,7 +246,7 @@ module.exports = {
                                     .setEmoji("✅")
                                     .setStyle(ButtonStyle.Secondary);
                                 const row = new ActionRowBuilder().addComponents(
-                                    reject,
+                                    decline,
                                     accept
                                 );
 

@@ -96,7 +96,7 @@ module.exports = {
                 viewParticipants(interaction);
             } else if (interaction.customId === "viewUserStats") {
                 viewUserStats(interaction);
-            } else if (interaction.customId === "rejectOffer") {
+            } else if (interaction.customId === "declineOffer") {
                 handleOffer(interaction, 0);
             } else if (interaction.customId === "acceptOffer") {
                 handleOffer(interaction, 1);
