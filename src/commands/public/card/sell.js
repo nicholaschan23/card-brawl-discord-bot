@@ -55,14 +55,14 @@ module.exports = {
                     response.embeds[0].data.title === "Card Details" &&
                     response.embeds[0].data.description.includes("Dropped in server ID"),
                 max: 1,
-                time: 60 * 1000,
+                time: 20_000,
             });
 
             if (collected.size === 0) {
                 console.warn(`[WARN] [sell] Command timed out:`, interaction.user.tag);
                 return await interaction.followUp({
                     content:
-                        "❌ Card info command not received within `1 minute`, cancelling.",
+                        "❌ Card info command not received within `20 seconds`, cancelling.",
                     ephemeral: true,
                 });
             }
@@ -171,14 +171,14 @@ module.exports = {
                     response.embeds.length === 1 &&
                     response.embeds[0].data.title === "Worker Details",
                 max: 1,
-                time: 60 * 1000,
+                time: 20_000,
             });
 
             if (collected.size === 0) {
                 console.warn(`[WARN] [sell] Command timed out:`, interaction.user.tag);
                 return await interaction.followUp({
                     content:
-                        "❌ Worker info command not received within `1 minute`, cancelling.",
+                        "❌ Worker info command not received within `20 seconds`, cancelling.",
                     ephemeral: true,
                 });
             }
