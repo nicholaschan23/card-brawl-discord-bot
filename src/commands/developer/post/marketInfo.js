@@ -12,7 +12,7 @@ const cardAdsIntro =
     `* Find cards easily with formatted titles (<Edition> <Print> <Character>)\n` +
     `* Receive formatted card offers, instead of players just sending you card codes and having to manually look them up\n` +
     `* Automatically prevents duplicate listings to have no clutter\n` +
-    `* Collect offers more conveniently without relying on direct messages (DMs)\n` +
+    `* Collect and manage offers more conveniently without relying on direct messages\n` +
     `* Visually see the card being sold, rather than relying on text\n` +
     `\`\`\``;
 

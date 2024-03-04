@@ -28,7 +28,7 @@ async function handleOffer(interaction, decision) {
         await interaction.channel.send({ content: content, embeds: [embed] });
 
         const regex = /`([^`]+)`/;
-        const match = regex.exec(embed.description);
+        const match = regex.exec(interaction.message.embeds[0].data.description);
         const code = match[1];
         const channel = client.channels.cache.get(config.channelID.cardAds);
         const task = async () => {
