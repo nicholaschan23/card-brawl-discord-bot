@@ -24,7 +24,7 @@ const listCards =
 
 const sendOffers =
     `## Send Offers (<#${config.channelID.cardOffers}>)\n ` +
-    `:dolls: **To send offers for cards, use the command \`/card offer\`!** You can search for specific cards using message titles by pressing \`CTRL+F\` (i.e. E6 MP Yato). Once an offer is posted, it cannot be retracted or edited, but you're welcome to make multiple offers for a single card.\n` +
+    `:dolls: **To send offers for cards, use the command \`/card offer\`!** When the offer is posted, the seller can accept or decline it with the attached buttons. When an offer is accepted, the listing will automatically delete. You can search for specific cards using message titles by using \`CTRL+F\` (i.e. E6 MP Yato).\n` +
     `- \`/card offer\` to send an offer`;
 
 const gettingStarted =
