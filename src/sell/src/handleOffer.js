@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, MessageMentions } = require("discord.js");
 const config = require("../../../config.json");
 
 const REJECT = 0;
@@ -6,10 +6,11 @@ const ACCEPT = 1;
 
 async function handleOffer(interaction, decision) {
     await interaction.deferUpdate();
-
-    const mentions = interaction.message.mentions.users.map((user) => user);
-    const seller = mentions[0];
-    const buyer = mentions[1];
+    const [seller, buyer] = interaction.message.content
+        .match(/<@(\d+)>/g)
+        .map((match) => match.match(/\d+/)[0]);
+    // console.log(seller);
+    // console.log(buyer);
 
     if (interaction.user.id === seller.id) {
         const embed = new EmbedBuilder(interaction.message.embeds[0]);
