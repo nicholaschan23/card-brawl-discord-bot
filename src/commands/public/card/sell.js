@@ -132,8 +132,8 @@ module.exports = {
             tagsStyle += `${matchFrame[1]} Frame\n`;
         }
         if (cardDetailsEmbed.description.includes(`Dyed with`)) {
-            var regexMysticDye = /Dyed with \*\*Mystic/;
-            var matchMysticDye = cardDetailsEmbed.description.match(regexMysticDye);
+            const regexMysticDye = /Dyed with \*\*Mystic/;
+            const matchMysticDye = cardDetailsEmbed.description.match(regexMysticDye);
             if (matchMysticDye) {
                 tagsStyle += "Mystic Dyed\n";
             } else {

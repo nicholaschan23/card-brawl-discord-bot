@@ -151,6 +151,7 @@ module.exports = {
 
                 // Validate card offer format
                 let cards = i.fields.getTextInputValue("cardOffer");
+                let output = "";
                 if (cards) {
                     cards = cards.split("\n");
                     for (let index = 0; index < cards.length; index++) {
@@ -177,9 +178,9 @@ module.exports = {
                         parts[0] = wishlist[0];
 
                         // Join the trimmed parts back together and store it back in line
-                        cards[i] = parts.join(" · ");
+                        output += parts.join(" · ") + "\n";
                     }
-                    cardOffer = `${`\`\`\`ls\n` + `${cards}\n` + `\`\`\``}`;
+                    cardOffer = `${`\`\`\`ls\n` + `${output.trim()}\n` + `\`\`\``}`;
                 }
 
                 // Must have one of the 3 fields filled out
