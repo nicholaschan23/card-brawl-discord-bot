@@ -153,15 +153,15 @@ module.exports = {
                 let cards = i.fields.getTextInputValue("cardOffer");
                 if (cards) {
                     cards = cards.split("\n");
-                    for (let i = 0; i < cards.length; i++) {
-                        let line = cards[i];
+                    for (let index = 0; index < cards.length; index++) {
+                        let line = cards[index];
                         // Split the line by the '·' character and trim each part
                         const parts = line.split("·").map((part) => part.trim());
 
                         // Check if the number of parts matches the expected format
                         if (parts.length !== 7) {
                             return await i.editReply({
-                                content: `❌ Invalid format: \`${line}\``,
+                                content: `❌ Invalid card format: \`${line}\``,
                                 ephemeral: true,
                             });
                         }

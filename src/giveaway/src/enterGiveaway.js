@@ -247,7 +247,7 @@ async function enterGiveaway(interaction) {
                                 const successEmbed = new EmbedBuilder()
                                     .setTitle("Giveaway")
                                     .setDescription(
-                                        `:white_check_mark: Success! Your **${
+                                        `✅ Success! Your **${
                                             amount + currentEntries
                                         } entries** for this [giveaway](${messageLink}) are confirmed!`
                                     )
