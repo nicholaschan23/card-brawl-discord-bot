@@ -107,11 +107,9 @@ async function enterGiveaway(interaction) {
         const maxIn = maxEntries - currentEntries;
         const entryAmount = new TextInputBuilder()
             .setCustomId("entryAmount")
-            .setLabel(`How many entries would you like to add?`)
+            .setLabel(`How many entries would you like to enter?`)
             .setValue(`${maxIn}`)
-            .setPlaceholder(
-                `Current entries: ${currentEntries} | Entry limit: ${maxEntries}`
-            )
+            .setPlaceholder(`Max: ${maxEntries} | Current: ${currentEntries}`)
             .setStyle(TextInputStyle.Short)
             .setMinLength(1)
             .setMaxLength(1)
@@ -136,15 +134,20 @@ async function enterGiveaway(interaction) {
         await interaction
             .awaitModalSubmit({
                 filter: (i) => i.customId === "giveawayEnterModal",
-                time: 60_000,
+                time: 15_000,
             })
             .then(async (i) => {
+                // Nothing submitted
+                if (!i) {
+                    return;
+                }
+
                 await i.deferReply({ ephemeral: true });
 
                 amount = i.fields.getTextInputValue("entryAmount");
                 if (isNaN(amount)) {
                     await i.editReply({
-                        content: "Please enter a number.",
+                        content: "❌ Please enter a number.",
                         ephemeral: true,
                     });
                     return;
@@ -192,7 +195,7 @@ async function enterGiveaway(interaction) {
                     .setDescription(
                         `Would you like to exchange **${amount} ${token} Tokens** to have a total of **${
                             amount + currentEntries
-                        }** entries?`
+                        }** ${amount + currentEntries > 1 ? "entries" : "entry"}?`
                     );
                 const response = await i.editReply({
                     fetchReply: true,
@@ -206,7 +209,7 @@ async function enterGiveaway(interaction) {
                     const collector = response.createMessageComponentCollector({
                         componentType: ComponentType.Button,
                         max: 1,
-                        time: 60_000,
+                        time: 30_000,
                     });
 
                     collector.on("collect", async (i) => {
@@ -247,9 +250,13 @@ async function enterGiveaway(interaction) {
                                 const successEmbed = new EmbedBuilder()
                                     .setTitle("Giveaway")
                                     .setDescription(
-                                        `✅ Success! Your **${
-                                            amount + currentEntries
-                                        } entries** for this [giveaway](${messageLink}) are confirmed!`
+                                        `✅ Success! Your **${amount + currentEntries} ${
+                                            amount + currentEntries > 1
+                                                ? "entries"
+                                                : "entry"
+                                        }** for this [giveaway](${messageLink}) ${
+                                            amount + currentEntries > 1 ? "are" : "is"
+                                        } confirmed!`
                                     )
                                     .setColor(green);
 
@@ -267,10 +274,16 @@ async function enterGiveaway(interaction) {
                     });
                 } catch (error) {
                     console.error("[ERROR] [enterGiveaway]", error);
+                    await i.editReply({
+                        embeds: [embed],
+                        components: [],
+                    });
                     return;
                 }
             })
-            .catch(console.error);
+            .catch(error => {
+                // console.error(`Error occurred for user ${interaction.user.tag}:`, error);
+            });
     } else {
         try {
             await interaction.deferReply({ ephemeral: true });

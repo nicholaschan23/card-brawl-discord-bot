@@ -149,7 +149,8 @@
     "brawl": {
         "voteTime": 30,
         "startTime": 300,
-        "serverSubscriberEntry": 5,
+        "cost": 10,
+        "discount": 0.5,
         "activeBoosterBonus": 1,
         "serverSubscriberBonus": 1
     },

@@ -230,18 +230,20 @@ module.exports = {
                 // Message has to actually ping (mention) the user
                 const user = message.mentions.users.first();
                 if (!user) {
-                    return console.warn(
-                        "[WARN] [readMessages] Couldn't find user that dropped cards:",
-                        message.url
-                    );
+                    // console.warn(
+                    //     "[WARN] [readMessages] Couldn't find user that dropped cards:",
+                    //     message.url
+                    // );
+                    return;
                 }
                 if (user.bot) {
                     return;
                 }
-                const userID = user.id;
+                
+                const task = async () => {
+                    const userID = user.id;
+                    const currentUnixTime = Math.floor(Date.now() / 1000);
 
-                const currentUnixTime = Math.floor(Date.now() / 1000);
-                try {
                     const uim = await UserInventoryModel.findOne({ userID }).exec();
                     // Inventory doesn't exist, create one
                     if (!uim) {
@@ -305,12 +307,12 @@ module.exports = {
                                 );
                             }
                         }
-
-                        const task = async () => {
-                            await uim.save();
-                        };
-                        await client.inventoryQueue.enqueue(task);
+                        await uim.save();
                     }
+                };
+
+                try {
+                    await client.inventoryQueue.enqueue(task);
                 } catch (error) {
                     console.error("[ERROR] [inventory]", error);
                 }

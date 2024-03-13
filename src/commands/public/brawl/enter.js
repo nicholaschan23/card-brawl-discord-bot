@@ -6,6 +6,7 @@ const {
     ActionRowBuilder,
 } = require("discord.js");
 const BrawlSetupModel = require("../../../brawl/schemas/brawlSetupSchema");
+const InventoryModel = require("../../../inventory/schemas/userInventorySchema");
 const getEnterEmbed = require("../../../brawl/embeds/brawlEnter");
 const getAnnouncementEmbed = require("../../../brawl/embeds/brawlAnnouncement");
 const client = require("../../../index");
@@ -15,14 +16,14 @@ module.exports = {
     category: "public/brawl",
     data: new SlashCommandSubcommandBuilder()
         .setName("enter")
-        .setDescription("Enter a card competition.")
-        .addStringOption((option) =>
-            option
-                .setName("name")
-                .setDescription("Card Brawl name you will be entering.")
-                .setRequired(true)
-                .setAutocomplete(true)
-        ),
+        .setDescription("Enter a card competition."),
+    // .addStringOption((option) =>
+    //     option
+    //         .setName("name")
+    //         .setDescription("Card Brawl name you will be entering.")
+    //         .setRequired(true)
+    //         .setAutocomplete(true)
+    // ),
     async execute(interaction) {
         const name = interaction.options.getString("name");
         const channel = client.channels.cache.get(interaction.channel.id);
@@ -31,75 +32,81 @@ module.exports = {
         // Find brawl setup in database
         let setupModel;
         try {
-            setupModel = await BrawlSetupModel.findOne({ name }).exec();
-            if (!setupModel) {
-                return await interaction.reply({
-                    content: `❌ No Card Brawl found with the name "${name}".`,
-                    ephemeral: true,
-                });
-            }
+            setupModel = await BrawlSetupModel.findOne().sort({ _id: -1 });
         } catch (error) {
             console.error("[brawl/enter] Error retrieving BrawlSetupModel:", error);
-            return await interaction.reply(
-                `❌ Error retrieving Card Brawl. Notifying <@${config.developerID}>.`
-            );
+            return await interaction.reply({
+                content: `❌ Error retrieving Card Brawl from database.`,
+            });
         }
 
         // Check preconditions
         if (!setupModel.open) {
-            return await interaction.reply(
-                `❌ The **${setupModel.name}** Card Brawl is closed.`
-            );
+            return await interaction.reply({
+                content: `❌ There is currently no active Card Brawl.`,
+            });
         }
 
-        // Developer debugging bypass
-        if (userID !== config.developerID) {
-            // Check if user is eligible for multiple entries
-            if (setupModel.entries.get(userID)) {
-                // Already an entry
-                if (
-                    interaction.member.roles.cache.some(
-                        (role) => role.name === "Server Subscriber"
-                    )
-                ) {
-                    // Server subscriber gets bonus entries
-                    if (
-                        setupModel.entries.get(userID).length ===
-                        config.brawl.serverSubscriberEntry
-                    ) {
-                        return await interaction.reply({
-                            content: `❌ <@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`,
-                            allowedMentions: { parse: [] },
-                        });
-                    }
-                } else {
-                    return await interaction.reply({
-                        content: `❌ <@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`,
-                        allowedMentions: { parse: [] },
-                    });
-                }
+        // Get cost to enter brawl
+        let cost = 0;
+        if (setupModel.entries.get(userID)) {
+            const numCardsEntered = setupModel.entries.get(userID).length;
+            cost = numCardsEntered * config.brawl.cost;
+
+            // Server subscriber gets discount for additional entries
+            if (
+                interaction.member.roles.cache.some(
+                    (role) => role.name === "Server Subscriber"
+                )
+            ) {
+                cost *= config.brawl.discount;
             }
         }
 
         // Confirm correct brawl data
-        const enterEmbed = getEnterEmbed(setupModel);
-        const confirm = new ButtonBuilder()
-            .setCustomId("confirmEnter")
-            .setLabel("Confirm")
-            .setStyle(ButtonStyle.Success);
         const cancel = new ButtonBuilder()
             .setCustomId("cancelEnter")
             .setLabel("Cancel")
             .setStyle(ButtonStyle.Danger);
+        const confirm = new ButtonBuilder()
+            .setCustomId("confirmEnter")
+            .setLabel("Confirm")
+            .setStyle(ButtonStyle.Success);
         const row = new ActionRowBuilder().addComponents(cancel, confirm);
 
-        // Display card brawl details
-        let response = await interaction.reply({
-            content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
-            embeds: [enterEmbed],
-            components: [row],
-            allowedMentions: { parse: [] },
-        });
+        let enterReply, enterEmbed;
+        if (cost > 0) {
+            const cardsEntered = setupModel.entries
+                .get(userID)
+                .map((str) => `${str}`)
+                .join(",");
+            enterEmbed = new EmbedBuilder.setTitle("Enter Card Brawl").setDescription(
+                `**Card Entered**: ${cardsEntered}\n\n` +
+                    `<@${userID}>, you already entered ${numCardsEntered} ${
+                        numCardsEntered > 1 ? "cards" : "card"
+                    } for the **${
+                        setupModel.name
+                    }** Card Brawl. Would you like to spend **${
+                        config.emoji.token
+                    } ${cost} Tokens** to enter another card?`
+            );
+            enterReply = {
+                embeds: [enterEmbed],
+                components: [row],
+                allowedMentions: { parse: [] },
+            };
+        } else {
+            // Display card brawl details
+            enterEmbed = getEnterEmbed(setupModel);
+            enterReply = {
+                content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
+                embeds: [enterEmbed],
+                components: [row],
+                allowedMentions: { parse: [] },
+            };
+        }
+
+        let response = await interaction.reply(enterReply);
 
         // Update embed based on button press
         const collectorFilter = (i) => i.user.id === userID;
@@ -108,17 +115,15 @@ module.exports = {
             confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
                 max: 1,
-                time: 60 * 1000,
+                time: 60_000,
             });
         } catch (error) {
             console.warn("[brawl/enter] Command timed out:", interaction.user.tag);
 
             enterEmbed.setColor(config.embed.red);
+            enterReply.components = [];
             await confirmation.update({
-                content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
-                embeds: [enterEmbed],
-                components: [],
-                allowedMentions: { parse: [] },
+                enterReply,
             });
 
             return await interaction.followUp({
@@ -131,21 +136,33 @@ module.exports = {
         switch (confirmation.customId) {
             case "cancelEnter": {
                 enterEmbed.setColor(config.embed.red);
-                return await confirmation.update({
-                    content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
-                    embeds: [enterEmbed],
-                    components: [],
-                    allowedMentions: { parse: [] },
-                });
+                enterReply.components = [];
+                return await confirmation.update(enterReply);
             }
             case "confirmEnter": {
+                if (cost > 0) {
+                    const inventoryModel = await InventoryModel.findOne({
+                        userID,
+                    }).exec();
+                    
+                    if (!inventoryModel) {
+                        await interaction.followUp(`❌ You have no inventory.`);
+                        enterEmbed.setColor(config.embed.red);
+                        enterReply.components = [];
+                        return await confirmation.update(enterReply);
+                    }
+
+                    if (inventoryModel.numTokens < cost) {
+                        await interaction.followUp(`❌ You do not have enough tokens.`);
+                        enterEmbed.setColor(config.embed.red);
+                        enterReply.components = [];
+                        return await confirmation.update(enterReply);
+                    }
+                }
+
                 enterEmbed.setColor(config.embed.green);
-                await confirmation.update({
-                    content: `<@${userID}>, is this the correct Card Brawl you want to enter?`,
-                    embeds: [enterEmbed],
-                    components: [],
-                    allowedMentions: { parse: [] },
-                });
+                enterReply.components = [];
+                await confirmation.update(enterReply);
                 break;
             }
         }
@@ -175,7 +192,8 @@ module.exports = {
             if (collected.size === 0) {
                 console.warn("[WARN] [enter] Command timed out:", interaction.user.tag);
                 return await interaction.followUp({
-                    content: "❌ Confirmation not received within `1 minute`, cancelling.",
+                    content:
+                        "❌ Confirmation not received within `1 minute`, cancelling.",
                     ephemeral: true,
                 });
             }
@@ -196,7 +214,7 @@ module.exports = {
             embedMessage = collected.first();
         } catch (error) {
             return await interaction.followUp({
-                content: "Card embed not found.",
+                content: "❌ Card embed not found.",
                 ephemeral: true,
             });
         }
@@ -213,7 +231,7 @@ module.exports = {
                 `[brawl/enter] Couldn't finding card code between backticks. Found "${cardCode}"`
             );
             return await embedMessage.reply(
-                `❌ Error finding card code. Found \`${cardCode}\`. Notifying <@${config.developerID}>.`
+                `❌ Error finding card code. Found \`${cardCode}\`.`
             );
         }
         const cardCode = match[1];
@@ -245,6 +263,12 @@ module.exports = {
             if (description.includes(`Sketched by`)) {
                 return await embedMessage.reply("❌ This card is sketched.");
             }
+        }
+
+        // Change buttons
+        if (cost > 0) {
+            confirm.setLabel(`${cost}`);
+            confirm.setEmoji(config.emoji.token);
         }
 
         // Display card confirmation
@@ -296,7 +320,7 @@ module.exports = {
             }
             case "confirmEnter": {
                 // Get the most recent setupModel queue to handle concurrent saving
-                const task = async () => {
+                const brawlTask = async () => {
                     // Get most recent setupModel at the head of the queue
                     const recentSetupModel = await BrawlSetupModel.findOne({
                         name,
@@ -315,34 +339,7 @@ module.exports = {
                         );
                     }
 
-                    // Check if user is eligible for multiple entries
-                    if (userID !== config.developerID) {
-                        // Debugging
-                        if (recentSetupModel.entries.get(userID)) {
-                            // Already an entry
-                            if (
-                                interaction.member.roles.cache.some(
-                                    (role) => role.name === "Server Subscriber"
-                                )
-                            ) {
-                                // Server subscriber gets bonus entries
-                                if (
-                                    setupModel.entries.get(userID).length ===
-                                    config.brawl.serverSubscriberEntry
-                                ) {
-                                    throw new Error(
-                                        `❌ <@${userID}>, you already entered **${config.brawl.serverSubscriberEntry} cards** for the **${setupModel.name}** Card Brawl.`
-                                    );
-                                }
-                            } else {
-                                throw new Error(
-                                    `❌ <@${userID}>, you already entered a card for the **${setupModel.name}** Card Brawl. Become a <@&${config.roleID.serverSubscriber}> to submit up to **${config.brawl.serverSubscriberEntry} cards**!`
-                                );
-                            }
-                        }
-                    }
-
-                    // Check prerequisites again
+                    // Add card
                     if (recentSetupModel.entries.get(userID)) {
                         recentSetupModel.entries.get(userID).push(cardCode);
                     } else {
@@ -364,15 +361,37 @@ module.exports = {
                         .fetch(recentSetupModel.messageID)
                         .then((message) => {
                             message.edit({
-                                content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
+                                content: `Type \`/brawl enter\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                                 embeds: [updatedEmbed],
                             });
                         });
                 };
 
+                const tokenTask = async () => {
+                    const inventoryModel = await InventoryModel.findOne({
+                        userID,
+                    }).exec();
+
+                    if (!inventoryModel) {
+                        throw new Error(`❌ <@${userID}>, you have no inventory.`);
+                    }
+
+                    if (inventoryModel.numTokens < cost) {
+                        throw new Error(
+                            `❌ <@${userID}>, you do not have enough tokens to enter another card.`
+                        );
+                    }
+
+                    inventoryModel.numTokens -= cost;
+                    await inventoryModel.save();
+                };
+
                 // Add card to the brawl in database
                 try {
-                    await client.setupModelQueue.enqueue(task);
+                    await client.setupModelQueue.enqueue(brawlTask);
+                    if (cost > 0) {
+                        await client.inventoryQueue.enqueue(tokenTask);
+                    }
                     await channel.send(
                         `✅ Successfully submitted \`${cardCode}\` to the **${setupModel.name}** Card Brawl!`
                     );

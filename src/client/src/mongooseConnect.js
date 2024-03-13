@@ -11,6 +11,15 @@ async function mongooseConnect() {
 
     db.on("error", (error) => {
         console.error("[ERROR] [mongooseConnect] MongoDB connection error:", error);
+
+        // Handle connection timeout error
+        if (error.code === 'UND_ERR_CONNECT_TIMEOUT') {
+            console.log("[INFO] [mongooseConnect] Reconnecting to MongoDB...");
+            mongoose.connect(mongoURI, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            });
+        }
     });
 
     db.once("open", () => {

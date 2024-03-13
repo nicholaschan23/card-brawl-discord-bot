@@ -142,7 +142,7 @@ module.exports = {
                     const row = new ActionRowBuilder().addComponents(supportButton);
 
                     const message = await channel.send({
-                        content: `Type \`/brawl enter ${name}\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
+                        content: `Type \`/brawl enter\` to join this Card Brawl! 🥊 <@&${config.roleID.brawlCompetitor}>`,
                         embeds: [setupBrawlEmbed],
                         components: [row],
                     });
