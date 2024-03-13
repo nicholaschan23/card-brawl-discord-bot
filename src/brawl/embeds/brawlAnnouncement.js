@@ -38,9 +38,11 @@ function getAnnouncementEmbed(setupModel) {
         `✂️ Trimmed` +
         `${sketch === "optional" ? "\n" + sketchText : ""}`;
     const bonuses =
-        `**Entries**:\n` +
-        `@everyone **1** entry\n` +
-        `<@&${config.roleID.serverSubscriber}> **${config.brawl.serverSubscriberEntry}** entries\n\n` +
+        `**Unlimited Entries**:\n` +
+        `@everyone **1** free entry\n` +
+        `<@&${config.roleID.serverSubscriber}> **%${config.brawl.discount * 100}** discount\n` +
+        `Each additional entry costs **${config.emoji.token} ${config.brawl.cost}** more than the previous`
+        `\n` +
         `**Bonus Votes**: *(Does not stack)*\n` +
         `<@&${config.roleID.activeBooster}> **+${config.brawl.activeBoosterBonus}** vote\n` +
         `<@&${config.roleID.serverSubscriber}> **+${config.brawl.serverSubscriberBonus}** vote`;

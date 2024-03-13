@@ -22,6 +22,7 @@ const QA = [
         answer:
             `Below is a list of available options.\n` +
             `- Giveaways (<#${config.channelID.giveaway}>)\n` +
+            `- Brawl entries (<#${config.channelID.brawlCompetitors}>)\n` +
             `- Role color (\`/role color\`)`,
     },
 ];
