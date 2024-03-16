@@ -48,9 +48,9 @@ module.exports = {
         }
 
         // Get cost to enter brawl
-        let cost = 0;
+        let cost, numCardsEntered = 0;
         if (setupModel.entries.get(userID)) {
-            const numCardsEntered = setupModel.entries.get(userID).length;
+            numCardsEntered = setupModel.entries.get(userID).length;
             cost = numCardsEntered * config.brawl.cost;
 
             // Server subscriber gets discount for additional entries
@@ -78,18 +78,20 @@ module.exports = {
         if (cost > 0) {
             const cardsEntered = setupModel.entries
                 .get(userID)
-                .map((str) => `${str}`)
-                .join(",");
-            enterEmbed = new EmbedBuilder.setTitle("Enter Card Brawl").setDescription(
-                `**Card Entered**: ${cardsEntered}\n\n` +
-                    `<@${userID}>, you already entered ${numCardsEntered} ${
-                        numCardsEntered > 1 ? "cards" : "card"
-                    } for the **${
-                        setupModel.name
-                    }** Card Brawl. Would you like to spend **${
-                        config.emoji.token
-                    } ${cost} Tokens** to enter another card?`
-            );
+                .map((str) => `\`${str}\``)
+                .join(", ");
+            enterEmbed = new EmbedBuilder()
+                .setTitle("Enter Card Brawl")
+                .setDescription(
+                    `Cards Entered: ${cardsEntered}\n\n` +
+                        `You already entered **${numCardsEntered}** ${
+                            numCardsEntered > 1 ? "cards" : "card"
+                        } for the **${
+                            setupModel.name
+                        }** Card Brawl. Would you like to spend **${
+                            config.emoji.token
+                        } ${cost} Tokens** to enter another card?`
+                );
             enterReply = {
                 embeds: [enterEmbed],
                 components: [row],
@@ -115,19 +117,19 @@ module.exports = {
             confirmation = await response.awaitMessageComponent({
                 filter: collectorFilter,
                 max: 1,
-                time: 60_000,
+                time: 30_000,
             });
         } catch (error) {
             console.warn("[brawl/enter] Command timed out:", interaction.user.tag);
 
             enterEmbed.setColor(config.embed.red);
             enterReply.components = [];
-            await confirmation.update({
+            await response.update({
                 enterReply,
             });
 
             return await interaction.followUp({
-                content: "❌ Confirmation not received within `1 minute`, cancelling.",
+                content: "❌ Confirmation not received within `30 seconds`, cancelling.",
                 ephemeral: true,
             });
         }
@@ -144,7 +146,7 @@ module.exports = {
                     const inventoryModel = await InventoryModel.findOne({
                         userID,
                     }).exec();
-                    
+
                     if (!inventoryModel) {
                         await interaction.followUp(`❌ You have no inventory.`);
                         enterEmbed.setColor(config.embed.red);
@@ -322,7 +324,9 @@ module.exports = {
                 // Get the most recent setupModel queue to handle concurrent saving
                 const brawlTask = async () => {
                     // Get most recent setupModel at the head of the queue
-                    const recentSetupModel = await BrawlSetupModel.findOne().sort({ _id: -1 });
+                    const recentSetupModel = await BrawlSetupModel.findOne().sort({
+                        _id: -1,
+                    });
 
                     // Check eligibility again
                     if (!recentSetupModel.open) {

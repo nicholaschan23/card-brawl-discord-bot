@@ -71,9 +71,10 @@ module.exports = {
         try {
             const setupModel = await BrawlSetupModel.findOne({ name }).exec();
             if (setupModel) {
-                return await interaction.reply(
-                    `Another Card Brawl already exists with this name.`
-                );
+                return await interaction.reply({
+                    content: `Another Card Brawl already exists with this name.`,
+                    ephemeral: true,
+                });
             }
         } catch (error) {
             console.error("[ERROR] [create] Error retrieving 'BrawlSetupModel':", error);
@@ -134,7 +135,7 @@ module.exports = {
                     const channel = client.channels.cache.get(
                         config.channelID.brawlCompetitors
                     );
-                    
+
                     const supportButton = new ButtonBuilder()
                         .setLabel("Server Subscriber")
                         .setURL(config.serverShop)
