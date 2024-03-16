@@ -322,9 +322,7 @@ module.exports = {
                 // Get the most recent setupModel queue to handle concurrent saving
                 const brawlTask = async () => {
                     // Get most recent setupModel at the head of the queue
-                    const recentSetupModel = await BrawlSetupModel.findOne({
-                        name,
-                    }).exec();
+                    const recentSetupModel = await BrawlSetupModel.findOne().sort({ _id: -1 });
 
                     // Check eligibility again
                     if (!recentSetupModel.open) {
