@@ -18,7 +18,7 @@ const cardAdsIntro =
 
 const listCards =
     `## List Cards (<#${config.channelID.cardAds}>)\n` +
-    `:flags: **To list cards for trade, use the command \`/card sell\`!** Once your listing is no longer available, use \`/card sold\` to remove it. Please note that unsold listings will be automatically deleted after __1 week__ to ensure a fresh market, but you can always repost your cards.\n` +
+    `:flags: **To list cards for trade, use the command \`/card sell\`!** Once your listing is no longer available, use \`/card sold\` to remove it. Please note that unsold listings will be automatically deleted after __2 weeks__ to ensure a fresh market, but you can always repost your cards.\n` +
     `-  \`/card sell\` to list your cards for trade\n` +
     `- \`/card sold\` to delete your listing`;
 
