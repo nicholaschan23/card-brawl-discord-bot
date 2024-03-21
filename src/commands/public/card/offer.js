@@ -18,7 +18,11 @@ module.exports = {
         .setName("offer")
         .setDescription("Send an offer for a card.")
         .addStringOption((option) =>
-            option.setName("code").setDescription("Card's unique code.").setRequired(true)
+            option
+                .setName("code")
+                .setDescription("Card's unique code.")
+                .setRequired(true)
+                .setAutocomplete(true)
         ),
     category: "public/card",
     async execute(interaction) {
