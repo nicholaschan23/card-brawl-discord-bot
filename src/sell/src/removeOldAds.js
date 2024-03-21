@@ -51,12 +51,9 @@ async function removeOldAds() {
                 }
             }
 
-            await CardAdModel.deleteMany({ timestamp: { $lt: timestampThreshold } });
+            // Delete the corresponding models from the database
+            await CardAdModel.deleteMany({ messageID: { $in: messageIDsToDelete } });
             totalMessagesDeleted += modelsToDelete.length;
-
-            console.log(
-                `[INFO] [removeOldAds] Deleted ${messageIDsToDelete.length} card ads`
-            );
         }
     };
 
