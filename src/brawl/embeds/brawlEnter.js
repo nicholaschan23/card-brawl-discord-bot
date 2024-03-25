@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const config = require("../../../config.json");
 
 function getEnterEmbed(setupModel) {
+    const name = setupModel.name;
     const theme = setupModel.theme;
     const series = setupModel.series;
     const sketch = setupModel.sketch;
@@ -22,6 +23,7 @@ function getEnterEmbed(setupModel) {
 
     // Description
     const headers =
+        `Name: **${name}**\n` +
         `Size: **${size}** card${size === 1 ? "" : "s"} submitted\n` +
         `Theme: **${theme}**\n` +
         `Series: **${series ?? "Any"}**\n` +
