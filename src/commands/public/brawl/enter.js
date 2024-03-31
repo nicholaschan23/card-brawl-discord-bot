@@ -258,9 +258,9 @@ module.exports = {
         if (!description.includes(`Framed with`)) {
             return await embedMessage.reply("❌ This card is not framed.");
         }
-        if (!description.includes(`Morphed by`)) {
-            return await embedMessage.reply("❌ This card is not morphed.");
-        }
+        // if (!description.includes(`Morphed by`)) {
+        //     return await embedMessage.reply("❌ This card is not morphed.");
+        // }
         if (setupModel.sketch === "prohibited") {
             if (description.includes(`Sketched by`)) {
                 return await embedMessage.reply("❌ This card is sketched.");

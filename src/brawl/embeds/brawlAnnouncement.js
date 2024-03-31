@@ -31,9 +31,9 @@ function getAnnouncementEmbed(setupModel) {
         `**Requirements**:` +
         `${series ? "\n🏷️ Match series" : ""}\n` +
         `🖼️ Framed\n` +
-        `🎨 Morphed` +
         `${sketch === "prohibited" ? "\n" + sketchText : ""}\n\n` +
         `**Optional**:\n` +
+        `🎨 Morphed` +
         `💧 Dyed\n` +
         `✂️ Trimmed` +
         `${sketch === "optional" ? "\n" + sketchText : ""}`;

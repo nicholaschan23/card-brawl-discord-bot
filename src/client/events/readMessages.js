@@ -41,7 +41,27 @@ module.exports = {
                             reaction.emoji.name === "🌹" ||
                             reaction.emoji.name === "🌼" ||
                             reaction.emoji.name === "🌷" ||
-                            reaction.emoji.name === "💐")
+                            reaction.emoji.name === "💐" ||
+                            reaction.emoji.name === "stEgg1a" ||
+                            reaction.emoji.name === "stEgg2a" ||
+                            reaction.emoji.name === "stEgg3a" ||
+                            reaction.emoji.name === "stEgg4a" ||
+                            reaction.emoji.name === "stEgg5a" ||
+                            reaction.emoji.name === "stEgg6a" ||
+                            reaction.emoji.name === "stEgg7a" ||
+                            reaction.emoji.name === "stEgg8a" ||
+                            reaction.emoji.name === "stEgg9a" ||
+                            reaction.emoji.name === "stEgg10a" ||
+                            reaction.emoji.name === "stEgg11a" ||
+                            reaction.emoji.name === "stEgg12a" ||
+                            reaction.emoji.name === "stEgg13a" ||
+                            reaction.emoji.name === "stEgg14a" ||
+                            reaction.emoji.name === "stEgg15a" ||
+                            reaction.emoji.name === "stEgg16a" ||
+                            reaction.emoji.name === "stEgg17a" ||
+                            reaction.emoji.name === "stEgg18a" ||
+                            reaction.emoji.name === "stEgg19a" ||
+                            reaction.emoji.name === "stEgg20a")
                     );
                 };
 
@@ -54,9 +74,17 @@ module.exports = {
                     });
 
                     collector.on("collect", (reaction) => {
-                        message.reply(
-                            `<@&${config.roleID.karutaEvent}> A ${reaction.emoji.name} has dropped!`
-                        );
+                        const emoji = reaction.emoji.name;
+                        if (emoji.includes("stEgg")) {
+                            const number = parseInt(emoji.match(/\d+/)[0]);
+                            message.reply(
+                                `<@&${config.roleID.karutaEvent}> **:nest_with_eggs: Springtide Egg #${number}** has dropped!`
+                            );
+                        } else {
+                            message.reply(
+                                `<@&${config.roleID.karutaEvent}> A ${emoji} has dropped!`
+                            );
+                        }
                     });
 
                     collector.on("end", (collected) => {
@@ -239,7 +267,7 @@ module.exports = {
                 if (user.bot) {
                     return;
                 }
-                
+
                 const task = async () => {
                     const userID = user.id;
                     const currentUnixTime = Math.floor(Date.now() / 1000);
