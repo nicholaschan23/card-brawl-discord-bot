@@ -33,7 +33,7 @@ function getAnnouncementEmbed(setupModel) {
         `🖼️ Framed\n` +
         `${sketch === "prohibited" ? "\n" + sketchText : ""}\n\n` +
         `**Optional**:\n` +
-        `🎨 Morphed` +
+        `🎨 Morphed\n` +
         `💧 Dyed\n` +
         `✂️ Trimmed` +
         `${sketch === "optional" ? "\n" + sketchText : ""}`;
