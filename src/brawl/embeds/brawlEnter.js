@@ -31,7 +31,7 @@ function getEnterEmbed(setupModel) {
     const requirements =
         `**Requirements**:` +
         `${series ? "\n🏷️ Match series" : ""}\n` +
-        `🖼️ Framed\n` +
+        `🖼️ Framed` +
         `${sketch === "prohibited" ? "\n" + sketchText : ""}\n\n` +
         `**Optional**:\n` +
         `🎨 Morphed\n` +
