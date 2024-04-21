@@ -56,7 +56,7 @@ module.exports = {
     // Filter out the null values (successful image loads) and keep only the keys of failed loads
     const badCards = badCardsKeys.filter((key) => key !== null);
 
-    if (!badCards) {
+    if (badCards.length === 0) {
       return await interaction.editReply(`Successfully loaded all images!`);
     }
     return await interaction.editReply(`\`\`\`\n${badCards.join(`\n`)}\`\`\``);
