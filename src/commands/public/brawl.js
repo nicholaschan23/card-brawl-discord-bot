@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const BrawlSetupModel = require("../../brawl/schemas/brawlSetupSchema");
 const create = require("./brawl/create");
 const enter = require("./brawl/enter");
+const images = require("./brawl/images")
 const start = require("./brawl/start");
 const stats = require("./brawl/stats");
 const view = require("./brawl/view");
@@ -13,6 +14,7 @@ module.exports = {
         .setDescription("Brawl main command.")
         .addSubcommand(create.data)
         .addSubcommand(enter.data)
+        .addSubcommand(images.data)
         .addSubcommand(start.data)
         .addSubcommand(stats.data)
         .addSubcommand(view.data),
@@ -24,6 +26,7 @@ module.exports = {
         switch (subcommand) {
             case "enter":
             case "start":
+            case "images":
             case "view": {
                 const setup = await BrawlSetupModel.find();
                 choices = [...setup.map((model) => model.name)];
@@ -55,6 +58,10 @@ module.exports = {
             }
             case "enter": {
                 await enter.execute(interaction);
+                break;
+            }
+            case "images": {
+                await images.execute(interaction);
                 break;
             }
             case "start": {
