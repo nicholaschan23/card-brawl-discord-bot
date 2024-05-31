@@ -12,7 +12,7 @@ function getWinnerEmbed(bracketModel, setupModel) {
                 `Theme: **${setupModel.theme}**\n` +
                 `Card: \`${winner}\` by <@${winnerUserID}>`
         )
-        .setImage(setupModel.cards.get(winner).imageLink);
+        .setImage(`attachment://${winner}.png`);
     return embed;
 }
 

@@ -117,19 +117,19 @@ module.exports = {
                 embeds: [getIntroductionEmbed(setupModel)],
             });
             await message.react("🥳");
-            await delay(config.brawl.startTime - 3);
-            await judgesChannel.send("# 3");
-            await delay(1);
-            await judgesChannel.send("# 2");
-            await delay(1);
-            await judgesChannel.send("# 1");
-            await delay(1);
-            await judgesChannel.send("# Let the Card Brawl begin! 🥊");
-            await delay(2);
-            await judgesChannel.send(
-                "If you don't see your card in **Round 1**, you're lucky and automatically are in **Round 2**! Skipping a few matches..."
-            );
-            await delay(2);
+            // await delay(config.brawl.startTime - 3);
+            // await judgesChannel.send("# 3");
+            // await delay(1);
+            // await judgesChannel.send("# 2");
+            // await delay(1);
+            // await judgesChannel.send("# 1");
+            // await delay(1);
+            // await judgesChannel.send("# Let the Card Brawl begin! 🥊");
+            // await delay(2);
+            // await judgesChannel.send(
+            //     "If you don't see your card in **Round 1**, you're lucky and automatically are in **Round 2**! Skipping a few matches..."
+            // );
+            // await delay(2);
         }
         // Resume or start card brawl
         await myBrawlBracket.conductTournament();

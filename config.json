@@ -147,6 +147,7 @@
         "champion": "<:Rank6Champ:931065720681422859>"
     },
     "brawl": {
+        "cards_directory": "./cards",
         "voteTime": 30,
         "startTime": 300,
         "cost": 10,

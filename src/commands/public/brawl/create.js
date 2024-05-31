@@ -185,6 +185,7 @@ module.exports = {
                         components: [],
                     });
                     console.log("[BRAWL CREATE] Successfully created a Card Brawl");
+                    deleteImages();
                     break;
                 }
             }
@@ -197,3 +198,16 @@ module.exports = {
         }
     },
 };
+
+// Delete cards images
+function deleteImages() {
+  const fs = require("fs")
+  const directoryPath = config.brawl.cards_directory;
+  fs.rm(directoryPath, { recursive: true, force: true }, (err) => {
+    if (err) {
+      console.error(`Error while deleting ${directoryPath}.`, err);
+    } else {
+      console.log(`${directoryPath} is deleted.`);
+    }
+  });
+}
