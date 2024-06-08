@@ -16,36 +16,36 @@ module.exports = {
         .addSubcommand(start.data)
         .addSubcommand(stats.data)
         .addSubcommand(view.data),
-    async autocomplete(interaction) {
-        const subcommand = interaction.options.getSubcommand();
+    // async autocomplete(interaction) {
+    //     const subcommand = interaction.options.getSubcommand();
 
-        // Populate choices
-        let choices;
-        switch (subcommand) {
-            case "enter":
-            case "start":
-            case "view": {
-                const setup = await BrawlSetupModel.find();
-                choices = [...setup.map((model) => model.name)];
-                choices.reverse();
-                break;
-            }
-            default: {
-                console.error(
-                    `[ERROR] [BRAWL] There was no autocomplete case for the "${subcommand}" subcommand`
-                );
-            }
-        }
+    //     // Populate choices
+    //     let choices;
+    //     switch (subcommand) {
+    //         case "enter":
+    //         case "start":
+    //         case "view": {
+    //             const setup = await BrawlSetupModel.find();
+    //             choices = [...setup.map((model) => model.name)];
+    //             choices.reverse();
+    //             break;
+    //         }
+    //         default: {
+    //             console.error(
+    //                 `[ERROR] [BRAWL] There was no autocomplete case for the "${subcommand}" subcommand`
+    //             );
+    //         }
+    //     }
 
-        // Manage autocomplete
-        const focusedValue = interaction.options.getFocused().toLowerCase();
-        const filtered = choices.filter((choice) =>
-            choice.toLowerCase().startsWith(focusedValue)
-        );
-        await interaction.respond(
-            filtered.map((choice) => ({ name: choice, value: choice }))
-        );
-    },
+    //     // Manage autocomplete
+    //     const focusedValue = interaction.options.getFocused().toLowerCase();
+    //     const filtered = choices.filter((choice) =>
+    //         choice.toLowerCase().startsWith(focusedValue)
+    //     );
+    //     await interaction.respond(
+    //         filtered.map((choice) => ({ name: choice, value: choice }))
+    //     );
+    // },
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
         switch (subcommand) {
