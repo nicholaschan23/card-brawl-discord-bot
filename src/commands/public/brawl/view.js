@@ -13,7 +13,7 @@ module.exports = {
                 .setName("name")
                 .setDescription("Name of the Card Brawl to view competitors for.")
                 .setRequired(true)
-                .setAutocomplete(true)
+                // .setAutocomplete(true)
         ),
     async execute(interaction) {
         const name = interaction.options.getString("name");
